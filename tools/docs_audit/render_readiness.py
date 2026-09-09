@@ -79,19 +79,51 @@ def released() -> str | None:
     return None
 
 
-def collected() -> int:
-    """How many tests `pytest` collects right now."""
+def _collected_in(root: Path) -> int:
+    """How many tests `pytest` collects in one checkout."""
     result = subprocess.run(
-        [sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider"],
-        cwd=REPO_ROOT,
+        # `-o addopts=` discards whatever the checkout's own pytest configuration adds.
+        # This repository's sets `-q`, which on top of the `-q` below is `-qq` -- and at two
+        # levels of quiet pytest stops printing "N tests collected" at all and prints a count
+        # per file instead. The counter would then have been reading a format that depends on
+        # the configuration of the tree it happens to be pointed at.
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "--collect-only",
+            "-q",
+            "-o",
+            "addopts=",
+            "-p",
+            "no:cacheprovider",
+        ],
+        cwd=root,
         capture_output=True,
         text=True,
         check=False,
     )
     found = re.search(r"(\d+)\s+tests? collected", result.stdout)
     if found is None:
-        raise SystemExit(f"could not read a test count from pytest:\n{result.stdout[-2000:]}")
+        raise SystemExit(
+            f"could not read a test count from pytest in {root}:\n{result.stdout[-2000:]}"
+        )
     return int(found.group(1))
+
+
+def collected() -> int:
+    """How many tests `pytest` collects right now, across **both** checkouts.
+
+    The number is published in the readiness block and on the test-count badge, and what it
+    has always meant is "the size of the suite standing behind these guarantees". The split
+    put that suite in two repositories and did not make it smaller, so counting one of them
+    would drop roughly a third of it and report a shrunken suite as the truth.
+
+    The library first, because it is the larger half and because a failure there is the more
+    urgent one to name. Both are counted the same way -- what `pytest` **collects**, which is
+    not what passed; the badge is labelled `tests` and carries a count for that reason.
+    """
+    return _collected_in(CORE_ROOT) + _collected_in(REPO_ROOT)
 
 
 def soak() -> dict | None:
