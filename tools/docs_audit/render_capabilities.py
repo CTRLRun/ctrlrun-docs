@@ -1,21 +1,21 @@
-"""Render `docs/capabilities.yaml` three ways, and refuse a rendered copy that drifted.
+"""Render `capabilities.yaml` three ways, and refuse a rendered copy that drifted.
 
 One source, several renders. The README's capability matrix, the docs home page's capability
 grid and the plain-text list PyPI and directory listings carry are never edited by hand: each
 is the output of this script for one `format`, and `--check` fails when any of them differs.
 
     python tools/docs_audit/render_capabilities.py readme      # print one render
-    python tools/docs_audit/render_capabilities.py --write     # refresh docs/generated/
+    python tools/docs_audit/render_capabilities.py --write     # refresh generated/
     python tools/docs_audit/render_capabilities.py --check     # CI
 
 `--check` compares two things:
 
-1. the three files under `docs/generated/`, byte for byte;
+1. the three files under `generated/`, byte for byte;
 2. every **marker block** in `README.md` and under `docs/`, which is how a page embeds a render
    in place. A block opens with the generated-comment line this script emits — it names the
    format — and closes with an `end generated` comment. What lies between must equal the render.
 
-    <!-- generated from docs/capabilities.yaml (readme) — edit the YAML, never this table -->
+    <!-- generated from capabilities.yaml (readme) — edit the YAML, never this table -->
     | Guarantee | … |
     <!-- end generated -->
 
@@ -32,10 +32,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import yaml
+
 from _files import REPO_ROOT, documents, relative
 
-SOURCE = REPO_ROOT / "docs" / "capabilities.yaml"
-GENERATED = REPO_ROOT / "docs" / "generated"
+SOURCE = REPO_ROOT / "capabilities.yaml"
+GENERATED = REPO_ROOT / "generated"
 FORMATS: tuple[str, ...] = ("readme", "mdx", "text")
 FILENAMES: Mapping[str, str] = {
     "readme": "capabilities.readme.md",
@@ -51,10 +52,8 @@ WAY_LABELS: Mapping[str, str] = {
 VERSIONS: frozenset[str] = frozenset({"v0.1", "v0.2", "v0.3", "v0.4", "v0.5", "v0.6"})
 MAX_DESCRIPTION_WORDS = 15
 
-_OPEN_COMMENT = (
-    "generated from docs/capabilities.yaml ({format}) — edit the YAML, never this {what}"
-)
-_MARKER_OPEN = re.compile(r"generated from docs/capabilities\.yaml \((?P<format>[a-z]+)\)")
+_OPEN_COMMENT = "generated from capabilities.yaml ({format}) — edit the YAML, never this {what}"
+_MARKER_OPEN = re.compile(r"generated from capabilities\.yaml \((?P<format>[a-z]+)\)")
 _MARKER_CLOSE = re.compile(r"end generated")
 
 
@@ -72,7 +71,7 @@ class Capability:
 
 
 class CapabilitiesError(ValueError):
-    """`docs/capabilities.yaml` says something the generator refuses to render."""
+    """`capabilities.yaml` says something the generator refuses to render."""
 
 
 def load(path: Path = SOURCE) -> tuple[Capability, ...]:
@@ -117,7 +116,7 @@ def _parse(raw: object, where: str, seen: set[str]) -> Capability:
             f"{where}: description is {words} words; the limit is {MAX_DESCRIPTION_WORDS}"
         )
     if description.rstrip().endswith("!"):
-        raise CapabilitiesError(f"{where}: no exclamation marks (docs/STYLE.md)")
+        raise CapabilitiesError(f"{where}: no exclamation marks (STYLE.md)")
     ways = raw["ways_in"]
     if not isinstance(ways, Mapping) or set(ways) != set(WAYS_IN):
         raise CapabilitiesError(f"{where}: ways_in must name exactly {list(WAYS_IN)}")
@@ -306,7 +305,7 @@ def check(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("format", nargs="?", choices=FORMATS, help="print one render")
-    parser.add_argument("--write", action="store_true", help="refresh docs/generated/")
+    parser.add_argument("--write", action="store_true", help="refresh generated/")
     parser.add_argument("--check", action="store_true", help="fail if a rendered copy drifted")
     arguments = parser.parse_args(argv)
     try:

@@ -1,0 +1,32 @@
+# What is in this repository and is **not** a page of the site.
+#
+# The site root used to be `docs/` inside CTRLRun/ctrlrun, so this file only had to exclude a
+# handful of neighbours. The root is the whole repository now, which brings the tooling, the
+# tests and the form API into view -- so each of them is named here. A file that is not a page
+# and is not on this list is a page nobody meant to publish.
+
+# The maintainers' documents.
+README.md
+IA.md
+STYLE.md
+SEO.md
+BUILD-PROMPTS-*.md
+
+# The capability source and the rendered fragments pages embed. A render is a fragment, not a
+# page: `docs.mdx` and `docs/production/index.mdx` include them.
+capabilities.yaml
+generated/
+
+# Source assets and the browser verification scripts. `images/` is the published set.
+assets/
+
+# The checks, their tooling, and this repository's own configuration.
+tests/
+tools/
+scripts/
+.github/
+pyproject.toml
+LICENSE
+
+# The Vercel Function behind the review form. It is deployed by Vercel, not by Mintlify.
+website-form/

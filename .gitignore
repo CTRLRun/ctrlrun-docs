@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.DS_Store
+
+# A local clone of the library this site documents, if you put it here rather than beside
+# this repository. `tools/docs_audit/_core.py` finds it either way.
+/ctrlrun/
+node_modules/

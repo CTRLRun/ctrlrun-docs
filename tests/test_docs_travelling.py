@@ -14,8 +14,10 @@ from pathlib import Path
 
 import pytest
 
+from _core import CORE_ROOT
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DOCS = REPO_ROOT / "docs"
+DOCS = REPO_ROOT
 TOOLS = REPO_ROOT / "tools" / "docs_audit"
 
 if not (DOCS / "docs" / "try-it.mdx").exists():  # pragma: no cover - not a checkout
@@ -29,7 +31,7 @@ import render_probe  # noqa: E402
 #: is absent, so from inside an sdist there are no published results to render the study page
 #: from. The page is edited in a checkout, which is where these two run; CI's `check` job and
 #: every developer run are checkouts.
-IN_CHECKOUT = (REPO_ROOT / "research" / "framework-probe" / "results").is_dir()
+IN_CHECKOUT = (CORE_ROOT / "research" / "framework-probe" / "results").is_dir()
 needs_results = pytest.mark.skipif(
     not IN_CHECKOUT,
     reason="no research/framework-probe/results: the distributions prune it by design",
@@ -132,12 +134,12 @@ def test_the_page_quotes_the_run_the_harness_recorded():
 def _python_in_the_script(name: str) -> str:
     """One of the Python programs the Try-it page runs, lifted out of the JavaScript."""
     body = re.search(rf"var {name} = \[(.*?)\]\.join", SCRIPT, re.S)
-    assert body, f"docs/try-it.js: no {name} array — the page's Python moved"
+    assert body, f"try-it.js: no {name} array — the page's Python moved"
     try:
         lines = json.loads(f"[{body.group(1)}]")
     except json.JSONDecodeError as exc:  # pragma: no cover - a malformed array is the failure
         raise AssertionError(
-            f"docs/try-it.js: {name} is no longer JSON-parseable ({exc}). Keep it to "
+            f"try-it.js: {name} is no longer JSON-parseable ({exc}). Keep it to "
             "double-quoted strings with no comment inside the array and no trailing comma: "
             "verify-browser-demo.mjs parses it the same way."
         ) from exc
@@ -162,7 +164,7 @@ def test_the_browser_demo_program_is_valid_python():
     with no network and no Node.
     """
     program = _browser_demo_program()
-    compile(program, "docs/try-it.js PROGRAM", "exec")
+    compile(program, "try-it.js PROGRAM", "exec")
 
 
 def test_the_program_ends_on_an_expression_pyodide_can_return():
@@ -184,7 +186,7 @@ def test_the_transcript_box_scrolls_down_rather_than_growing():
     and scrolls to 458.
     """
     style = re.search(r"<pre\s*\n\s*style=\{\{(.*?)\}\}", TRY_IT, re.S)
-    assert style, "docs/docs/try-it.mdx: the transcript box is no longer a <pre> with inline style"
+    assert style, "docs/try-it.mdx: the transcript box is no longer a <pre> with inline style"
     box = dict(re.findall(r"(\w+):\s*\"([^\"]*)\"", style.group(1)))
 
     assert "maxHeight" in box, "minHeight without maxHeight is a box that can only grow"
@@ -210,7 +212,7 @@ def test_the_transcript_does_not_depend_on_how_the_theme_lays_the_box_out():
     assert "output.appendChild(node)" not in SCRIPT, "a line appended straight into the <pre>"
 
     style = re.search(r"<pre\s*\n\s*style=\{\{(.*?)\}\}", TRY_IT, re.S)
-    assert style, "docs/docs/try-it.mdx: the transcript box is no longer a <pre> with inline style"
+    assert style, "docs/try-it.mdx: the transcript box is no longer a <pre> with inline style"
     box = dict(re.findall(r"(\w+):\s*\"([^\"]*)\"", style.group(1)))
     assert box.get("display") == "block", "the theme's flex would lay the lines out in a row"
 
@@ -224,7 +226,7 @@ def test_the_reveal_follows_the_newest_line_only_for_a_reader_at_the_bottom():
 
 def test_the_harness_runs_the_program_the_page_runs():
     """A harness with its own copy of the artifact verifies the copy. This one reads
-    docs/try-it.js, so the program it proves is the program the reader gets."""
+    try-it.js, so the program it proves is the program the reader gets."""
     assert "try-it.js" in HARNESS, "the harness no longer reads the page's script"
     assert "runPython(PROGRAM)" in HARNESS
     assert "run_demo(" not in HARNESS, "the harness has grown its own copy of the program again"
@@ -243,7 +245,7 @@ def _playground_step():
     page's own copy of the Python was broken.
     """
     namespace: dict[str, object] = {}
-    exec(compile(_playground_module(), "docs/try-it.js PLAYGROUND", "exec"), namespace)
+    exec(compile(_playground_module(), "try-it.js PLAYGROUND", "exec"), namespace)
     step = namespace["step"]
 
     def call(**request):
@@ -254,7 +256,7 @@ def _playground_step():
 
 def test_the_playground_module_is_valid_python_and_defines_step():
     namespace: dict[str, object] = {}
-    exec(compile(_playground_module(), "docs/try-it.js PLAYGROUND", "exec"), namespace)
+    exec(compile(_playground_module(), "try-it.js PLAYGROUND", "exec"), namespace)
     assert callable(namespace.get("step"))
 
 
@@ -396,7 +398,6 @@ def test_the_page_quotes_lines_the_demo_prints():
     for the same reason: ids differ per run and everything else must not.
     """
     from click.testing import CliRunner
-
     from ctrlrun.cli.main import main
 
     with CliRunner().isolated_filesystem():
@@ -508,4 +509,4 @@ def test_all_three_pages_are_in_the_navigation_and_the_search_plan():
         "docs/study/does-your-framework-double-execute",
     ):
         assert slug in found, f"{slug} is not in docs.json"
-        assert f"`{slug}`" in plan, f"{slug} has no row in docs/SEO.md"
+        assert f"`{slug}`" in plan, f"{slug} has no row in SEO.md"

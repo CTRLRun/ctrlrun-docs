@@ -26,8 +26,10 @@ from pathlib import Path
 
 import pytest
 
+from _core import CORE_ROOT
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DOCS = REPO_ROOT / "docs"
+DOCS = REPO_ROOT
 PRODUCTION = DOCS / "docs" / "production"
 TOOLS = REPO_ROOT / "tools" / "docs_audit"
 
@@ -40,9 +42,17 @@ PAGES = sorted(PRODUCTION.glob("*.mdx"))
 #: `.github`, and `T181` asserts that no `research/` path is in the wheel or the sdist — so their
 #: absence inside an sdist is the packaging rule working, not a deletion.
 REPOSITORY_ONLY = (
-    REPO_ROOT / ".github" / "workflows" / "ci.yml",
-    REPO_ROOT / "research" / "soak" / "results",
+    CORE_ROOT / ".github" / "workflows" / "ci.yml",
+    CORE_ROOT / "research" / "soak" / "results",
 )
+
+
+def _name(path: Path) -> str:
+    """A repository-only path, named from whichever of the two checkouts holds it."""
+    for root in (REPO_ROOT, CORE_ROOT):
+        if path.is_relative_to(root):
+            return path.relative_to(root).as_posix()
+    return str(path)
 
 
 def _repository_only(path: Path) -> Path:
@@ -57,12 +67,12 @@ def _repository_only(path: Path) -> Path:
     if path.exists():
         return path
     present = [candidate for candidate in REPOSITORY_ONLY if candidate.exists()]
-    names = [str(item.relative_to(REPO_ROOT)) for item in present]
+    names = [_name(item) for item in present]
     assert not present, (
-        f"{path.relative_to(REPO_ROOT)} is missing from a tree that still has {names}; "
+        f"{_name(path)} is missing from a tree that still has {names}; "
         "that is a deletion, not an sdist"
     )
-    pytest.skip(f"{path.relative_to(REPO_ROOT)} is not in a distribution, by design")
+    pytest.skip(f"{_name(path)} is not in a distribution, by design")
 
 
 _FRONTMATTER = re.compile(r"\A---\n.*?\n---\n", re.S)
@@ -76,16 +86,23 @@ def _body(page: Path) -> str:
 def _spec_test_ids() -> set[str]:
     """Every acceptance-test id `SPEC-v0.6.md` and its predecessors define."""
     found: set[str] = set()
-    for spec in sorted(DOCS.glob("SPEC-v0.*.md")):
+    for spec in sorted((CORE_ROOT / "docs").glob("SPEC-v0.*.md")):
         text = spec.read_text(encoding="utf-8")
         found.update(re.findall(r"^#### (T\d+[a-z]*) ", text, re.M))
     return found
 
 
 def _written_test_ids() -> set[str]:
-    """Every acceptance-test id a test function in `tests/` is named for."""
+    """Every acceptance-test id a test function is named for, in **both** repositories.
+
+    The suite was one directory until the documentation moved to its own repository, and a
+    page's citation does not care which of the two holds the test that proves it. Reading
+    only one would have made every citation of a documentation test read as uncited.
+    """
     found: set[str] = set()
-    for module in sorted((REPO_ROOT / "tests").glob("*.py")):
+    for module in sorted(
+        [*(CORE_ROOT / "tests").glob("*.py"), *(REPO_ROOT / "tests").glob("*.py")]
+    ):
         text = module.read_text(encoding="utf-8")
         found.update(re.findall(r"^def test_(T\d+[a-z]*)_", text, re.M))
     return found
@@ -282,7 +299,7 @@ def test_the_two_rows_of_the_lost_commit_are_not_merged():
 
 def test_the_soak_page_is_the_render_of_the_published_results():
     """No hand-written number, and the duration is the measured one."""
-    _repository_only(REPO_ROOT / "research" / "soak" / "results")
+    _repository_only(CORE_ROOT / "research" / "soak" / "results")
     drift = subprocess.run(
         [sys.executable, str(TOOLS / "render_soak.py"), "--check"],
         cwd=REPO_ROOT,
@@ -301,7 +318,7 @@ def test_the_soak_page_states_the_measured_duration_and_what_it_does_not_establi
     to keep being printed, and printed beside what a run of that length cannot establish.
     "Soaked" is the sentence a stranger will quote, and this is the page they land on.
     """
-    results_dir = _repository_only(REPO_ROOT / "research" / "soak" / "results")
+    results_dir = _repository_only(CORE_ROOT / "research" / "soak" / "results")
     body = _body(PRODUCTION / "soak.mdx")
     results = sorted(results_dir.glob("*.json"))
     assert results, "no soak results to render"
@@ -327,7 +344,7 @@ def test_the_soak_page_derives_the_criterion_and_agrees_with_the_harness():
     """
     import sys
 
-    _repository_only(REPO_ROOT / "research" / "soak" / "results")
+    _repository_only(CORE_ROOT / "research" / "soak" / "results")
     sys.path.insert(0, str(TOOLS))
     try:
         import render_soak
@@ -394,7 +411,7 @@ def test_every_production_page_is_in_the_production_group():
 #: CTRLRun does, how to use it and how it works. The block has two homes on the site, where a
 #: reader who wants the numbers goes, and the generator still refuses a shrunken suite: what
 #: was dropped is one embedding, not the guard.
-READINESS_HOMES = ("docs/docs.mdx", "docs/docs/production/index.mdx")
+READINESS_HOMES = ("docs.mdx", "docs/production/index.mdx")
 
 
 @pytest.mark.parametrize("home", READINESS_HOMES)
@@ -478,15 +495,15 @@ def test_the_recorded_readiness_still_matches_what_it_was_measured_from():
     from ctrlrun.verify.guarantees import GUARANTEES
 
     recorded = render_readiness.state()
-    with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
+    with (CORE_ROOT / "pyproject.toml").open("rb") as handle:
         assert recorded["version"] == tomllib.load(handle)["project"]["version"]
     assert recorded["guarantees"] == len(GUARANTEES)
 
-    if not (REPO_ROOT / "research" / "soak" / "results").exists():
+    if not (CORE_ROOT / "research" / "soak" / "results").exists():
         # In a distribution the results are pruned, so `soak()` reports none — which says
         # nothing about whether the recorded figures drifted. The version and the guarantee
         # count above are checked either way.
-        _repository_only(REPO_ROOT / "research" / "soak" / "results")
+        _repository_only(CORE_ROOT / "research" / "soak" / "results")
     published = render_readiness.soak()
     if published is None:
         assert recorded["soak"] is None
@@ -629,38 +646,52 @@ def test_ci_publishes_the_test_count_badge_after_the_suite_has_passed():
     """
     import yaml
 
-    ci = _repository_only(REPO_ROOT / ".github" / "workflows" / "ci.yml")
+    ci = _repository_only(CORE_ROOT / ".github" / "workflows" / "ci.yml")
     workflow = yaml.safe_load(ci.read_text(encoding="utf-8"))
-    steps = workflow["jobs"]["check"]["steps"]
-    ran = [i for i, step in enumerate(steps) if "./scripts/check.sh" in str(step.get("run", ""))]
+    jobs = workflow["jobs"]
+
+    # The suite runs in `check`, and the badge is written in `docs` -- which is where the
+    # generator lives now that this repository holds it.
+    ran = [
+        i
+        for i, step in enumerate(jobs["check"]["steps"])
+        if "./scripts/check.sh" in str(step.get("run", ""))
+    ]
     wrote = [
         i
-        for i, step in enumerate(steps)
+        for i, step in enumerate(jobs["docs"]["steps"])
         if "render_badges.py --write-count" in str(step.get("run", ""))
     ]
     assert len(ran) == 1 and len(wrote) == 1, (ran, wrote)
-    assert ran[0] < wrote[0], "the badge is written before the suite runs"
 
-    condition = str(steps[wrote[0]].get("if", ""))
+    # **The ordering is `needs:` now, and that is the stronger form.** It used to be two steps
+    # in one job, where the order is a convention: an independent review once changed the
+    # step's condition to `always() && ...`, which makes it run after a red suite, and the
+    # test still passed. A job that `needs: check` does not start at all unless `check`
+    # succeeded, so there is no condition left to weaken.
+    assert "check" in jobs["docs"]["needs"], jobs["docs"]["needs"]
+
+    # And nothing in the job may put the implicit `success()` back in question.
+    condition = str(jobs["docs"]["steps"][wrote[0]].get("if", "")) + str(jobs["docs"].get("if", ""))
     for override in ("always(", "success(", "failure(", "cancelled(", "!"):
         assert override not in condition, (
             f"the write step overrides the implicit success(): {condition!r}"
         )
 
-    # And the publishing job waits on that job, so a red matrix leg publishes nothing.
-    badge = workflow["jobs"]["badge"]
-    assert "check" in badge["needs"] and "verify" in badge["needs"], badge["needs"]
-    assert badge["if"] == "github.event_name == 'push' && github.ref == 'refs/heads/main'"
+    # One write, so `docs` must not be a matrix: two legs would race for one artifact name.
+    assert "strategy" not in jobs["docs"], "a matrix would upload the badge twice"
 
-    # The matrix leg the step is guarded on has to be one the matrix actually runs, or the
-    # artifact is never uploaded and the *verify* badge's download fails on the next push.
-    guarded = re.search(r"matrix\.python-version == '([^']+)'", condition)
-    assert guarded, condition
-    assert guarded.group(1) in workflow["jobs"]["check"]["strategy"]["matrix"]["python-version"]
+    # And the publishing job waits on the job that produces the artifact, as well as on the
+    # two it always waited for. Without `docs` it would download nothing, or win a race and
+    # publish a stale count -- the same bug on a good day.
+    badge = jobs["badge"]
+    for needed in ("check", "verify", "docs"):
+        assert needed in badge["needs"], (needed, badge["needs"])
+    assert badge["if"] == "github.event_name == 'push' && github.ref == 'refs/heads/main'"
 
 
 def test_the_readme_says_where_it_runs_before_the_badges():
-    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    readme = (CORE_ROOT / "README.md").read_text(encoding="utf-8")
     header = "Runs in production on a single file, or on Postgres across hosts. Apache-2.0."
     assert header in readme
     assert readme.index(header) < readme.index("img.shields.io")

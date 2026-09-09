@@ -1,4 +1,4 @@
-"""The documentation site's pages, held to `docs/STYLE.md` and `docs/IA.md`.
+"""The documentation site's pages, held to `STYLE.md` and `docs/IA.md`.
 
 The rules a machine can check: frontmatter, the word budget, the closing Next block, the
 navigation, and on every Concepts page a definitional first sentence. The rest is what a
@@ -13,8 +13,10 @@ from pathlib import Path
 
 import pytest
 
+from _core import CORE_ROOT
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DOCS = REPO_ROOT / "docs"
+DOCS = REPO_ROOT
 
 if not (DOCS / "docs.json").exists():  # pragma: no cover - not a checkout
     pytest.skip("no repository checkout", allow_module_level=True)
@@ -197,7 +199,7 @@ def test_the_documentation_root_preserves_the_technical_overview():
     text = (DOCS / "docs.mdx").read_text(encoding="utf-8")
     assert "The last check before an AI agent does something it can't undo." in text
     assert "Autonomy belongs to the action, not the agent." in text
-    assert "generated from docs/capabilities.yaml (mdx)" in text
+    assert "generated from capabilities.yaml (mdx)" in text
     assert '"mcpServers"' in text and "/mcp" in text
 
 
@@ -277,7 +279,7 @@ def test_how_this_is_built_does_not_undercount_the_suite_it_describes():
     hundred, on the page that argues the tests are the evidence.
     """
     functions: set[str] = set()
-    for module in (REPO_ROOT / "tests").glob("*.py"):
+    for module in [*(CORE_ROOT / "tests").glob("*.py"), *(REPO_ROOT / "tests").glob("*.py")]:
         functions.update(re.findall(r"^def (test_\w+)", module.read_text(encoding="utf-8"), re.M))
 
     text = (DOCS / "docs" / "how-this-is-built.md").read_text(encoding="utf-8")

@@ -8,7 +8,7 @@ no promise. The marker is a word on the fence's info string:
     ```bash runnable
     ```yaml runnable
 
-Rules, stated once here and in `docs/STYLE.md`:
+Rules, stated once here and in `STYLE.md`:
 
 - Every runnable block in one document runs in **one temporary directory**, in document order,
   so a `yaml runnable` policy written early is the `ctrlrun.yaml` a later block reads.
@@ -212,7 +212,6 @@ def _run(
 
 def _load_yaml(fence: Fence, workdir: Path) -> Failure | None:
     import yaml
-
     from ctrlrun import Authority, Policy
     from ctrlrun.errors import CTRLRunError
 

@@ -29,13 +29,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import unquote
 
+from _core import CORE_ROOT
 from _files import DOCUMENT_PATTERNS, REPO_ROOT, documents, outside_fences, relative
 
-#: A render under `docs/generated/` is a fragment, embedded into a page by a later session and
+#: A render under `generated/` is a fragment, embedded into a page by a later session and
 #: never published on its own. Its links are checked on the page that embeds it, where they
 #: either resolve or fail with that page — and until a page embeds it, a link to a page not
 #: yet written is a plan, not a broken link.
-EXCLUDED: tuple[str, ...] = ("docs/generated/*",)
+EXCLUDED: tuple[str, ...] = ("generated/*",)
 
 
 def documents_to_check() -> list[Path]:
@@ -44,13 +45,18 @@ def documents_to_check() -> list[Path]:
 
 _MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 _HREF = re.compile(r"""href=["']([^"']+)["']""")
-_GITHUB = re.compile(r"^https://github\.com/CTRLRun/ctrlrun/(?:blob|tree)/[^/]+/(.*)$")
+#: A link into the org on github.com resolves against whichever checkout owns that
+#: repository, so a page can cite `LICENSE` in the library and `docs.json` here and
+#: both are checked. Named groups rather than two regexes: one place decides.
+_GITHUB = re.compile(
+    r"^https://github\.com/CTRLRun/(?P<repo>ctrlrun|ctrlrun-docs)/(?:blob|tree)/[^/]+/(?P<path>.*)$"
+)
 _HEADING = re.compile(r"^\s{0,3}(#{1,6})\s+(.*?)\s*#*\s*$")
 _EXPLICIT_ID = re.compile(r"\{#([A-Za-z0-9_-]+)\}\s*$")
 _ID_ATTRIBUTE = re.compile(r"""\bid=["']([A-Za-z0-9_-]+)["']""")
 
 
-_IA = REPO_ROOT / "docs" / "IA.md"
+_IA = REPO_ROOT / "IA.md"
 
 
 def planned_pages() -> frozenset[str]:
@@ -127,20 +133,20 @@ def _resolve(target: str, source: Path) -> tuple[Path | None, str | None] | None
         matched = _GITHUB.match(path_part)
         if matched is None:
             return None
-        return REPO_ROOT / unquote(matched.group(1)), anchor
+        root = REPO_ROOT if matched.group("repo") == "ctrlrun-docs" else CORE_ROOT
+        return root / unquote(matched.group("path")), anchor
     if not path_part:
         return source, anchor
     path_part = unquote(path_part)
     if path_part.startswith("/"):
         for candidate in (
-            REPO_ROOT / "docs" / (path_part.lstrip("/") + ".mdx"),
-            REPO_ROOT / "docs" / (path_part.lstrip("/") + ".md"),
-            REPO_ROOT / "docs" / path_part.lstrip("/"),
+            REPO_ROOT / (path_part.lstrip("/") + ".mdx"),
+            REPO_ROOT / (path_part.lstrip("/") + ".md"),
             REPO_ROOT / path_part.lstrip("/"),
         ):
             if candidate.exists():
                 return candidate, anchor
-        return REPO_ROOT / "docs" / (path_part.lstrip("/") + ".mdx"), anchor
+        return REPO_ROOT / (path_part.lstrip("/") + ".mdx"), anchor
     return (source.parent / path_part).resolve(), anchor
 
 

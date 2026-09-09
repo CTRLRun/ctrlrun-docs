@@ -1,0 +1,45 @@
+# This repository ships no package. It holds the CTRLRun documentation site, the tools that
+# render it from the library's own source, and the tests that check it -- so the only thing
+# here is configuration for those tools.
+#
+# The library itself is `CTRLRun/ctrlrun`, published to PyPI as `ctrlrun`. Nothing in this
+# repository is installed by `pip install ctrlrun`, and nothing here is imported by it.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["tools/docs_audit", "tests"]
+force-exclude = true
+
+[tool.ruff.format]
+# Same reasoning as the library's: the formatter reads Python code blocks inside Markdown and
+# the linter does not, so a page's illustrative block would be reformatted on the accident of
+# whether it happens to parse. A page's code is illustration, and the two tools now agree.
+exclude = ["*.md", "*.mdx"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "ANN", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# `CoreCheckoutMissing` follows the library's own naming (`DuplicateEffect`, `AmbiguousEffect`,
+# `MissingDependency`), which drops the `Error` suffix. `MissingDependencyError` sitting beside
+# those in an `except` clause would be the odd one out, and the library exempts `errors.py` for
+# exactly this reason.
+"tools/docs_audit/_core.py" = ["N818"]
+# The reference generators carry the pages' own prose as string literals, and a page's line is
+# not a code line: the rendered file is what has a width. Everything else about them is linted.
+"tools/docs_audit/render_*.py" = ["E501"]
+# Type hints are a src/ constraint; tests stay cheap to write.
+"tests/*" = ["ANN", "N802"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+# Registered rather than tolerated: an unregistered mark is a warning, and a warning is how
+# `@pytest.mark.authoriti` would have run nothing while looking like it ran something.
+markers = [
+    "authority: exercises the demo end to end, so it needs the CLI installed",
+]
+
+# No `[tool.mypy]` section: see the note in `scripts/check.sh`. `mypy --strict` covers the
+# library's `src/` in the library's own repository, and `tools/` was never inside it.

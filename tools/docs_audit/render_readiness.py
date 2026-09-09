@@ -4,14 +4,14 @@ The block is the first thing a stranger reads about whether CTRLRun can be run f
 every number in it comes from something that measures itself:
 
 - the version and the dependency floor from `pyproject.toml`;
-- the test count from `pytest --collect-only`, recorded in `docs/generated/readiness.json`;
+- the test count from `pytest --collect-only`, recorded in `generated/readiness.json`;
 - the soak's duration, actions and unattributed count from `research/soak/results/*.json`;
 - what `ctrlrun verify` checks from the guarantee catalogue itself.
 
 And it carries a **Not yet** list, inside the block and never below it: no external security
 audit, no third-party review of the kernel, no sector packs. The honest half is why the first
 half is believed. A line leaves only when the thing it names has become true, in its own pull
-request, and `docs/docs/CLAIMS.md` changes in the same one.
+request, and `docs/CLAIMS.md` changes in the same one.
 
     python tools/docs_audit/render_readiness.py --write   # refresh, re-counting the suite
     python tools/docs_audit/render_readiness.py --check    # what CI runs
@@ -32,13 +32,14 @@ import sys
 import tomllib
 from pathlib import Path
 
+from _core import CORE_ROOT
 from _files import REPO_ROOT, relative
 
-STATE = REPO_ROOT / "docs" / "generated" / "readiness.json"
-GENERATED = REPO_ROOT / "docs" / "generated"
+STATE = REPO_ROOT / "generated" / "readiness.json"
+GENERATED = REPO_ROOT / "generated"
 FILENAMES = {"readme": "readiness.readme.md", "mdx": "readiness.mdx", "full": "readiness.full.mdx"}
 FORMATS = tuple(FILENAMES)
-SOAK = REPO_ROOT / "research" / "soak" / "results"
+SOAK = CORE_ROOT / "research" / "soak" / "results"
 _OPEN = re.compile(r"generated from the suite, pyproject and the soak \((?P<format>[a-z]+)\)")
 _CLOSE = re.compile(r"end generated")
 
@@ -53,7 +54,7 @@ NOT_YET: tuple[tuple[str, str], ...] = (
 
 
 def _version() -> str:
-    with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
+    with (CORE_ROOT / "pyproject.toml").open("rb") as handle:
         return str(tomllib.load(handle)["project"]["version"])
 
 
@@ -71,7 +72,7 @@ def released() -> str | None:
     impossible. The changelog is the source because it is the file that already has to be
     right before a tag, and it flips this line on its own when the release lands.
     """
-    text = (REPO_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    text = (CORE_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     for found in _HEADING.finditer(text):
         if found.group("when").lower() != "unreleased":
             return found.group("version")

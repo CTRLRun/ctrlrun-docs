@@ -8,8 +8,10 @@ from pathlib import Path
 
 import pytest
 
+from _core import CORE_ROOT
+
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "examples/medical_workbench.py"
+SOURCE = CORE_ROOT / "examples/medical_workbench.py"
 
 
 @pytest.fixture
@@ -34,7 +36,7 @@ def workbench():
 
 
 def test_browser_and_local_example_execute_identical_python():
-    script = (ROOT / "docs/medical-workbench.js").read_text()
+    script = (ROOT / "medical-workbench.js").read_text()
     encoded = re.search(r'var MODULE = (\[.*?\])\.join\("\\n"\);', script, re.S)
     assert encoded
     assert "\n".join(json.loads(encoded[1])) == SOURCE.read_text().rstrip("\n")

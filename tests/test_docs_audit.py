@@ -13,6 +13,8 @@ from pathlib import Path
 
 import pytest
 
+from _core import CORE_ROOT
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TOOLS = REPO_ROOT / "tools" / "docs_audit"
 
@@ -24,7 +26,7 @@ sys.path.insert(0, str(TOOLS))
 #: `MANIFEST.in` prunes `.github` and `adapters` from the sdist, so from inside one the README's
 #: links into `adapters/` cannot resolve and there is no workflow to read. The same signal the
 #: packaging tests use: a checkout has `adapters/`; a distribution does not.
-IN_CHECKOUT = (REPO_ROOT / "adapters").is_dir() and (REPO_ROOT / ".github").is_dir()
+IN_CHECKOUT = (CORE_ROOT / "adapters").is_dir() and (REPO_ROOT / ".github").is_dir()
 checkout_only = pytest.mark.skipif(
     not IN_CHECKOUT, reason="not a repository checkout: the sdist prunes .github and adapters"
 )
@@ -355,10 +357,19 @@ def test_a_duplicate_heading_gets_a_numbered_anchor(tmp_path):
     assert links.check_text(page.read_text(), page) == []
 
 
-def test_a_github_blob_url_into_this_repository_is_an_internal_link(tmp_path):
+def test_a_github_blob_url_into_either_repository_is_an_internal_link(tmp_path):
+    """A link into the org resolves against the checkout that owns that repository.
+
+    Both directions, in one fixture, because one of them alone would pass while the resolver
+    sent everything to a single root: `docs/verify.md` exists here and not in the library,
+    and `LICENSE` exists in the library and not here. A checker that picked one root would
+    call one of the two broken.
+    """
     page = tmp_path / "a.md"
     page.write_text(
-        "[ok](https://github.com/CTRLRun/ctrlrun/blob/main/docs/docs/verify.md#what-the-badge-means)\n"
+        "[site](https://github.com/CTRLRun/ctrlrun-docs/blob/main/docs/verify.md"
+        "#what-the-badge-means)\n"
+        "[library](https://github.com/CTRLRun/ctrlrun/blob/main/LICENSE)\n"
         "[bad](https://github.com/CTRLRun/ctrlrun/blob/main/docs/nope.md)\n"
         "[external](https://example.com/anything)\n",
         encoding="utf-8",
@@ -373,9 +384,9 @@ def test_a_github_blob_url_into_this_repository_is_an_internal_link(tmp_path):
 
 def test_a_root_relative_docs_path_resolves_under_docs(tmp_path, monkeypatch):
     monkeypatch.setattr(links, "REPO_ROOT", tmp_path)
-    (tmp_path / "docs" / "docs" / "concepts").mkdir(parents=True)
-    (tmp_path / "docs" / "docs" / "concepts" / "effect-keys.mdx").write_text("# Effect keys\n")
-    page = tmp_path / "docs" / "index.mdx"
+    (tmp_path / "docs" / "concepts").mkdir(parents=True)
+    (tmp_path / "docs" / "concepts" / "effect-keys.mdx").write_text("# Effect keys\n")
+    page = tmp_path / "index.mdx"
     page.write_text('<Card href="/docs/concepts/effect-keys" /> [x](/concepts/missing)\n')
 
     broken = links.check_text(page.read_text(), page)
@@ -388,9 +399,8 @@ def test_a_query_string_is_not_part_of_the_page_path(tmp_path, monkeypatch):
     the whole string and called a working link broken -- and the strip must not swallow a
     genuinely missing page that happens to carry a query."""
     monkeypatch.setattr(links, "REPO_ROOT", tmp_path)
-    (tmp_path / "docs").mkdir()
-    (tmp_path / "docs" / "try.mdx").write_text("---\ntitle: Try\n---\n")
-    page = tmp_path / "docs" / "index.mdx"
+    (tmp_path / "try.mdx").write_text("---\ntitle: Try\n---\n")
+    page = tmp_path / "index.mdx"
     page.write_text("[a](/try?situation=uncertain) [b](/nope?situation=uncertain)\n")
 
     broken = links.check_text(page.read_text(), page)
@@ -401,12 +411,11 @@ def test_a_query_string_is_not_part_of_the_page_path(tmp_path, monkeypatch):
 @checkout_only
 def test_a_link_to_a_page_the_ia_plans_is_planned_not_broken(tmp_path, monkeypatch):
     monkeypatch.setattr(links, "REPO_ROOT", tmp_path)
-    monkeypatch.setattr(links, "_IA", tmp_path / "docs" / "IA.md")
-    (tmp_path / "docs").mkdir()
-    (tmp_path / "docs" / "IA.md").write_text(
+    monkeypatch.setattr(links, "_IA", tmp_path / "IA.md")
+    (tmp_path / "IA.md").write_text(
         "Guides\n  ├─ Protect a function   docs/guides/protect-a-function\n"
     )
-    page = tmp_path / "docs" / "index.mdx"
+    page = tmp_path / "index.mdx"
     page.write_text("[a](/docs/guides/protect-a-function) [b](/guides/never-planned)\n")
     links.PLANNED.clear()
 
@@ -422,11 +431,11 @@ def test_the_real_documents_have_no_broken_internal_links():
 
 
 def test_a_generated_fragment_is_not_checked_on_its_own_but_a_page_is():
-    """The grid under `docs/generated/` links to pages later sessions write; it is checked
+    """The grid under `generated/` links to pages later sessions write; it is checked
     where it is embedded. The exclusion is narrow: a page under `docs/` is still checked."""
     checked = {links.relative(path) for path in links.documents_to_check()}
 
-    assert not any(name.startswith("docs/generated/") for name in checked)
+    assert not any(name.startswith("generated/") for name in checked)
     assert "README.md" in checked
     assert any(name.startswith("docs/") for name in checked)
 
@@ -447,13 +456,13 @@ def test_every_description_is_at_most_fifteen_words():
 
 
 def test_every_page_a_capability_names_is_in_the_information_architecture():
-    ia = (REPO_ROOT / "docs" / "IA.md").read_text(encoding="utf-8")
+    ia = (REPO_ROOT / "IA.md").read_text(encoding="utf-8")
     for entry in capabilities.load():
         assert f"`{entry.page}`" in ia or f" {entry.page}\n" in ia, entry.page
 
 
 def test_every_claim_a_capability_names_is_a_row_in_claims_md():
-    claims = (REPO_ROOT / "docs" / "docs" / "CLAIMS.md").read_text(encoding="utf-8")
+    claims = (REPO_ROOT / "docs" / "CLAIMS.md").read_text(encoding="utf-8")
     for entry in capabilities.load():
         if entry.claim is None:
             assert entry.claim_note, entry.id
@@ -462,7 +471,7 @@ def test_every_claim_a_capability_names_is_a_row_in_claims_md():
 
 
 def test_the_generated_copies_match_the_generator():
-    """The drift test. Every rendered copy — the three files under `docs/generated/` and every
+    """The drift test. Every rendered copy — the three files under `generated/` and every
     marker block in the README or a docs page — is the generator's output for that format."""
     drift = capabilities.check(capabilities.load())
 
@@ -501,7 +510,7 @@ def test_every_render_carries_the_generated_comment_and_the_close_marker():
     loaded = capabilities.load()
     for fmt in capabilities.FORMATS:
         text = capabilities.render(fmt, loaded)
-        assert f"generated from docs/capabilities.yaml ({fmt})" in text.splitlines()[0]
+        assert f"generated from capabilities.yaml ({fmt})" in text.splitlines()[0]
         assert "end generated" in text.splitlines()[-1]
 
 
@@ -570,7 +579,7 @@ def test_the_generator_refuses_a_null_claim_without_a_note(tmp_path):
 
 @checkout_only
 def test_ci_runs_the_three_checks_and_the_drift_check():
-    """`docs/STYLE.md` says the `docs` job runs them. A guard that CI does not run is prose."""
+    """`STYLE.md` says the `docs` job runs them. A guard that CI does not run is prose."""
     workflow = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
 
     for script in ("snippets.py", "lint.py", "links.py", "render_capabilities.py --check"):
@@ -585,7 +594,7 @@ def test_the_scripts_run_as_scripts():
         ("render_capabilities.py", ["--check"]),
         ("links.py", ["README.md"]),
         ("snippets.py", ["--list", "README.md"]),
-        ("lint.py", ["docs/STYLE.md"]),
+        ("lint.py", ["STYLE.md"]),
     ):
         completed = subprocess.run(
             [sys.executable, str(TOOLS / script), *arguments],

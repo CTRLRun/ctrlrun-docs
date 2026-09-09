@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DOCS = REPO_ROOT / "docs"
+DOCS = REPO_ROOT
 
 if not (
     DOCS / "docs" / "demos" / "medical-affairs.mdx"

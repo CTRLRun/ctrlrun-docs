@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # The pages describe a library that lives in another repository, so a change *there* can
+  # make a page here wrong without anything here changing. `CTRLRun/ctrlrun`'s own CI sends
+  # this event on a push to its main branch, and the run below checks these pages against
+  # that commit. Without it the split would have turned a red check into a slow drift.
+  repository_dispatch:
+    types: [library-changed]
+  # And a weekly floor, so a dispatch that never arrives -- a token expiring, a workflow
+  # edited -- surfaces as a red run rather than as silence.
+  schedule:
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: ctrlrun-docs
+
+      # The library these pages document. The checks read it -- a page that says the CLI
+      # prints X is only true if the CLI prints X -- and `tools/docs_audit/_core.py` raises
+      # when it is absent rather than skipping, so a checkout that failed to happen is a red
+      # run and not a green one that verified nothing.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: CTRLRun/ctrlrun
+          ref: ${{ github.event.client_payload.sha || 'main' }}
+          path: ctrlrun
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          # The library itself, because the reference pages are rendered from its docstrings
+          # and its `--help`, and the checks import it to compare.
+          pip install -e "./ctrlrun[dev,gateway,otel,identity]"
+          pip install ruff mypy pytest griffe pyyaml
+
+      # One script, called here and by a developer before pushing, so "it passed locally" and
+      # "it passed in CI" cannot come to mean different things.
+      - name: check
+        working-directory: ctrlrun-docs
+        env:
+          CTRLRUN_SOURCE: ${{ github.workspace }}/ctrlrun
+        run: ./scripts/check.sh
+
+      # The four drift checks, named individually because `STYLE.md` says the CI job runs them
+      # and `test_ci_runs_the_three_checks_and_the_drift_check` reads this file to prove it.
+      # A guard CI does not run is prose.
+      - name: The documentation audit
+        working-directory: ctrlrun-docs
+        env:
+          CTRLRUN_SOURCE: ${{ github.workspace }}/ctrlrun
+        run: |
+          python tools/docs_audit/snippets.py
+          python tools/docs_audit/lint.py
+          python tools/docs_audit/links.py
+          python tools/docs_audit/render_capabilities.py --check

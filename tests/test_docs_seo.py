@@ -1,6 +1,6 @@
 """What search engines and assistants read: titles, descriptions, one H1, and the FAQ data.
 
-`docs/SEO.md` names the target query per page and the sentence written to answer it. The rules
+`SEO.md` names the target query per page and the sentence written to answer it. The rules
 a machine can hold are here; the sentences themselves are what a reviewer reads for.
 """
 
@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DOCS = REPO_ROOT / "docs"
+DOCS = REPO_ROOT
 
 if not (DOCS / "docs.json").exists():  # pragma: no cover - not a checkout
     pytest.skip("no repository checkout", allow_module_level=True)
@@ -93,7 +93,7 @@ def test_the_faq_structured_data_matches_the_page():
 
 
 def test_seo_md_names_every_page_and_its_query():
-    """`docs/SEO.md` is the plan: one row per page. A page with no row is a page nobody decided
+    """`SEO.md` is the plan: one row per page. A page with no row is a page nobody decided
     what it was for."""
     plan = (DOCS / "SEO.md").read_text(encoding="utf-8")
     missing = []
@@ -103,7 +103,7 @@ def test_seo_md_names_every_page_and_its_query():
             continue  # one row covers the generated API pages
         if f"`{slug}`" not in plan:
             missing.append(slug)
-    assert missing == [], f"docs/SEO.md has no row for: {missing}"
+    assert missing == [], f"SEO.md has no row for: {missing}"
 
 
 def test_the_definitional_words_appear_where_the_plan_says():

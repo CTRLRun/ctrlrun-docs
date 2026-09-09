@@ -6,7 +6,7 @@ is the only place a badge row appears; a second format with no consumer would be
 artifact nobody reads, and an independent review is what noticed the first version shipping one.
 
     python tools/docs_audit/render_badges.py readme     # print one render
-    python tools/docs_audit/render_badges.py --write    # refresh docs/generated/
+    python tools/docs_audit/render_badges.py --write    # refresh generated/
     python tools/docs_audit/render_badges.py --check    # CI
 
 Most of the row is rendered by somebody else — PyPI, GitHub Actions, OpenSSF, Astral. Two are
@@ -22,7 +22,7 @@ are enforced: `scripts/check.sh` runs `ruff format --check`, `ruff check` and `m
 src`, CI calls that file rather than naming the tools itself, and `test_ci_runs_the_check_script`
 fails if it stops. The `docs` badge is a link and claims nothing.
 
-Downloads and stars are deliberately absent. `docs/STYLE.md` forbids social proof that does not
+Downloads and stars are deliberately absent. `STYLE.md` forbids social proof that does not
 exist, and a count published four days after the first release measures mirrors.
 
 `--write-count` is what CI calls, and what it counts is what `pytest` **collects**. That is not
@@ -44,7 +44,7 @@ from pathlib import Path
 from _files import REPO_ROOT, documents, relative
 from render_readiness import collected
 
-GENERATED = REPO_ROOT / "docs" / "generated"
+GENERATED = REPO_ROOT / "generated"
 FILENAMES = {"readme": "badges.readme.md"}
 FORMATS = tuple(FILENAMES)
 BADGES_BRANCH = "https://raw.githubusercontent.com/CTRLRun/ctrlrun/badges"

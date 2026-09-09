@@ -16,9 +16,11 @@ from pathlib import Path
 
 import pytest
 
+from _core import CORE_ROOT
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TOOLS = REPO_ROOT / "tools" / "docs_audit"
-DOCS = REPO_ROOT / "docs"
+DOCS = REPO_ROOT
 
 if not (TOOLS.exists() and (DOCS / "docs" / "reference").exists()):  # pragma: no cover
     pytest.skip("no repository checkout", allow_module_level=True)
@@ -244,7 +246,6 @@ def test_the_authority_reference_names_every_grant_key():
 
 def test_the_exit_codes_page_says_what_verify_says():
     from click.testing import CliRunner
-
     from ctrlrun.cli.main import main
 
     help_text = " ".join(CliRunner().invoke(main, ["verify", "--help"]).output.split())
@@ -377,7 +378,7 @@ def test_every_extra_the_reference_names_is_an_extra_that_exists():
     """
     import tomllib
 
-    with (REPO_ROOT / "pyproject.toml").open("rb") as handle:
+    with (CORE_ROOT / "pyproject.toml").open("rb") as handle:
         declared = set(tomllib.load(handle)["project"].get("optional-dependencies", {}))
 
     named = set(render_api.EXTRA_FOR.values())
