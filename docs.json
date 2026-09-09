@@ -21,8 +21,12 @@
         "label": "How it works"
       },
       {
+        "href": "/try",
+        "label": "Try it"
+      },
+      {
         "href": "/docs",
-        "label": "Documentation"
+        "label": "Docs"
       },
       {
         "label": "GitHub",
@@ -64,14 +68,6 @@
               "docs/get-started/quickstart",
               "docs/get-started/three-ways-in",
               "docs/get-started/choosing"
-            ]
-          },
-          {
-            "group": "Demos",
-            "pages": [
-              "docs/demos/index",
-              "docs/try-it",
-              "docs/demos/medical-affairs"
             ]
           },
           {
@@ -396,17 +392,32 @@
     },
     {
       "source": "/demos/index",
-      "destination": "/docs/demos/index",
+      "destination": "/try",
+      "permanent": true
+    },
+    {
+      "source": "/docs/demos/index",
+      "destination": "/try",
       "permanent": true
     },
     {
       "source": "/try-it",
-      "destination": "/docs/try-it",
+      "destination": "/try",
+      "permanent": true
+    },
+    {
+      "source": "/docs/try-it",
+      "destination": "/try",
       "permanent": true
     },
     {
       "source": "/demos/medical-affairs",
-      "destination": "/docs/demos/medical-affairs",
+      "destination": "/try",
+      "permanent": true
+    },
+    {
+      "source": "/docs/demos/medical-affairs",
+      "destination": "/try",
       "permanent": true
     },
     {

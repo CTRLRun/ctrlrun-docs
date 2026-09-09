@@ -100,10 +100,6 @@ Architecture and specifications
   ├─ Architecture                      architecture/overview
   └─ Specifications                    architecture/specifications
 Changelog                              changelog
-Demos
-  ├─ Overview                          demos/index
-  ├─ Try it in your browser            try-it
-  └─ Medical affairs                   demos/medical-affairs
 Research: does your framework
   double-execute?                      study/does-your-framework-double-execute
 Get the badge                          verify/get-the-badge
@@ -297,9 +293,6 @@ signature · what is not covered. Query: *ctrlrun faq* and each question verbati
 
 | Path | Purpose | Query |
 |---|---|---|
-| `docs/demos/index` | The two pages that run the released wheel in the reader's own browser, and the one line that runs the same thing faster offline. | *ctrlrun demo online* |
-| `docs/demos/medical-affairs` | An approval bound to revision A of a letter to a physician, and the send of revision B refused after new evidence redrafts it — the browser demo under a policy whose consequential action is a document rather than a payment. | *AI medical information letter review · agent citation drift* |
-| `docs/try-it` | `ctrlrun demo` in the browser via Pyodide, the same five refusals the README shows, a run-again button, and one line to install it for real. Any scenario the browser cannot run says so by name. | *try ctrlrun* |
 | `docs/study/does-your-framework-double-execute` | The framework-probe results, rendered from `research/framework-probe/results/*.json` by script; *No published results yet* until a file exists. Behaviour, not quality. | *does langgraph retry tool calls* · *agent framework double execution study* |
 | `docs/verify/get-the-badge` | The two-minute version of adding the verified badge: the workflow, what *declared guarantees pass* means, what N/A means. No gallery until a repo carries it. | *ctrlrun verified badge* |
 

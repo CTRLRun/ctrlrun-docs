@@ -2,7 +2,6 @@
 
 import copy
 import json
-import re
 import runpy
 from pathlib import Path
 
@@ -33,13 +32,6 @@ def workbench():
         return json.loads(module["step"](json.dumps({"op": op, "snapshot": snapshot, **extra})))
 
     return snapshot, call
-
-
-def test_browser_and_local_example_execute_identical_python():
-    script = (ROOT / "medical-workbench.js").read_text()
-    encoded = re.search(r'var MODULE = (\[.*?\])\.join\("\\n"\);', script, re.S)
-    assert encoded
-    assert "\n".join(json.loads(encoded[1])) == SOURCE.read_text().rstrip("\n")
 
 
 def test_reviewed_document_releases_and_produces_real_receipts(workbench):

@@ -122,8 +122,7 @@ synthetic; release decisions and receipts execute in Python.
 recovery and all six stages at three viewport widths.
 
 The scenario explorer holds 48 domains and 238 actions, all illustrative client-side
-simulations. The Python runtime demos are at `/docs/try-it` and `/docs/demos/medical-affairs`,
-and load their runtime only when invoked.
+simulations.
 
 The risk check stores no answers and sends nothing until a visitor submits a review request.
 Its result distinguishes an indicated pattern from an unknown answer, and explains the score.

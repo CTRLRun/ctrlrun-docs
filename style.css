@@ -94,13 +94,6 @@
 .cr-services details { border-bottom:1px solid var(--cr-line); padding:16px 0; }
 .cr-services summary { font-size:15px; font-weight:550; }
 .cr-services p { font-size:14px; padding:12px 0; }
-.cr-review-example { margin-bottom:45px; }
-.cr-review-example h2+p { margin-top:18px; }
-.cr-control-map { margin-top:24px; overflow-x:auto; }
-.cr-control-map table { width:100%; min-width:600px; border-collapse:collapse; text-align:left; font-size:13px; line-height:1.7; }
-.cr-control-map th,.cr-control-map td { min-width:130px; padding:14px 16px; border:1px solid var(--cr-line); vertical-align:top; }
-.cr-control-map thead { background:var(--cr-paper); }
-.cr-control-map th { font-weight:550; }
 .cr-review h2 { margin-bottom:20px; }
 .cr-review form { margin:24px 0; }
 .cr-review .cr-field { margin-bottom:22px; }
@@ -347,7 +340,9 @@ body:has(.cr-site) { --topbar-tabs-height:0px; }
 .cr-home h1 { font-size:clamp(40px,4.7vw,60px); line-height:1.08; }
 .cr-home .cr-lede { font-size:22px; line-height:1.55; max-width:430px; }
 .cr-home .cr-actions { gap:18px 24px; margin:36px 0 0; }
-.cr-hero-quickstart { display:inline-block; margin-top:24px; }
+.cr-site .cr-hero-aside { margin-top:30px; font-size:14px; line-height:1.6; color:var(--cr-muted); }
+.cr-hero-aside a { color:var(--cr-accent); font-weight:550; text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px; }
+.cr-hero-aside a:hover { text-decoration-thickness:2px; }
 .cr-home .cr-integration { align-items:start; gap:80px; }
 .cr-home .cr-integration .cr-button { margin-top:30px; }
 .cr-film { display:block; width:100%; border:1px solid var(--cr-line); border-radius:10px; background:var(--cr-ink); aspect-ratio:16/9; }
@@ -421,7 +416,6 @@ body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistan
   .cr-home .cr-eyebrow { font-size:12px; letter-spacing:.05em; }
   .cr-home .cr-lede { margin-top:20px; }
   .cr-home .cr-actions { gap:12px; align-items:flex-start; }
-  .cr-hero-quickstart { padding:8px 0; }
   .cr-home .cr-section { padding:56px 0; }
   .cr-home .cr-section-heading { margin-bottom:28px; }
   .cr-home .cr-failure-chain { padding:20px 16px; }
@@ -502,12 +496,9 @@ body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistan
 .cr-surface-planned::before { opacity:.35; }
 .cr-surfaces a { color:var(--cr-ink); font-weight:550; text-decoration:underline; text-underline-offset:3px; }
 .cr-proof-links { display:flex; flex-wrap:wrap; gap:12px 22px; font-size:14px; font-weight:550; margin-top:34px; }
-.cr-proof-links a:hover,.cr-review-strip a:hover { text-decoration:underline; text-underline-offset:4px; }
+.cr-proof-links a:hover { text-decoration:underline; text-underline-offset:4px; }
 .cr-site .cr-code-context p { margin:0; }
 .cr-code-context a { text-decoration:underline; text-underline-offset:4px; }
-.cr-review-strip { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px; padding:44px 0; border-bottom:1px solid var(--cr-line); }
-.cr-review-strip strong { font-size:18px; font-weight:550; }
-.cr-review-strip>div { display:flex; flex-wrap:wrap; gap:16px 24px; font-size:14px; font-weight:550; }
 .cr-demo-next h2 { font-size:28px; }
 @media (max-width:1000px) {
   .cr-domain-actions { grid-template-columns:repeat(3,minmax(0,1fr)); }

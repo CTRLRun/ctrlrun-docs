@@ -249,19 +249,6 @@ sentence that rots quietly.
 | `production/operations` | the signals table, and that there is nothing to run | the recovery rows above and `reference/cli`; `test_T177c_the_command_list_is_exactly_the_one_the_spec_froze` asserts the command list these are drawn from |
 | the badge row | the test-count badge | written by `tools/docs_audit/render_badges.py --write-count` in CI **after** `scripts/check.sh` has passed, published to the `badges` branch only on a push to `main`; `test_ci_publishes_the_test_count_badge_after_the_suite_has_passed` asserts the order |
 
-## The browser playground
-
-The Try-it page says every line in its box was produced by `ctrlrun` in the tab, and that the
-sequence it tells the reader to try ends the way it says.
-
-| Claim | Code | Proof |
-|---|---|---|
-| "Every line in the box was produced by `ctrlrun` here: the page owns the controls and nothing else." | `PLAYGROUND` in `try-it.js` is a module over `Control`, `InMemoryStateStore`, `LocalApprovalProvider` and `@protect`; the JavaScript builds a request and prints the JSON `step()` returns | `test_the_playground_runs_the_sequence_the_page_tells_the_reader_to_try` runs that module natively through the six steps and asserts each outcome; `docs/assets/verify-browser-demo.mjs` runs the same module and sequence under Pyodide |
-| the six steps: allowed · `ApprovalRequired` then `ApprovalMismatch` then executed · `consumed` · `ActionDenied` with no request · `AMBIGUOUS` then a refused retry with one remote call · `DuplicateEffect` | the same kernel paths the matrix rows above cite | the same test, and `test_the_page_names_every_outcome_the_module_can_return`, which holds the page's vocabulary to the module's |
-| an approval is the reader pressing *Approve*, recorded by `grant_approval`; no auto-approve, no dry run | one `grant_approval(` in the module and nothing else that grants | `test_the_playground_has_no_way_to_grant_but_the_human_button` |
-| the policy shown is the policy that ran | `POLICY` in the module | `test_the_playground_policy_on_the_page_is_the_policy_in_the_module` |
-| the versions and date the page quotes are a run's | `docs/assets/browser-demo.verified.json`, written by the harness after a passing run | `test_the_page_quotes_the_run_the_harness_recorded` |
-
 ## Demo output
 
 The README quotes `ctrlrun demo` verbatim.
@@ -294,16 +281,3 @@ It found **nine** stale references the first time it ran, four of which pointed 
 literal, a comment or the middle of another function. The instruction above had been followed
 by hand at three releases and the table had drifted anyway, which is the argument for the test
 rather than against the instruction.
-
-## Medical Affairs workbench
-
-These claims describe a demonstration using curated synthetic evidence and an in-memory archive.
-They do not describe biomedical retrieval, LLM synthesis or clinical validation capabilities.
-
-| Claim | Code | Proof |
-| --- | --- | --- |
-| Unsupported fixture claims are denied before release, even with a client-supplied pass flag. | `validate` and `invoke` in `examples/medical_workbench.py`; the `medical.brief.release` policy | `test_invalid_evidence_is_denied_even_with_a_client_pass_flag` |
-| The reviewed action binds document content, evidence versions, validation version and destination. | `invoke` serializes the document into protected action arguments. | `test_edited_document_cannot_use_original_approval`, `test_reviewed_document_releases_and_produces_real_receipts` |
-| Approval reuse and an already committed effect do not create another archive write. | The example calls the real `@protect` boundary and records simulated writes in `deliveries`. | `test_approval_reuse_and_duplicate_effect_never_write_twice` |
-| An unknown delivery remains `AMBIGUOUS` until the simulated destination confirms receipt. | `release` raises after recording a write; `step` resolves only an existing ambiguous effect with a recorded delivery. | `test_unknown_delivery_remains_ambiguous_until_destination_confirmation`, `test_reconciliation_never_invents_a_delivery` |
-| The browser executes the same Python as the checked-in example. | `MODULE` in `medical-workbench.js` | `test_browser_and_local_example_execute_identical_python` |
