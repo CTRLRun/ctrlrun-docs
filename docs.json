@@ -21,21 +21,21 @@
         "label": "How it works"
       },
       {
-        "href": "/try",
-        "label": "Try it"
-      },
-      {
         "href": "/docs",
         "label": "Docs"
       },
       {
-        "label": "GitHub",
-        "href": "https://github.com/CTRLRun/ctrlrun"
+        "href": "/#pro-and-enterprise",
+        "label": "Pro and Enterprise"
+      },
+      {
+        "href": "https://github.com/CTRLRun/ctrlrun",
+        "label": "GitHub"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Get a safety review",
+      "label": "Protect my agent",
       "href": "/protect-my-agent"
     }
   },
@@ -45,7 +45,7 @@
         "tab": "CTRLRun",
         "pages": [
           "index",
-          "try",
+          "execution-boundary",
           "risk-check",
           "protect-my-agent"
         ]
@@ -85,15 +85,6 @@
             ]
           },
           {
-            "group": "MCP",
-            "pages": [
-              "docs/mcp/overview",
-              "docs/mcp/gateway-in-5-minutes",
-              "docs/mcp/approve-from-your-assistant",
-              "docs/mcp/use-the-docs-from-your-editor"
-            ]
-          },
-          {
             "group": "Concepts",
             "pages": [
               "docs/concepts/action-and-hash",
@@ -103,6 +94,7 @@
               "docs/concepts/outcomes-and-ambiguous",
               "docs/concepts/receipts-and-evidence",
               "docs/concepts/authority-and-delegation",
+              "docs/authority",
               "docs/concepts/observe-mode",
               "docs/concepts/fail-closed"
             ]
@@ -119,8 +111,18 @@
               "docs/guides/run-on-postgres",
               "docs/guides/verify-in-ci",
               "docs/guides/export-to-opentelemetry",
+              "docs/adapters",
               "docs/guides/langgraph-adapter",
               "docs/guides/openai-agents-adapter"
+            ]
+          },
+          {
+            "group": "MCP",
+            "pages": [
+              "docs/mcp/overview",
+              "docs/mcp/gateway-in-5-minutes",
+              "docs/mcp/approve-from-your-assistant",
+              "docs/mcp/use-the-docs-from-your-editor"
             ]
           },
           {
@@ -192,26 +194,28 @@
             "expanded": false
           },
           {
+            "group": "Verify",
+            "pages": [
+              "docs/verify",
+              "docs/security/verify-guarantees",
+              "docs/verify/get-the-badge"
+            ]
+          },
+          {
             "group": "Compare",
             "pages": [
               "docs/compare/framework-hitl",
               "docs/compare/guardrail-libraries",
               "docs/compare/governance-toolkits",
               "docs/compare/durable-workflows",
-              "docs/compare/idempotency-keys"
+              "docs/compare/idempotency-keys",
+              "docs/study/does-your-framework-double-execute"
             ]
           },
           {
             "group": "FAQ",
             "pages": [
               "docs/faq"
-            ]
-          },
-          {
-            "group": "More",
-            "pages": [
-              "docs/verify/get-the-badge",
-              "docs/study/does-your-framework-double-execute"
             ]
           }
         ]
@@ -220,13 +224,13 @@
         "tab": "Reference",
         "groups": [
           {
-            "group": "Reference",
+            "group": "CLI and configuration",
             "pages": [
+              "docs/reference/cli",
+              "docs/reference/exit-codes",
               "docs/reference/policy-yaml",
               "docs/reference/authority-yaml",
-              "docs/reference/cli",
               "docs/reference/receipt-and-event-schemas",
-              "docs/reference/exit-codes",
               "docs/reference/errors"
             ]
           },
@@ -316,27 +320,28 @@
             "group": "Architecture",
             "pages": [
               "docs/ARCHITECTURE",
-              "docs/architecture/specifications"
+              "docs/architecture/specifications",
+              "docs/how-this-is-built"
             ]
           },
           {
             "group": "Security",
             "pages": [
-              "docs/security/verify-guarantees",
-              "docs/security/receipt-chain",
-              "docs/security/disclosure",
               "docs/THREAT_MODEL",
-              "docs/how-this-is-built"
+              "docs/security/receipt-chain",
+              "docs/security/disclosure"
             ]
           },
           {
-            "group": "Readings and references",
+            "group": "Standards",
             "pages": [
-              "docs/OWASP-AGENTIC-TOP10",
               "docs/ACS",
-              "docs/adapters",
-              "docs/authority",
-              "docs/verify",
+              "docs/OWASP-AGENTIC-TOP10"
+            ]
+          },
+          {
+            "group": "Project",
+            "pages": [
               "docs/CLAIMS",
               "docs/ROADMAP"
             ]
@@ -392,32 +397,37 @@
     },
     {
       "source": "/demos/index",
-      "destination": "/try",
+      "destination": "/execution-boundary",
       "permanent": true
     },
     {
       "source": "/docs/demos/index",
-      "destination": "/try",
+      "destination": "/execution-boundary",
+      "permanent": true
+    },
+    {
+      "source": "/try",
+      "destination": "/execution-boundary",
       "permanent": true
     },
     {
       "source": "/try-it",
-      "destination": "/try",
+      "destination": "/execution-boundary",
       "permanent": true
     },
     {
       "source": "/docs/try-it",
-      "destination": "/try",
+      "destination": "/execution-boundary",
       "permanent": true
     },
     {
       "source": "/demos/medical-affairs",
-      "destination": "/try",
+      "destination": "/execution-boundary",
       "permanent": true
     },
     {
       "source": "/docs/demos/medical-affairs",
-      "destination": "/try",
+      "destination": "/execution-boundary",
       "permanent": true
     },
     {

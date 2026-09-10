@@ -146,7 +146,7 @@ not needed; the assistants that do read `llms.txt` get Mintlify's.
 
 | Page | Search intent |
 |---|---|
-| `index` | Execution safety for AI agents |
-| `try` | try AI agent guardrails demo · what stops an agent action |
+| `index` | Execution safety for AI agents · control AI agents running in your platform |
+| `execution-boundary` | what stops an agent action · AI agent execution boundary · how an agent execution boundary is adopted |
 | `risk-check` | AI agent execution risk assessment |
-| `protect-my-agent` | AI agent architecture review and integration help |
+| `protect-my-agent` | AI agent execution boundary, connection coverage and ctrlrun Pro/Enterprise governance for businesses |

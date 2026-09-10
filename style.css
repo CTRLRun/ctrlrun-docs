@@ -16,6 +16,7 @@
 .cr-site .cr-eyebrow,.cr-site .cr-step { font-size:10px; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-weight:600; letter-spacing:.12em; line-height:1.6; color:var(--cr-muted); }
 .cr-site .cr-eyebrow { margin-bottom:20px; }
 .cr-dot { color:var(--cr-accent); }
+.cr-lede .cr-mark { color:var(--cr-accent); font-weight:600; }
 .cr-hero { padding:80px 0 52px; max-width:830px; }
 .cr-hero h1 { margin-bottom:25px; }
 .cr-site .cr-lede { margin-top:24px; font-size:21px; color:var(--cr-ink); letter-spacing:-.015em; }
@@ -27,13 +28,10 @@
 .cr-site .cr-github-badge { gap:10px; color:var(--cr-accent); background:var(--cr-panel); border-color:var(--cr-accent); }
 .cr-github-badge svg { flex-shrink:0; }
 .cr-site .cr-caption { font-size:12px; line-height:1.7; color:var(--cr-muted); }
-.cr-flow-arrow { font-size:26px; color:var(--cr-muted); text-align:center; }
 .cr-section { padding:64px 0; border-bottom:1px solid var(--cr-line); scroll-margin-top:100px; }
 .cr-section h2+p { margin-top:18px; }
 .cr-section-heading { display:flex; justify-content:space-between; gap:20px; align-items:flex-end; margin-bottom:28px; }
 .cr-section-heading .cr-eyebrow { margin-bottom:12px; }
-.cr-explorer { border:1px solid var(--cr-line); border-radius:8px; background:var(--cr-paper); }
-.cr-demo-toolbar { display:grid; grid-template-columns:1fr 1.1fr 1.1fr; gap:16px; padding:22px; border-bottom:1px solid var(--cr-line); }
 .cr-field { display:flex; flex-direction:column; gap:8px; font-size:12px; font-weight:550; min-width:0; }
 .cr-site select,.cr-site input:not([type=checkbox]):not([type=radio]),.cr-site textarea,.cr-select-button { width:100%; border:1px solid var(--cr-line); border-radius:4px; background:var(--cr-paper); color:var(--cr-ink); padding:11px 12px; min-height:44px; font-size:13px; line-height:1.5; }
 .cr-site textarea { resize:vertical; }
@@ -44,30 +42,9 @@
 .cr-domain-options button { width:100%; display:flex; justify-content:space-between; gap:10px; padding:10px; min-height:42px; text-align:left; color:var(--cr-ink); font-size:13px; border:0; border-radius:3px; background:transparent; }
 .cr-domain-options button:hover,.cr-domain-options .cr-option-active { background:var(--cr-panel); }
 .cr-domain-options p { padding:12px; font-size:12px; }
-.cr-demo-stage { display:grid; grid-template-columns:.9fr 1.2fr; min-height:320px; }
-.cr-request { padding:35px 32px; }
-.cr-request h3 { margin:15px 0 6px; }
-.cr-site .cr-request-value { color:var(--cr-ink); font-size:19px; }
-.cr-request .cr-caption { margin-top:12px; }
-.cr-request-line { font-size:25px; padding:12px 0; color:var(--cr-muted); }
-.cr-wordmark { font-size:22px; font-weight:600; letter-spacing:-.04em; }
-.cr-result { padding:30px 32px; border-left:1px solid var(--cr-line); }
-.cr-result h3 { margin:10px 0 12px; }
-.cr-result>p { font-size:14px; }
-.cr-result .cr-check { font-family:ui-monospace,monospace; font-size:11px; }
-.cr-result-green .cr-check { color:#3c7041; }
-.cr-result-red h3 { color:#a13d32; }
-.cr-result-amber h3 { color:#98600e; }
-.dark .cr-result-green .cr-check { color:#9ec793; }
-.dark .cr-result-red h3 { color:#f5a198; }
-.dark .cr-result-amber h3 { color:#edbd70; }
-.cr-result .cr-rule { margin-top:18px; font-size:12px; }
-.cr-code-label { display:inline-block; margin-top:10px; font-size:10px; color:var(--cr-muted); font-family:ui-monospace,monospace; }
-.cr-demo-actions { display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; margin-top:20px; }
-.cr-demo-actions .cr-button { font-size:11px; padding:9px 12px; gap:8px; }
 .cr-site .cr-text-link { padding:0; background:none; border:0; color:var(--cr-ink); font-weight:550; font-size:13px; line-height:1.8; text-decoration:none; text-underline-offset:4px; }
 .cr-site .cr-text-link:hover,.cr-footer a:hover { text-decoration:underline; }
-.cr-demo-note { padding:12px 22px; border-top:1px solid var(--cr-line); font-size:10px; }
+.cr-boundary-note { padding:12px 22px; border-top:1px solid var(--cr-line); font-size:10px; }
 .cr-domain-cta { display:flex; align-items:center; justify-content:space-between; gap:25px; border-top:1px solid var(--cr-line); padding:20px 22px; }
 .cr-domain-cta strong { font-size:13px; font-weight:550; }
 .cr-domain-cta p { font-size:12px; margin-top:3px; }
@@ -94,6 +71,20 @@
 .cr-services details { border-bottom:1px solid var(--cr-line); padding:16px 0; }
 .cr-services summary { font-size:15px; font-weight:550; }
 .cr-services p { font-size:14px; padding:12px 0; }
+/* The adoption stack, as the adopt deck draws it: the agents you already run, the
+   boundary, the layers around it, the systems underneath. The Plus band is the only
+   one that carries the accent, because it is the only one we build for you. */
+.cr-stack { display:flex; flex-direction:column; align-items:center; gap:8px; margin:38px 0 0; }
+.cr-band { width:100%; padding:16px 20px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-panel); text-align:center; font-size:15px; line-height:1.5; color:var(--cr-ink); }
+.cr-band-mid { border-color:var(--cr-ink); background:var(--cr-ink); color:var(--cr-paper); font-weight:600; box-shadow:inset 4px 0 0 var(--cr-accent); }
+.cr-band-arrow { color:var(--cr-accent); font-size:19px; line-height:1; }
+.cr-band-plus { display:flex; flex-direction:column; gap:14px; padding:20px 24px; text-align:left; border-color:var(--cr-accent); background:var(--cr-paper); }
+.cr-band-plus b { font-size:16px; font-weight:600; letter-spacing:-.015em; }
+.cr-site .cr-band-features { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:1fr 1fr; gap:9px 28px; font-size:14px; line-height:1.55; color:var(--cr-muted); }
+.cr-band-features li { position:relative; padding-left:17px; }
+.cr-band-features li::before { content:""; position:absolute; left:0; top:.6em; width:6px; height:6px; border-radius:50%; background:var(--cr-accent); }
+.cr-band-scope { border-top:1px solid var(--cr-line); padding-top:11px; font-size:13px; font-weight:550; color:var(--cr-ink); }
+.cr-site .cr-band-note { margin-top:14px; font-size:14px; line-height:1.6; text-align:center; }
 .cr-review h2 { margin-bottom:20px; }
 .cr-review form { margin:24px 0; }
 .cr-review .cr-field { margin-bottom:22px; }
@@ -122,24 +113,16 @@
   .cr-site { padding-left:24px; padding-right:24px; }
   .cr-hero { padding-top:55px; }
   .cr-integration { gap:30px; }
-  .cr-demo-toolbar { grid-template-columns:1fr 1fr; }
-  .cr-demo-toolbar>.cr-field:last-child { grid-column:1/-1; }
   .cr-section-heading { align-items:flex-start; flex-direction:column; gap:10px; }
 }
 @media (max-width:600px) {
   .cr-hero { padding:42px 0 35px; }
   .cr-site .cr-lede { font-size:18px; }
   .cr-site .cr-intro { font-size:15px; }
-  .cr-flow-arrow { transform:rotate(90deg); line-height:1; }
-  .cr-integration,.cr-demo-stage { grid-template-columns:1fr; }
+  .cr-band-features { grid-template-columns:1fr; }
+  .cr-band-plus { padding:18px; }
+  .cr-integration { grid-template-columns:1fr; }
   .cr-section { padding:40px 0; }
-  .cr-demo-toolbar { grid-template-columns:1fr; padding:18px; gap:14px; }
-  .cr-demo-toolbar>.cr-field:last-child { grid-column:auto; }
-  .cr-request { padding:24px; }
-  .cr-request-line { display:none; }
-  .cr-wordmark { display:block; margin-top:14px; }
-  .cr-result { border-left:0; border-top:1px solid var(--cr-line); padding:24px; min-height:270px; }
-  .cr-demo-actions { align-items:flex-start; flex-direction:column; }
   .cr-domain-cta { flex-direction:column; align-items:flex-start; gap:12px; }
   .cr-footer { flex-direction:column; }
   .cr-check-grid { grid-template-columns:1fr; }
@@ -239,67 +222,9 @@ body:has(.cr-site) { --topbar-tabs-height:0px; }
 
 #cr-medical-workbench [hidden]{display:none!important}
 
-/* Scenario explorer: the three lanes, the check ladder, the share row. */
-.cr-lanes { display:grid; grid-template-columns:1fr 26px 1.25fr 26px 1fr; gap:12px; align-items:stretch; padding:22px; background:var(--cr-panel); border-bottom:1px solid var(--cr-line); border-radius:8px 8px 0 0; }
-.cr-lane { display:flex; flex-direction:column; gap:6px; padding:14px 16px; background:var(--cr-paper); border:1px solid var(--cr-line); border-radius:6px; }
-.cr-lane strong { font-size:16px; font-weight:550; letter-spacing:-.02em; color:var(--cr-ink); }
-.cr-site .cr-lane p { font-size:12px; line-height:1.65; }
-.cr-lane-control { border-color:var(--cr-accent); border-left-width:2px; }
-.cr-lanes .cr-flow-arrow { align-self:center; font-size:20px; }
-.cr-site .cr-lane-note { padding:14px 22px; font-size:12.5px; line-height:1.7; border-bottom:1px solid var(--cr-line); color:var(--cr-muted); }
-.cr-lane-note em { color:var(--cr-ink); font-style:normal; font-weight:600; }
-.cr-chips { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:0 22px 18px; border-bottom:1px solid var(--cr-line); }
-.cr-chips .cr-step { width:100%; margin-bottom:2px; }
-.cr-site .cr-chip { min-height:34px; padding:6px 13px; border:1px solid var(--cr-line); border-radius:999px; background:transparent; color:var(--cr-ink); font-size:12px; font-weight:550; }
-.cr-site .cr-chip:hover { border-color:var(--cr-accent); }
-.cr-site .cr-chip-on { background:var(--cr-ink); color:var(--cr-paper); border-color:var(--cr-ink); }
-.cr-site .cr-chip-more { border-style:dashed; color:var(--cr-muted); }
-.cr-effect-key { display:flex; flex-direction:column; gap:4px; margin-top:16px; }
-.cr-effect-key code { font-size:12px; color:var(--cr-accent); }
-.cr-checks { list-style:none; margin:22px 0 0; padding:18px 0 0; border-top:1px solid var(--cr-line); display:grid; gap:13px; }
-.cr-checks li { display:grid; grid-template-columns:18px 1fr; gap:10px; align-items:start; }
-.cr-check-mark { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; line-height:1.5; color:var(--cr-muted); }
-.cr-checks strong { display:block; font-size:12.5px; font-weight:550; color:var(--cr-ink); }
-.cr-checks em { display:block; font-style:normal; font-size:11.5px; line-height:1.6; color:var(--cr-muted); }
-.cr-checks li>span>span:not(.cr-sr-only) { display:block; margin-top:3px; font-size:11.5px; line-height:1.6; color:var(--cr-ink); }
-.cr-check-pass .cr-check-mark { color:#3c7041; }
-.cr-check-stop .cr-check-mark { color:#a13d32; font-weight:700; }
-.cr-check-stop strong { color:#a13d32; }
-.dark .cr-check-pass .cr-check-mark { color:#9ec793; }
-.dark .cr-check-stop .cr-check-mark,.dark .cr-check-stop strong { color:#f5a198; }
-.cr-check-wait,.cr-check-skip { opacity:.5; }
-.cr-split { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px; padding-top:18px; border-top:1px solid var(--cr-line); }
-.cr-split>div { padding-left:14px; border-left:2px solid var(--cr-line); }
-.cr-split .cr-safe { border-color:var(--cr-accent); }
-.cr-site .cr-split p { margin-top:6px; font-size:12.5px; line-height:1.65; }
-.cr-site .cr-split .cr-safe p { color:var(--cr-ink); }
-.cr-sees { display:flex; flex-direction:column; gap:6px; margin-top:18px; }
-.cr-sees code { display:block; padding:10px 12px; border:1px solid var(--cr-line); border-radius:4px; background:var(--cr-panel); color:var(--cr-ink); font-size:11.5px; line-height:1.6; overflow-x:auto; }
-.cr-result .cr-code-label { display:flex; flex-wrap:wrap; align-items:center; gap:6px 16px; margin-top:14px; }
-.cr-code-label>span { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:10px; color:var(--cr-muted); }
-.cr-code-label a { text-decoration:underline; text-underline-offset:3px; font-size:12px; }
-.cr-trail { margin:18px 0 0; padding:14px 0 0; border-top:1px dashed var(--cr-line); }
-.cr-trail ol { margin:8px 0 0; padding-left:20px; display:grid; gap:6px; font-size:11.5px; line-height:1.6; color:var(--cr-muted); }
-.cr-trail li { list-style:decimal; }
-.cr-trail li::marker { color:var(--cr-accent); font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:10px; }
-.cr-demo-share { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:14px 20px; padding:16px 22px; border-top:1px solid var(--cr-line); }
-.cr-demo-share>div:first-child { flex:1 1 340px; display:flex; flex-direction:column; gap:6px; }
-.cr-site .cr-demo-share input { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:11.5px; min-height:40px; }
-.cr-share-actions { display:flex; flex-wrap:wrap; align-items:center; gap:16px; }
-.cr-share-actions .cr-button { min-height:40px; font-size:12px; }
-.cr-demo-note a { text-decoration:underline; text-underline-offset:3px; }
-@media (max-width:900px) {
-  .cr-lanes { grid-template-columns:1fr; }
-  .cr-lanes .cr-flow-arrow { transform:rotate(90deg); line-height:1; }
-}
-@media (max-width:600px) {
-  .cr-lanes { padding:16px; }
-  .cr-chips { padding:0 18px 16px; }
-  .cr-split { grid-template-columns:1fr; gap:16px; }
-  .cr-demo-share { padding:16px 18px; }
-  .cr-checks { gap:11px; }
-}
-.cr-site .cr-demo-note { padding:14px 22px; font-size:11.5px; line-height:1.7; }
+/* The execution boundary: the check ladder, the chips, the share row. */
+.cr-boundary-note a { text-decoration:underline; text-underline-offset:3px; }
+.cr-site .cr-boundary-note { padding:14px 22px; font-size:11.5px; line-height:1.7; }
 
 /* Homepage: the same failure as two chains, and the three control pillars. */
 .cr-failure-chain .cr-section-heading { margin-bottom:32px; }
@@ -345,9 +270,10 @@ body:has(.cr-site) { --topbar-tabs-height:0px; }
 .cr-hero-aside a:hover { text-decoration-thickness:2px; }
 .cr-home .cr-integration { align-items:start; gap:80px; }
 .cr-home .cr-integration .cr-button { margin-top:30px; }
-.cr-film { display:block; width:100%; border:1px solid var(--cr-line); border-radius:10px; background:var(--cr-ink); aspect-ratio:16/9; }
-.cr-site .cr-demo-film .cr-caption { margin-top:20px; max-width:820px; }
-.cr-demo-film code { font-size:13px; }
+/* The demo film. It sits in the quickstart, outside `.cr-site`, so the tokens need fallbacks. */
+.cr-film { display:block; width:100%; border:1px solid var(--cr-line,#e0e3dc); border-radius:10px; background:var(--cr-ink,#20221f); aspect-ratio:16/9; }
+.cr-film-block { width:100%; min-width:0; margin:24px 0; }
+.cr-film-block .cr-caption { margin-top:10px; font-size:13px; line-height:1.7; color:var(--cr-muted,#656963); }
 .cr-code-col { min-width:0; }
 .cr-home .cr-integration .cr-code-col { margin-top:8px; }
 .cr-code-col .cr-proof-links { margin-top:26px; padding-left:2px; }
@@ -360,44 +286,31 @@ body:has(.cr-site) { --topbar-tabs-height:0px; }
 .cr-home .cr-section,.cr-try-workspace { scroll-margin-top:100px; }
 .cr-home .cr-section { padding:92px 0; }
 .cr-home .cr-section-heading { margin-bottom:40px; }
-/* The illustration starts with a choice and result, with context available on demand. */
+/* The page opens on the claim, then hands the reader the controls. */
 .cr-try-header { padding:36px 0 18px; display:flex; justify-content:space-between; gap:32px; align-items:center; }
 .cr-try-header>div { max-width:770px; }
 .cr-try-header .cr-eyebrow { margin-bottom:10px; }
+/* Every page below the homepage opens the same way: the way back, then the eyebrow. */
+.cr-try-header .cr-text-link+.cr-eyebrow { margin-top:30px; }
 .cr-try-page h1 { font-size:clamp(30px,3.3vw,42px); line-height:1.15; }
 .cr-try-header p:not(.cr-eyebrow) { font-size:16px; margin-top:14px; }
 .cr-try-header>.cr-text-link { flex-shrink:0; }
-.cr-site .cr-try-disclosure { font-size:14px; margin:0 0 20px; }
 .cr-try-workspace { padding-bottom:36px; }
-.cr-try-page .cr-demo-toolbar { padding:20px 24px; }
 .cr-try-page .cr-field,.cr-try-page .cr-select-button,.cr-try-page select { font-size:14px; }
-.cr-try-page .cr-request,.cr-try-page .cr-result { padding:24px; }
-.cr-try-page .cr-request h3 { margin-top:8px; }
-.cr-try-page .cr-request-line { padding:4px 0; }
-.cr-try-page .cr-result>p,.cr-try-page .cr-split p { font-size:16px; }
-.cr-try-page .cr-result .cr-rule { font-size:14px; }
-.cr-try-page .cr-result .cr-check,.cr-try-page .cr-code-label { font-size:12px; }
-.cr-try-page .cr-checks strong { font-size:14px; }
-.cr-try-page .cr-checks em,.cr-try-page .cr-checks li>span>span { font-size:13px; }
-.cr-try-page .cr-demo-stage { grid-template-columns:.85fr 1.15fr; }
-.cr-try-page .cr-sees code { font-size:14px; overflow-wrap:anywhere; }
-.cr-try-page .cr-chips { padding:20px 24px; border-top:1px solid var(--cr-line); }
-.cr-try-page .cr-chip { min-height:44px; font-size:14px; }
-.cr-try-page .cr-lanes { border-radius:0; border-bottom:1px solid var(--cr-line); }
-.cr-try-page .cr-lane p { font-size:14px; }
-.cr-site .cr-lane-note { padding:18px 24px 0; font-size:14px; }
-.cr-site .cr-demo-prompt { padding:14px 24px 20px; font-size:15px; color:var(--cr-muted); }
-.cr-demo-prompt b { color:var(--cr-ink); font-weight:600; }
 /* The three controls are steps, not settings: number them. */
 .cr-field>span,.cr-field #cr-domain-label,.cr-domain-picker>span { display:flex; align-items:center; gap:9px; }
 .cr-field i { display:inline-flex; align-items:center; justify-content:center; width:19px; height:19px; flex-shrink:0; border-radius:50%; background:var(--cr-accent); color:var(--cr-paper); font:600 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace; font-style:normal; }
 .dark .cr-field i { color:#171b15; }
-.cr-try-page .cr-demo-note { font-size:13px; }
-/* Keep documentation tools in documentation; product pages use the main links. */
+.cr-try-page .cr-boundary-note { font-size:13px; }
+/* Keep documentation tools in documentation; product pages use the main links. The rule
+   named two of the four product pages, so risk-check and protect-my-agent carried a docs
+   search box the other two did not. `.cr-subpage` is the other two. */
 body:has(.cr-home) #search-bar-entry,body:has(.cr-home) #assistant-entry,
 body:has(.cr-try-page) #search-bar-entry,body:has(.cr-try-page) #assistant-entry,
+body:has(.cr-subpage) #search-bar-entry,body:has(.cr-subpage) #assistant-entry,
 body:has(.cr-home) #search-bar-entry-mobile,body:has(.cr-home) #assistant-entry-mobile,
-body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistant-entry-mobile { display:none; }
+body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistant-entry-mobile,
+body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-entry-mobile { display:none; }
 @media (max-width:1000px) {
   .cr-home .cr-home-hero { gap:32px; }
   .cr-try-header { align-items:flex-start; flex-direction:column; gap:14px; }
@@ -407,9 +320,6 @@ body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistan
   .cr-home .cr-section { padding:72px 0; }
   .cr-home h1 { font-size:clamp(38px,7vw,56px); }
   .cr-home .cr-section-heading { align-items:flex-start; flex-direction:column; }
-  .cr-try-page .cr-demo-stage { grid-template-columns:1fr; }
-  .cr-try-page .cr-result { border-left:0; border-bottom:1px solid var(--cr-line); grid-row:1; }
-  .cr-try-page .cr-demo-toolbar { grid-template-columns:1fr; }
 }
 @media (max-width:600px) {
   .cr-home,.cr-try-page { padding:0 20px; }
@@ -421,7 +331,7 @@ body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistan
   .cr-home .cr-failure-chain { padding:20px 16px; }
   .cr-home .cr-code pre { font-size:12px; padding:18px; }
   .cr-try-header { padding-top:26px; }
-  .cr-try-page .cr-demo-toolbar,.cr-try-page .cr-request,.cr-try-page .cr-result,.cr-try-page .cr-chips { padding:18px; }
+  .cr-try-header .cr-text-link+.cr-eyebrow { margin-top:22px; }
 }
 
 /* Preserve the original hallucination example, aligned for direct comparison. */
@@ -439,6 +349,9 @@ body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistan
 .cr-home .cr-chain-steps li { font-size:14px; padding:12px 8px; line-height:1.4; color:var(--cr-ink); }
 .cr-home .cr-chain-steps li:not(:last-child)::after { content:"↓"; right:auto; left:50%; top:auto; bottom:-15px; transform:translateX(-50%); }
 .cr-home .cr-home-how { border-top:1px solid var(--cr-line); }
+.cr-site .cr-hero-context { margin-top:26px; max-width:470px; font-size:18px; line-height:1.6; letter-spacing:-.012em; color:var(--cr-ink); }
+.cr-hero-context b { font-weight:600; color:var(--cr-accent); }
+/* Two lines that carry the larger argument without taking a section of their own. */
 @media (max-width:600px) {
   .cr-home .cr-failure-chain { padding:18px 14px; }
   .cr-home .cr-failure-chain h2 { font-size:25px; }
@@ -447,46 +360,94 @@ body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistan
   .cr-home .cr-chain-steps { grid-template-rows:repeat(3,minmax(68px,auto)); }
   .cr-home .cr-chain-steps li { padding:10px 6px; }
 }
-@media (max-width:600px) {
-  .cr-try-page .cr-demo-toolbar { grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 10px; }
-  .cr-try-page .cr-demo-toolbar>.cr-field:last-child { grid-column:1 / -1; }
-}
 
 /* Short visual story: many actions pass through one execution boundary. */
 .cr-example-wrap { min-width:0; }
 .cr-site .cr-example-label { margin:0 0 12px; font:600 12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.07em; color:var(--cr-accent); }
-.cr-domain-actions { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:16px; }
-.cr-domain-actions a { display:flex; flex-direction:column; gap:13px; padding:22px 18px; background:var(--cr-paper); border:1px solid var(--cr-line); border-radius:6px; min-width:0; }
-.cr-domain-actions strong { font-size:16px; font-weight:550; letter-spacing:-.02em; display:flex; align-items:center; justify-content:space-between; gap:8px; }
-.cr-domain-actions strong span { color:var(--cr-accent); }
-.cr-domain-actions a:hover { border-color:var(--cr-accent); }
-.cr-home .cr-domain-actions .cr-step { font-size:12px; letter-spacing:0; }
-.cr-boundary-flow { display:grid; grid-template-columns:1fr 40px 1fr 40px 1fr; align-items:center; gap:32px; padding:52px 36px; margin:40px 0 56px; border:1px solid var(--cr-line); border-radius:8px; }
-.cr-boundary-source,.cr-boundary-gate { text-align:center; display:flex; flex-direction:column; gap:8px; }
-.cr-boundary-source strong { font-weight:550; font-size:20px; }
-/* The gate carries the logo itself: the keycap mark, then the wordmark, under the label. */
-.cr-boundary-gate { background:var(--cr-ink); color:#f2f3f5; border-radius:8px; padding:22px 18px 24px; }
-.cr-home .cr-boundary-gate .cr-step { color:#f2f3f5; opacity:.6; }
-.cr-gate-logo { display:flex; align-items:center; justify-content:center; gap:11px; margin-top:4px; }
-.cr-gate-key { flex-shrink:0; }
-.cr-gate-word { font-size:30px; font-weight:800; letter-spacing:-.045em; line-height:1.1; }
-.cr-gate-word span { font-weight:400; letter-spacing:-.025em; }
-.cr-boundary-arrow { font-size:30px; text-align:center; color:var(--cr-accent); }
-.cr-boundary-decisions { display:flex; flex-direction:column; gap:10px; font-size:17px; font-weight:550; }
-.cr-decision-allow { color:#356339; }
-.cr-decision-approve { color:#885508; }
-.cr-decision-deny { color:#9c372e; }
-.dark .cr-decision-allow { color:#9ec793; }
-.dark .cr-decision-approve { color:#edbd70; }
-.dark .cr-decision-deny { color:#f5a198; }
-.cr-memory-rules { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px 36px; }
-.cr-memory-rules>div { padding-top:24px; border-top:2px solid var(--cr-accent); }
-.cr-memory-rules h3 { font-size:21px; margin:10px 0 8px; }
-.cr-memory-rules p { font-size:15px; }
-.cr-memory-rules a { text-decoration:underline; text-underline-offset:3px; }
-.cr-site .cr-not-llm { margin-top:52px; padding-top:30px; border-top:1px solid var(--cr-line); max-width:820px; font-size:15px; line-height:1.7; color:var(--cr-muted); }
-.cr-not-llm strong { color:var(--cr-ink); font-weight:550; }
-.cr-not-llm .cr-text-link { display:inline-block; margin-left:6px; }
+
+.cr-how-intro { max-width:780px; margin-bottom:48px; }
+.cr-site .cr-how-intro h2 { margin:0 0 24px; letter-spacing:-.03em; }
+/* How it works: the boundary, drawn. Two ends we do not own, one box we do. */
+/* How it works, drawn. Two variants: the wide one keeps seven stages on one spine, the
+   narrow one stacks them -- one SVG scaled down to a phone renders its labels at 4px. */
+.cr-diagram { display:block; width:100%; height:auto; }
+.cr-dia-narrow { display:none; }
+.cr-diagram text { font-family:inherit; }
+.cr-dia-label,.cr-dia-num { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; fill:var(--cr-accent); }
+.cr-dia-label { font-size:11px; font-weight:600; letter-spacing:.09em; }
+.cr-dia-num { font-size:10.5px; font-weight:600; }
+.cr-dia-claim { font-size:17px; font-weight:550; letter-spacing:-.02em; fill:var(--cr-ink); }
+.cr-dia-note { font-size:13px; fill:var(--cr-muted); }
+.cr-dia-name { font-size:15px; font-weight:600; letter-spacing:-.02em; fill:var(--cr-ink); }
+.cr-dia-gloss { font-size:11.5px; fill:var(--cr-muted); }
+.cr-dia-rule { font-size:13.5px; font-weight:600; fill:var(--cr-ink); }
+.cr-dia-rule-note { font-size:12px; fill:var(--cr-muted); }
+.cr-dia-strip { fill:none; stroke:var(--cr-line); stroke-dasharray:5 4; }
+.cr-dia-box { fill:var(--cr-paper); stroke:var(--cr-ink); stroke-width:1.5; }
+.cr-dia-node { fill:var(--cr-panel); stroke:var(--cr-line); }
+.cr-dia-arrow { fill:none; stroke:var(--cr-accent); stroke-width:1.5; }
+.cr-dia-head { fill:var(--cr-accent); }
+.cr-dia-div,.cr-dia-spine { fill:none; stroke:var(--cr-line); }
+.cr-dia-tier { fill:var(--cr-panel); stroke:var(--cr-accent); stroke-dasharray:5 4; }
+.cr-dia-tier-label { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:11px; font-weight:600; letter-spacing:.09em; fill:var(--cr-accent); }
+.cr-dia-tier-text { font-size:12.5px; fill:var(--cr-muted); }
+.cr-dia-link { font-size:12.5px; font-weight:600; fill:var(--cr-accent); text-decoration:underline; }
+.cr-diagram a:hover .cr-dia-link { text-decoration:none; }
+/* Swap high: between 820 and 1100 the wide drawing scales to roughly 0.7 and renders its
+   11px labels at 8. The stacked variant at its own size beats the wide one shrunk. */
+@media (max-width:1080px) {
+  .cr-dia-wide { display:none; }
+  /* Its own size, never blown up to fill the column: scaling a 360-wide drawing to 480
+     renders 11px labels at 15 and puts the diagram out of step with the page's type. */
+  .cr-dia-narrow { display:block; max-width:360px; margin:0 auto; }
+}
+/* protect-my-agent: what connecting an existing agent involves, and what each way in covers. */
+.cr-site .cr-section-title { font-size:23px; letter-spacing:-.025em; margin:44px 0 20px; }
+.cr-site .cr-connect { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.cr-connect li { padding-top:16px; border-top:2px solid var(--cr-accent); min-width:0; }
+.cr-connect .cr-step { color:var(--cr-accent); }
+.cr-connect b { display:block; margin:8px 0 8px; font-size:15.5px; font-weight:600; color:var(--cr-ink); }
+.cr-site .cr-connect p { margin:0; font-size:14px; line-height:1.7; color:var(--cr-muted); }
+.cr-scroll { overflow-x:auto; overscroll-behavior-x:contain; }
+.cr-coverage { width:100%; min-width:520px; border-collapse:collapse; font-size:14px; }
+.cr-coverage th,.cr-coverage td { padding:12px 14px; text-align:left; vertical-align:top; border-bottom:1px solid var(--cr-line); }
+.cr-coverage thead th { font:600 11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.09em; text-transform:uppercase; color:var(--cr-accent); }
+.cr-coverage tbody th { font-weight:600; color:var(--cr-ink); white-space:nowrap; width:1%; }
+.cr-coverage td { color:var(--cr-muted); line-height:1.65; }
+.cr-band-scope a { color:var(--cr-accent); text-decoration:underline; text-underline-offset:3px; }
+@media (max-width:800px) {
+  .cr-site .cr-connect { grid-template-columns:1fr; gap:20px; }
+}
+/* Pro and Enterprise. Two cards that swap their button for the form that button asks for,
+   so the page never sends the reader somewhere else to say who they are. */
+/* Its own slide now: the section supplies the boundary rule, so this must not draw a second
+   one inset from it -- and the space it used to need is what pushed the footer off-screen. */
+.cr-commercial { margin-top:0; padding-top:0; border-top:0; }
+.cr-commercial-head { max-width:760px; margin-bottom:28px; }
+.cr-commercial-head .cr-eyebrow { margin:0 0 12px; color:var(--cr-accent); }
+.cr-site .cr-commercial-head h3 { font-size:23px; letter-spacing:-.02em; margin:0 0 10px; }
+.cr-site .cr-commercial-head p { margin:0; font-size:14.5px; line-height:1.7; color:var(--cr-muted); }
+.cr-site .cr-commercial-head h2 + p { margin-top:14px; }
+.cr-tiers { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+.cr-tier { display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:24px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-paper); min-width:0; }
+.cr-tier .cr-step { color:var(--cr-accent); }
+.cr-site .cr-tier h3 { font-size:21px; letter-spacing:-.02em; margin:0; }
+.cr-site .cr-tier-promise { margin:0; font-size:15.5px; font-weight:600; color:var(--cr-ink); }
+.cr-site .cr-tier-body { margin:0; font-size:14px; line-height:1.7; color:var(--cr-muted); }
+.cr-site .cr-tier-who { display:flex; flex-wrap:wrap; gap:4px 10px; margin:2px 0 0; font-size:13.5px; color:var(--cr-ink); }
+.cr-tier-who span { font:600 10px/2 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--cr-muted); }
+.cr-tier .cr-button { margin-top:6px; }
+.cr-tier-open { border-color:var(--cr-accent); }
+.cr-tier-form { width:100%; margin-top:6px; }
+.cr-tier-form fieldset { display:flex; flex-direction:column; gap:12px; border:0; margin:0; padding:0; }
+.cr-tier-form .cr-button { align-self:flex-start; }
+.cr-site .cr-tier-form .cr-caption { margin:0; }
+.cr-site .cr-tier-done { margin:6px 0 0; padding:14px 16px; border:1px solid var(--cr-accent); border-radius:5px; font-size:14px; line-height:1.65; color:var(--cr-ink); background:var(--cr-panel); }
+.cr-site .cr-commercial > .cr-caption { margin-top:18px; }
+.cr-commercial .cr-caption a { text-decoration:underline; text-underline-offset:3px; }
+@media (max-width:800px) {
+  .cr-tiers { grid-template-columns:1fr; }
+}
 .cr-site .cr-surfaces { list-style:none; padding:0; margin:34px 0 0; display:flex; flex-direction:column; gap:20px; }
 .cr-surfaces li { position:relative; padding-left:16px; font-size:14px; line-height:1.6; color:var(--cr-muted); }
 .cr-surfaces li::before { content:""; position:absolute; left:0; top:.6em; width:6px; height:6px; border-radius:50%; background:var(--cr-accent); }
@@ -497,27 +458,283 @@ body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistan
 .cr-surfaces a { color:var(--cr-ink); font-weight:550; text-decoration:underline; text-underline-offset:3px; }
 .cr-proof-links { display:flex; flex-wrap:wrap; gap:12px 22px; font-size:14px; font-weight:550; margin-top:34px; }
 .cr-proof-links a:hover { text-decoration:underline; text-underline-offset:4px; }
+.cr-site .cr-coming-soon { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; margin-top:22px; padding-top:18px; border-top:1px solid var(--cr-line); font-size:13.5px; line-height:1.65; color:var(--cr-muted); }
+.cr-coming-soon span { flex-shrink:0; padding:2px 7px; border:1px solid var(--cr-line); border-radius:3px; font:600 10px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.1em; color:var(--cr-muted); }
 .cr-site .cr-code-context p { margin:0; }
 .cr-code-context a { text-decoration:underline; text-underline-offset:4px; }
-.cr-demo-next h2 { font-size:28px; }
-@media (max-width:1000px) {
-  .cr-domain-actions { grid-template-columns:repeat(3,minmax(0,1fr)); }
-  .cr-boundary-flow { gap:16px; padding:28px 20px; grid-template-columns:1fr 24px 1fr 24px 1fr; }
-}
+.cr-try-next h2 { font-size:28px; }
 @media (max-width:800px) {
   .cr-home .cr-lede { max-width:520px; }
-  .cr-memory-rules { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
 }
 @media (max-width:600px) {
   .cr-home .cr-home-hero { padding:36px 0 52px; gap:34px; }
   .cr-home .cr-lede { font-size:19px; }
-  .cr-domain-actions { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .cr-domain-actions a { padding:16px 12px; }
-  .cr-domain-actions strong { font-size:15px; }
-  .cr-boundary-flow { grid-template-columns:1fr; gap:12px; padding:24px 18px; margin-bottom:30px; }
-  .cr-boundary-arrow { transform:rotate(90deg); line-height:1; }
-  .cr-boundary-gate { width:100%; max-width:230px; justify-self:center; padding:18px; }
-  .cr-boundary-decisions { flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px 16px; font-size:15px; }
-  .cr-memory-rules { grid-template-columns:1fr; gap:22px; }
-  .cr-memory-rules h3 { font-size:21px; }
+  .cr-how-intro { margin-bottom:32px; }
+}
+
+
+/* Four reading chapters. Minimum heights preserve breathing room without clipping
+   content on short screens, at larger text sizes, or when columns stack. */
+.cr-home {
+  max-width:1320px;
+  padding-inline:clamp(24px,4vw,56px);
+  --cr-chapter-space:clamp(56px,7svh,88px);
+}
+.cr-home > .cr-home-hero,
+.cr-home > .cr-section {
+  min-height:calc(100svh - 72px);
+  padding-block:var(--cr-chapter-space);
+}
+.cr-home > .cr-home-hero {
+  grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+  gap:clamp(40px,5vw,72px);
+  align-items:center;
+}
+.cr-home .cr-home-pitch { padding-top:0; }
+.cr-home h1 { font-size:clamp(42px,4.6vw,64px); }
+.cr-home .cr-lede { max-width:480px; margin-top:30px; }
+.cr-home .cr-hero-context { margin-top:24px; max-width:460px; font-size:15px; line-height:1.75; }
+.cr-home .cr-actions { margin-top:36px; }
+.cr-site .cr-hero-oneline { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin-top:26px; font-size:12px; line-height:1.6; }
+.cr-hero-oneline span { font:600 10px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--cr-muted); }
+.cr-hero-oneline code { padding:6px 10px; border:1px solid var(--cr-line); border-radius:4px; background:var(--cr-paper); font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:13px; color:var(--cr-ink); white-space:nowrap; }
+.cr-home .cr-hero-aside { margin-top:30px; }
+.cr-home .cr-example-label { margin-bottom:16px; }
+.cr-home .cr-failure-chain { padding:32px; }
+.cr-home .cr-chain { gap:20px; }
+.cr-home .cr-chain-steps { grid-template-rows:repeat(3,minmax(60px,auto)); }
+.cr-home > .cr-home-how { display:flex; flex-direction:column; justify-content:center; min-height:0; padding-block:64px; }
+.cr-home .cr-section-heading { margin-bottom:32px; align-items:center; }
+.cr-home .cr-how-intro { max-width:820px; margin-bottom:44px; }
+.cr-home .cr-how-intro .cr-eyebrow { margin:0 0 16px; color:var(--cr-accent); }
+.cr-site .cr-how-after { margin-top:44px; text-align:right; }
+.cr-home .cr-how-after .cr-text-link { font-size:15px; }
+.cr-home .cr-how-intro h2 { font-size:clamp(28px,3.4vw,40px); line-height:1.15; }
+.cr-home .cr-planned-work { display:grid; grid-template-columns:100px minmax(0,1fr); gap:24px; margin-top:28px; padding:22px 0; border-block:1px solid var(--cr-line); }
+.cr-home .cr-planned-work > .cr-step { padding-top:3px; }
+.cr-home .cr-planned-work > div { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; }
+.cr-home .cr-planned-work p { font-size:14px; line-height:1.6; margin:0; }
+.cr-home .cr-planned-work strong { display:block; margin-bottom:4px; color:var(--cr-muted); font-weight:550; }
+.cr-home .cr-integration { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(40px,6vw,88px); }
+.cr-home .cr-integration h2 + p { margin-top:24px; }
+.cr-home .cr-integration .cr-code-col { margin-top:0; }
+.cr-home .cr-code pre { padding:28px; }
+.cr-home .cr-surfaces { gap:22px; }
+.cr-home .cr-surfaces b { margin-bottom:4px; }
+.cr-home > .cr-home-commercial { display:flex; flex-direction:column; border-bottom:0; }
+.cr-home .cr-home-commercial > .cr-commercial { margin-top:auto; }
+.cr-home .cr-footer { margin-top:auto; padding:28px 0 0; border-top:1px solid var(--cr-line); align-items:flex-end; }
+.cr-home .cr-footer > span { line-height:1.65; }
+.cr-home .cr-footer > div { line-height:1.65; }
+.cr-home .cr-footer > span { flex-shrink:0; }
+.cr-home .cr-footer > div { justify-content:flex-end; gap:12px 22px; }
+@media (max-width:1100px) {
+  .cr-home > .cr-home-hero { gap:32px; }
+  .cr-home .cr-failure-chain { padding:24px; }
+  .cr-home .cr-integration { gap:36px; }
+  .cr-home .cr-footer { align-items:flex-start; flex-direction:column; gap:24px; }
+  .cr-home .cr-footer > div { justify-content:flex-start; }
+}
+@media (max-width:800px) {
+  .cr-home > .cr-home-hero,.cr-home > .cr-section { min-height:0; padding-block:64px; }
+  .cr-home > .cr-home-hero { grid-template-columns:1fr; gap:44px; }
+  .cr-home .cr-home-pitch { max-width:580px; }
+  .cr-home h1 { font-size:clamp(40px,7vw,56px); }
+  .cr-home .cr-section-heading { align-items:flex-start; gap:16px; }
+  .cr-home .cr-integration { grid-template-columns:1fr; gap:40px; }
+  .cr-home .cr-planned-work { grid-template-columns:1fr; gap:16px; }
+  .cr-home .cr-planned-work > div { gap:24px; }
+}
+@media (max-width:600px) {
+  .cr-home { padding-inline:20px; }
+  .cr-home > .cr-home-hero,.cr-home > .cr-section { padding-block:48px; }
+  .cr-home .cr-lede { margin-top:24px; }
+  .cr-home .cr-failure-chain { padding:24px 16px; }
+  .cr-home .cr-chain { gap:12px; }
+  .cr-home .cr-chain-steps { grid-template-rows:repeat(3,minmax(76px,auto)); }
+  .cr-home .cr-planned-work > div { grid-template-columns:1fr; }
+  .cr-home .cr-code pre { padding:20px 16px; font-size:12px; }
+  .cr-home .cr-footer > span { flex-shrink:1; }
+  .cr-home .cr-footer > div { gap:14px 24px; }
+}
+
+
+/* Native slide snapping keeps wheel and touch scrolling available, including
+   sections taller than a small viewport. The controller adds keyboard navigation. */
+html.cr-slides-active { scroll-snap-type:y mandatory; scroll-padding-top:var(--cr-slide-top,64px); }
+.cr-slides-active .cr-home > section {
+  min-height:var(--cr-slide-height,calc(100svh - 64px));
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+  scroll-margin-top:0;
+  padding-block:clamp(28px,4svh,48px);
+}
+.cr-slides-active .cr-home > .cr-home-how { justify-content:center; }
+.cr-slide-dots {
+  position:fixed;
+  z-index:40;
+  top:calc(50% + var(--cr-slide-top,64px) / 2);
+  right:16px;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.cr-slide-dots[hidden] { display:none; }
+.cr-slide-dots button {
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  padding:0;
+  border:0;
+  background:transparent;
+  border-radius:22px;
+  cursor:pointer;
+}
+.cr-slide-dot {
+  width:8px;
+  height:8px;
+  border:1px solid var(--cr-muted);
+  border-radius:8px;
+  background:transparent;
+  transition:height .28s ease,background-color .28s ease,border-color .28s ease;
+}
+.cr-slide-dots [aria-current="step"] .cr-slide-dot { height:26px; background:var(--cr-accent); border-color:var(--cr-accent); }
+.cr-slide-dot-label {
+  position:absolute;
+  right:44px;
+  white-space:nowrap;
+  padding:5px 10px;
+  background:var(--cr-paper);
+  border:1px solid var(--cr-line);
+  border-radius:5px;
+  color:var(--cr-ink);
+  font-size:12px;
+  opacity:0;
+  transform:translateX(4px);
+  pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease;
+}
+.cr-slide-dots button:hover .cr-slide-dot-label,
+.cr-slide-dots button:focus-visible .cr-slide-dot-label { opacity:1; transform:translateX(0); }
+@media (max-height:950px) and (min-width:1101px) {
+  .cr-slides-active .cr-home > section { padding-block:24px; }
+  .cr-slides-active .cr-home .cr-how-intro { margin-bottom:26px; }
+  .cr-slides-active .cr-home .cr-how-intro h2 { font-size:clamp(24px,2.5vw,32px); margin-bottom:0; max-width:none; }
+  .cr-slides-active .cr-home .cr-diagram { max-height:calc(100svh - 290px); }
+  .cr-slides-active .cr-home .cr-commercial-head { margin-bottom:20px; }
+  .cr-slides-active .cr-home .cr-commercial-head h2 { font-size:clamp(22px,2.3vw,28px); }
+  .cr-slides-active .cr-home .cr-tier { padding:18px 20px; gap:8px; }
+  .cr-slides-active .cr-home .cr-tiers { gap:20px; }
+  .cr-slides-active .cr-home .cr-commercial > .cr-caption { margin-top:10px; }
+  .cr-slides-active .cr-home .cr-home-commercial .cr-footer { padding-top:20px; }
+  .cr-slides-active .cr-home .cr-section-heading { margin-bottom:28px; }
+}
+@media (max-width:1400px) {
+  .cr-slides-active .cr-home { padding-inline:64px; }
+  .cr-slide-dots { right:8px; }
+}
+@media (max-width:800px) {
+  .cr-slides-active .cr-home { padding-left:20px; padding-right:52px; }
+  .cr-slide-dots { right:0; gap:0; }
+  .cr-slide-dot { width:6px; height:6px; }
+  .cr-slide-dots [aria-current="step"] .cr-slide-dot { height:20px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .cr-slide-dot,.cr-slide-dot-label { transition:none; }
+}
+
+/* ---------------------------------------------------------------------------
+   The execution boundary: one drawing, chosen by domain.
+
+   The sections are not cards. They sit on the page's own white, separated by air
+   alone -- a border on each would put two hairlines a gap apart, and two hairlines
+   a gap apart read as one seam joining them. Only the things that really are
+   cards -- a way in, a rung, a refusal -- carry a border, and they are tinted so
+   they read against that white.
+
+   Colours come from variables rather than literals, because an SVG presentation
+   attribute cannot hold a var() and the dark theme has to reach inside the drawing.
+   --------------------------------------------------------------------------- */
+.cr-explorer { display:grid; gap:64px; min-width:0; }
+.cr-explorer>*,.cr-movement>* { min-width:0; }
+.cr-movement { scroll-margin-top:90px; }
+.cr-site .cr-movement>h2 { margin-top:7px; font-size:clamp(24px,2.4vw,31px); letter-spacing:-.03em; }
+.cr-movement-head { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 28px; }
+.cr-movement-head>div:first-child { min-width:0; }
+.cr-movement-head .cr-domain-picker { flex:0 1 320px; }
+.cr-site .cr-movement-head #cr-domain-label { font-size:12px; font-weight:600; }
+.cr-picker-hint { margin-top:6px; font-size:11px; color:var(--cr-muted); font-weight:400; }
+
+/* The drawing scrolls inside its own box rather than shrinking its labels to nothing. */
+.cr-dg-scroll { overflow-x:auto; overscroll-behavior-x:contain; padding:24px 0 6px; min-width:0; }
+.cr-dg { display:block; width:100%; min-width:860px; height:auto; }
+.cr-dg-node,.cr-dg-rowbox { fill:var(--cr-panel); stroke:var(--cr-line); stroke-width:1; }
+.cr-dg-gate { fill:var(--cr-paper); stroke:var(--cr-accent); stroke-width:1.5; }
+.cr-dg-zone { fill:none; stroke:var(--cr-line); stroke-width:1; stroke-dasharray:4 5; }
+.cr-dg-eyebrow,.cr-dg-zonelabel { font:600 9.5px/1 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.1em; fill:var(--cr-muted); }
+.cr-dg-label { font-size:11.5px; font-weight:500; fill:var(--cr-ink); }
+.cr-dg-label-sm { font-size:10px; }
+.cr-dg-aside { font-size:10px; fill:var(--cr-muted); }
+.cr-dg-wordmark { font-size:13px; font-weight:650; letter-spacing:-.03em; fill:var(--cr-ink); }
+.cr-dg-rowlabel { font-size:11.5px; font-weight:550; fill:var(--cr-ink); }
+.cr-dg-raises { font:600 9.5px/1 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.04em; fill:var(--cr-accent); }
+.cr-dg-key { font:500 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.04em; fill:var(--cr-accent); }
+.cr-dg-arrow { fill:none; stroke:var(--cr-muted); stroke-width:1.4; }
+/* `context-stroke` paints each head to match its own line; browsers without it keep the fallback. */
+.cr-dg-headfill { fill:var(--cr-muted); fill:context-stroke; }
+.cr-site .cr-dg-note { margin-top:16px; font-size:13px; line-height:1.7; }
+.cr-dg-note em { font-style:normal; font-weight:600; color:var(--cr-ink); }
+
+/* The picker names the narrower domains each choice holds, so nothing went missing. */
+.cr-picker-menu { width:max(100%,370px); }
+.cr-domain-options { max-height:330px; }
+.cr-domain-options button { align-items:flex-start; }
+.cr-domain-options button>span:first-child { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.cr-domain-options strong { font-weight:550; }
+.cr-domain-options small { font-size:10.5px; line-height:1.55; color:var(--cr-muted); white-space:normal; }
+
+/* Going in: what changes in the codebase, per shape of thing you are running. */
+.cr-ways { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:22px; }
+.cr-way { display:flex; flex-direction:column; gap:9px; padding:18px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-panel); }
+.cr-way strong { font-size:17px; font-weight:550; letter-spacing:-.02em; color:var(--cr-ink); }
+.cr-site .cr-way p { flex:1; font-size:13.5px; line-height:1.65; }
+.cr-way pre { overflow-x:auto; padding:12px; border:1px solid var(--cr-line); border-radius:4px; background:var(--cr-paper); }
+.cr-way code { font:500 11.5px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--cr-ink); white-space:pre; }
+
+/* Widening: a rung is a number, a name, a line, and where to read more. */
+.cr-ladder { list-style:none; margin:22px 0 0; padding:0; display:grid; gap:10px; }
+.cr-ladder>li { display:grid; grid-template-columns:26px 1fr auto; gap:2px 16px; align-items:center; padding:14px 18px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-panel); }
+.cr-ladder-index { grid-row:1/3; display:flex; align-items:center; justify-content:center; width:26px; height:26px; border:1px solid var(--cr-accent); border-radius:50%; color:var(--cr-accent); font:600 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace; }
+.cr-ladder>li>strong { grid-column:2; font-size:16px; font-weight:550; letter-spacing:-.02em; color:var(--cr-ink); }
+.cr-site .cr-ladder>li>p { grid-column:2; font-size:13.5px; line-height:1.6; }
+.cr-ladder>li>a { grid-column:3; grid-row:1/3; white-space:nowrap; }
+.cr-site .cr-ladder-close { margin-top:22px; font-size:17px; font-weight:550; color:var(--cr-ink); letter-spacing:-.015em; }
+
+/* Three refusals. Each card is a button that redraws the diagram above. */
+.cr-stories { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:22px; }
+.cr-site .cr-story { display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:16px 18px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-panel); text-align:left; }
+.cr-site .cr-story:hover { border-color:var(--cr-accent); }
+.cr-story strong { font-size:15px; font-weight:550; letter-spacing:-.02em; color:var(--cr-ink); }
+.cr-story>span { font-size:13px; line-height:1.6; color:var(--cr-muted); }
+.cr-story-go { margin-top:auto; color:var(--cr-accent); font-weight:600; font-size:12.5px; }
+
+/* The caveat and the CTA close their section as plain rows: no rule, only space. */
+.cr-site .cr-movement>.cr-boundary-note { margin-top:20px; padding:0; border:0; font-size:13px; line-height:1.7; }
+.cr-site .cr-movement>.cr-domain-cta { margin-top:28px; padding:0; border:0; }
+.cr-site .cr-domain-cta strong { font-size:15px; font-weight:550; }
+
+@media (max-width:1000px) {
+  .cr-ladder>li { grid-template-columns:26px 1fr; }
+  .cr-ladder>li>a { grid-column:2; grid-row:auto; margin-top:6px; }
+}
+@media (max-width:860px) {
+  .cr-ways,.cr-stories { grid-template-columns:1fr; }
+}
+@media (max-width:600px) {
+  .cr-explorer { gap:44px; }
+  .cr-dg-scroll { padding:18px 0 4px; }
 }

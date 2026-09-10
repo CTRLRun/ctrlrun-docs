@@ -218,6 +218,15 @@ def test_a_positioning_word_in_a_heading_is_flagged():
     assert {f.rule.id for f in found} == {"governance"}
 
 
+def test_action_governance_is_the_one_qualifier_the_heading_rule_permits():
+    """Narrowed 2026-09-10: the bare word names a competitor's category, and this qualifier
+    says the opposite of it. Everything else it covered is still refused."""
+    assert lint.lint_text("# Action governance for AI agents\n", "x.md", _empty()) == []
+    assert {f.rule.id for f in lint.lint_text("# Agent governance\n", "x.md", _empty())} == {
+        "governance"
+    }
+
+
 def test_a_positioning_word_in_a_body_sentence_is_not():
     found = lint.lint_text("It is not a governance toolkit.\n", "x.md", _empty())
 

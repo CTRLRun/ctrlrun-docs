@@ -5,52 +5,59 @@
 module.exports = async function verifyWebsite(page, base = 'http://localhost:3000') {
   const checks = [];
   const assert = (value, message) => { if (!value) throw new Error(message); checks.push(message); };
-  const result = () => page.locator('.cr-result').innerText();
-  const choose = value => page.getByLabel('Explore a situation').selectOption(value);
+  const drawing = () => page.locator('svg.cr-dg');
+  const shownDomain = () => page.locator('#cr-domain-value').textContent();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1280, height: 900 });
   assert((await page.goto(base)).status() === 200, 'Homepage responds without a redirect loop');
-  await page.getByRole('button', { name: 'Approve this exact action →' }).waitFor();
+  await page.locator('.cr-footer').waitFor();
   assert(await page.locator('h1').count() === 1, 'Homepage has one H1');
   assert(await page.locator('.cr-footer').isVisible(), 'Final CTAs render in custom mode');
   assert(await page.locator('link[rel=canonical]').getAttribute('href') === 'https://ctrlrun.dev/', 'Homepage canonical points to /');
-  await page.evaluate(() => { window.crTestEvents = []; window.addEventListener('ctrlrun:conversion', event => window.crTestEvents.push(event.detail)); });
-  await page.getByRole('button', { name: 'Approve this exact action →' }).click();
-  assert((await result()).includes('Exact action approved'), 'Approval binds to the exact action');
-  await page.getByRole('button', { name: 'Change to $5,000' }).click();
-  assert((await result()).includes('Approval was for $500, not $5,000.'), 'Changing $500 to $5,000 is blocked');
-  await choose('allowed');
-  await page.getByRole('button', { name: 'Execute action →' }).click();
-  await page.getByRole('button', { name: 'Retry the same action →' }).click();
-  assert((await result()).includes('Duplicate blocked'), 'A completed action cannot execute twice');
-  await choose('blocked');
-  assert((await result()).includes('does not have permission'), 'Permission denial is explained');
-  await choose('uncertain');
-  assert((await result()).includes('Outcome uncertain'), 'A lost response does not imply failure');
-  await page.getByRole('button', { name: 'Try again →' }).click();
-  assert((await result()).includes('Reconciliation required'), 'Unconfirmed retries remain blocked');
-  await page.getByRole('button', { name: 'Simulate provider confirming success →' }).click();
-  await page.getByRole('button', { name: 'Retry the same action →' }).click();
-  assert((await result()).includes('Duplicate blocked'), 'Confirmed success retains duplicate protection');
-  await page.getByRole('button', { name: 'Choose your domain Finance' }).click();
-  assert(await page.getByRole('option').count() >= 48, 'Industry breadth is discoverable');
-  await page.getByRole('combobox', { name: 'Search domains' }).fill('DevOps');
-  await page.keyboard.press('Enter');
-  assert(await page.getByRole('combobox', { name: /^Choose an action/ }).inputValue() === '0', 'Changing domain resets the selected action');
-  assert((await page.locator('.cr-domain-cta').innerText()).includes('production infrastructure'), 'Commercial CTA follows the selected domain');
-  await page.getByRole('combobox', { name: /^Choose an action/ }).selectOption('2');
-  assert((await page.locator('.cr-request').innerText()).includes('Delete infrastructure'), 'Changing action updates the request');
-  await page.getByRole('button', { name: 'Choose your domain DevOps' }).click();
-  await page.getByRole('combobox', { name: 'Search domains' }).fill('does-not-exist');
-  assert(await page.getByText('No matching domain.').isVisible(), 'Empty search has a useful recovery message');
-  await page.keyboard.press('Escape');
-  assert(await page.getByRole('button', { name: 'Choose your domain DevOps' }).evaluate(node => node === document.activeElement), 'Escape restores focus to the domain button');
-  assert((await page.evaluate(() => window.crTestEvents)).some(event => event.name === 'scenario_completed'), 'Scenario conversion events are emitted');
   for (const width of [375, 768, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Homepage fits viewport ' + width);
   }
+  // The execution boundary: one control, one drawing, and the refusals named inside it.
+  assert((await page.goto(base + '/execution-boundary')).status() === 200, 'The boundary page responds without a redirect loop');
+  assert(await drawing().count() === 1, 'The path is drawn once, not once per state');
+  const drawn = await drawing().textContent();
+  for (const raised of ['ActionDenied', 'ApprovalRequired', 'ApprovalMismatch', 'DuplicateEffect', 'AMBIGUOUS']) {
+    assert(drawn.includes(raised), 'The drawing names the refusal ' + raised);
+  }
+  assert(drawn.includes('Refund customer') && drawn.includes('refund_customer:txn_4821'), 'The drawing carries the action and its effect key');
+  assert(drawn.includes('Stripe. The ledger.'), 'The drawing names the real system for the domain shown');
+  await page.getByRole('button', { name: 'Your domain FinTech & Banking' }).click();
+  assert(await page.getByRole('option').count() === 12, 'Twelve domains, where there were forty-eight');
+  await page.getByRole('combobox', { name: 'Search domains' }).fill('payroll');
+  assert(await page.getByRole('option').count() === 1, 'A narrower name still finds the domain holding it');
+  await page.keyboard.press('Enter');
+  assert(await shownDomain() === 'HR & Payroll', 'Choosing by a narrower name selects its domain');
+  assert((await drawing().textContent()).includes('Send offer'), 'The drawing follows the domain');
+  assert((await drawing().textContent()).includes('The payroll run'), 'The system on the far side is the one this domain actually calls');
+  assert((await page.locator('.cr-domain-cta').innerText()).includes('payroll'), 'Commercial CTA follows the selected domain');
+  await page.getByRole('button', { name: 'Your domain HR & Payroll' }).click();
+  await page.getByRole('combobox', { name: 'Search domains' }).fill('does-not-exist');
+  assert(await page.getByText('No domain holds that name.').isVisible(), 'Empty search has a useful recovery message');
+  await page.keyboard.press('Escape');
+  assert(await page.getByRole('button', { name: 'Your domain HR & Payroll' }).evaluate(node => node === document.activeElement), 'Escape restores focus to the domain button');
+  assert((await drawing().textContent()).includes('A person answers this one'), 'The approval path is drawn coming back');
+  assert((await drawing().textContent()).includes('Ask what happened. Never repeat.'), 'The unknown outcome is settled, not retried');
+
+  await page.goto(base + '/execution-boundary?domain=Finance&action=Transfer%20funds');
+  assert(await shownDomain() === 'FinTech & Banking', 'A link written against the old forty-eight names still resolves');
+  assert((await drawing().textContent()).includes('Transfer funds'), 'and keeps the action it named');
+  await page.evaluate(() => { window.crTestEvents = []; window.addEventListener('ctrlrun:conversion', event => window.crTestEvents.push(event.detail)); });
+  await page.getByRole('button', { name: /Claims worker, timeout/ }).click();
+  assert(await shownDomain() === 'Insurance', 'A refusal card redraws the boundary above it');
+  assert((await page.evaluate(() => window.crTestEvents)).some(event => event.name === 'story_opened'), 'Conversion events are emitted');
+  for (const width of [375, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'The boundary page fits viewport ' + width);
+  }
+  await page.setViewportSize({ width: 1280, height: 900 });
+
   await page.goto(base + '/risk-check');
   await page.getByLabel('Move money', { exact: true }).check();
   for (let index = 0; index < 5; index++) await page.locator('input[name="risk-' + index + '"][value="' + ([2, 4].includes(index) ? 'No' : 'Yes') + '"]').check();

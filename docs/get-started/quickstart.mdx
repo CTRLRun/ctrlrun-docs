@@ -4,14 +4,21 @@ description: "Protect one function end to end in ten minutes: write a policy, de
 canonical: "https://ctrlrun.dev/docs/get-started/quickstart"
 ---
 
+import { DemoFilm } from "/snippets/demo-film.jsx";
+
 In about ten minutes you will write a policy, protect a refund function, run one refund
 autonomously, have a second one wait for a human, approve it from the shell, watch a mutated
 call refused, and read the receipts. Every block on this page runs offline against a fake remote,
 and the outputs shown are from a real run.
 
 **Prerequisites:** `pip install ctrlrun`, Python 3.11 or later, and an empty directory. If you
-would rather see it before you type it, [Try the scenarios](/try) walks the five demo
-decisions with no install.
+would rather see it before you type it, [the execution boundary](/execution-boundary) draws the
+same decisions with no install.
+
+<div className="cr-film-block">
+  <DemoFilm src="/images/demo.mp4" poster="/images/demo-poster.jpg" label="A terminal recording of a CTRLRun policy file and the decisions it produces. Captions are shown in the video." />
+  <p className="cr-caption">Forty-nine seconds: the policy file below, and the refusals it produces. Plays muted with captions.</p>
+</div>
 
 <Steps>
   <Step title="Write the policy">

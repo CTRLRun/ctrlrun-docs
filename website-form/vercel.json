@@ -4,6 +4,9 @@
   "functions": {
     "api/review.mjs": {
       "maxDuration": 15
+    },
+    "api/interest.mjs": {
+      "maxDuration": 15
     }
   },
   "headers": [

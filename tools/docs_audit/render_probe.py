@@ -105,6 +105,7 @@ def render() -> str:
         'title: "Does your framework double-execute?"',
         'description: "What agent frameworks do when a remote commits and the reply is lost, '
         'measured with one harness, the same fake remote and framework defaults."',
+        'sidebarTitle: "Double-execution study"',
         "---",
         "",
         "{/* " + MARKER + " */}",

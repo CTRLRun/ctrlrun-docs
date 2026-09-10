@@ -9,6 +9,13 @@ sentence that explains what CTRLRun is not, or names the thing it is being compa
 these are checked in **headline scope**: Markdown headings and the frontmatter fields Mintlify
 renders as the page's title, description and social preview.
 
+*Action governance* is the exception, added 2026-09-10 with the positioning change that earned
+it. The reason the bare word is forbidden is that it names a competitor's category — agent
+governance, the governance suite, the governance toolkit — and *action governance* is the one
+qualifier that says the opposite of all three: the unit is the action, not the agent. The rule
+is narrowed rather than removed, so *governance* alone, and every other qualifier, is still
+refused in a heading. `POSITIONING.md` carries the decision.
+
 **Claim words** — *compliance*, *conformant*, *certified*, *aligned with*, *pack*, *sector*, the
 named regulations, and social proof that does not exist — are checked **everywhere**, because a
 body sentence is where a compliance claim or a sector product gets asserted. Two documents are
@@ -52,7 +59,12 @@ def _rule(id: str, pattern: str, scope: str, why: str) -> Rule:
 
 RULES: tuple[Rule, ...] = (
     _rule("runtime-control", r"\bruntime[ -]control\b", "headline", "a competitor's phrase"),
-    _rule("governance", r"\bgovernance\b", "headline", "a competitor's phrase"),
+    _rule(
+        "governance",
+        r"(?<!action )(?<!action-)\bgovernance\b",
+        "headline",
+        "a competitor's phrase, except the one qualifier that is not theirs",
+    ),
     _rule("guardrails", r"\bguard-?rails?\b", "headline", "a competitor's phrase"),
     _rule("compliant", r"\bcompliant\b", "headline", "a claim this project does not make"),
     _rule(

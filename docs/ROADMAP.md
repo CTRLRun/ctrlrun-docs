@@ -215,25 +215,113 @@ Exit: a classifier that observes rather than infers, with a test that writes a b
 
 Standards: none new.
 
-## v0.8 — Multi-agent
+**Renumbered on 2026-09-10, and the reason is recorded here rather than made silently.** The chain below used to run *boundary → multi-agent → hardening → 1.0*, and nowhere in it did the kernel learn who may say yes or how much. An approval is a string somebody typed; a grant limits one action and says nothing about a thousand of them. Both are what a reader means by governance, and the homepage now says *action governance* — so the two milestones that make it true go in, before multi-agent, because propagating authority across hops needs authority that can be bounded and a yes that can be attributed underneath it. Nothing already shipped moves. A2A moves once more, to v0.10, and v0.10 says why. The homepage H1 stays *Execution safety for AI agents* until v0.9 exits; `internal/POSITIONING.md` carries that gate.
 
-- A2A integration: task-bound delegated authority with limits, expiry, and depth.
-- Authority propagation across agent hops.
+## v0.8 — Oversight
+
+One question: who may say yes, and can the kernel tell?
+
+Today `approver` is a non-empty string, and `ctrlrun delegate --as` is an assertion typed at a shell; the record keeps `created_via` so a reader can tell an act from an assertion, and that is the whole of it. The operator server authenticates who answered and does not check that they were entitled to. `docs/OWASP-AGENTIC-TOP10.md`'s `ASI09` row says so in as many words. v0.8 closes the part of that sentence a kernel can close.
+
+- **The approver is a principal.** Resolved through the v0.3 `IdentityProvider`, never carried as a string. A receipt records the verified principal that granted, and an approval with no resolvable approver is refused — the rule G7 applies to the requester, applied to the other side of the yes.
+- **Entitlement from the control registry.** A control (v0.6) names its approver role; an approval from a principal the role does not cover is refused, and the refusal names the control. Omission is not entitlement.
+- **Requester ≠ approver**, on the resolved principal and not the string. **M-of-N** requires N distinct verified principals; a second yes from the same principal counts once.
+- **Break-glass is a grant, not a flag.** It widens authority, it is recorded like any other grant, it expires, and every action taken under it carries the grant id in its receipt. There is no setting that skips a check.
+- **Credential revocation, consumed.** A revoked token is valid until `exp` today and the threat model says so. v0.8 consumes OpenID Shared Signals / CAEP events and refuses a principal whose credential was revoked before its expiry. Consuming only — issuing nothing, running no authorization server, exactly as v0.3.
+- **A policy change is a protected action.** A policy diff has a canonical form, so it has an action hash and an effect key; `ctrlrun policy propose` and `approve` put the same exact-action approval around the file that decides everything else, under the approver rules above. Beside it, a **diff replay**: the last N receipts evaluated against the proposed policy, reporting which decisions change. It reports what changes and never whether a policy is too permissive — `SPEC-v0.4.md` §3.9's rule for verify, applied here.
+
+**Does not close.** Whether the human was misled into the yes: a persuaded approver gives a valid approval and the receipt records it as one. And a policy-change approval does not defend against an administrator with write access to the file; the threat model's malicious-administrator line is unchanged.
+
+Do not build: an approval UI · notification delivery (the webhook is the primitive; each destination stays delivery work) · escalation timers beyond expiry · issuing approver credentials · unrevoking · a delegation browser.
+
+Exit: `ctrlrun.guarantees/v3` — G12 unentitled approver refused · G13 self-approval refused · G14 M-of-N with a duplicated principal refused · G15 revoked credential refused before `exp` · G16 an unapproved policy change decides nothing — each with a positive control, each `N/A` with a reason on a configuration that names no approver role. The entitlement sentence in `SPEC-mcp-operator.md` is rewritten to say what is then true.
+
+Standards: none new. RFC 8935 and RFC 8936 (SSF push and poll delivery) and CAEP are consumed as code; they appear in a mapping doc only after the test above exists, and "SSF-compatible" is unearned until a conformance suite says otherwise.
+
+## v0.9 — Envelope
+
+One question: how much, over which records, for which task?
+
+A grant today limits one action — `amount_lte: 5000` — and says nothing about the thousand actions that each pass it. That is the quantitative half of authority, and `VISION.md` §5's "how much" has had no code under it.
+
+- **Consequence budgets.** A metric, a scope and a window, on a grant. Consumed on reserve, held until reconciled: an `AMBIGUOUS` effect keeps its consumption until a human or a hook resolves it, so an agent cannot spend unlimited authority by generating ambiguity, and a `FAILED` one releases it. It was parked as a rate limiter with a correctness hole until that is specified; this is where it is specified, and v0.7's attempt number is what makes "until reconciled" computable.
+- **Scope providers.** A resource-ownership precondition through v0.7's fingerprint mechanism: *this record is in this principal's assigned scope*, fetched strictly before the reservation, hashed through the canonicalizer, fail-closed when the provider raises. This is what turns v0.6's data-scope primitive into an enforced one, and it is the bite on the sentence `docs/OWASP-AGENTIC-TOP10.md` currently has to write for `ASI06` — that nothing bites on an identifier an attacker chose.
+- **Task-bound authority.** A grant carries a task id and is attenuated by the same `child ⊆ parent` rule on that dimension as on every other. Mechanically one more delegation dimension; it is the object v0.10 propagates, and it shrinks what a hijacked agent can do without anything reading the hijack.
+
+**Does not close.** A budget cannot recall an action already in flight when a window rolls. A scope provider is worth what its source is worth, and the residual gap `SPEC-v0.7.md` states for preconditions — the recheck cannot run inside the atomic reservation write — applies to it unchanged. Task binding limits blast radius; it does not detect a hijack, and `ASI01` stays partial.
+
+Do not build: a consequence taxonomy — a budget names a metric, not a class · compensation or saga · a fleet-wide budget across stores · anything that reads a prompt to decide which task an agent is on.
+
+Exit: a budget exhausted by ambiguity refuses the next reserve until reconciled, and releases on `FAILED`, under the v0.6 multi-process standard against Postgres; a scope provider that raises leaves nothing reserved and nothing executed; a task-bound grant is refused on a task it does not name, by name. Three guarantees added, each with a positive control.
+
+**This is the gate for the homepage.** The H1 stays *Execution safety for AI agents* until v0.9 exits. After it, *action governance* is true in code, and only then does the category line move up.
 
 Standards: none new.
 
-## v0.9 — Hardening
+## v0.10 — Multi-agent
+
+- A2A integration: task-bound delegated authority (v0.9) with limits, expiry, and depth, propagated across agent hops.
+- Authority propagation across hops: the envelope a second agent receives is `⊆` the envelope the first agent held, checked at the hop and again at every evaluation, exactly as v0.3 checks a delegation.
+- **Upstream identity pinning.** A policy entry may pin the upstream it authorizes — a TLS key, or the hash of an MCP server's advertised tool schema — so a swapped server behind the same name, or a tool whose schema moved under an approved action name, is a `DENY`. The honest slice of `ASI04`: still deciding actions, still never inspecting a package; provenance at large stays out of scope and the OWASP row says so.
+
+**A2A moved from v0.8 to v0.10 on 2026-09-10, and the reason is recorded here rather than made silently** — the second move of the same item, on the same rule as the first. It moved to v0.8 because propagation needs a sound executor boundary underneath it. It moves again because propagation needs two more things underneath it that the chain did not have: authority that can be bounded (v0.9) and a yes that can be attributed (v0.8). A hop-counting model that propagates an unbounded grant approved by a string would be A2A on sand. Nothing about A2A changed; only its position, twice.
+
+Standards: A2A, as code. No conformance claim.
+
+## v0.11 — Evidence
+
+One question: can the record be trusted after the fact, and kept?
+
+- **An external anchor for the receipt chain.** The chain detects alteration and says on every page that it does not detect truncation or append — both measured at two statements, undetected, because the head is a row in the same database. v0.11 anchors the head outside the database at an interval (an RFC 3161 timestamp, or an equivalent the operator supplies) so a suffix erased or appended between two anchors is detected and named, in the same vocabulary as the six existing break kinds. No keys of its own: it consumes a timestamp and issues nothing, which is why it is here and signing is not.
+- **Retention and legal hold.** There is no retention policy today and `docs/postgres.md` says so, while `docs/CONTROL-MAPPING.md` maps receipt retention to a clause. v0.11 pays that debt: a chain-preserving prune that leaves a checkpoint receipt verifiable across the gap, and a hold that refuses to prune, both recorded as receipts themselves.
+- **Enforcement coverage.** From events already written: policy entries never exercised, gateway tools never routed, `@protect` actions never seen. The runtime half of `ctrlrun scan`, under the same rule — a clean result is not a verdict, no score, no percentage, no badge.
+
+**Does not close.** Authorship. An anchor proves the log existed in this form at that time; it does not prove who wrote it, and a malicious administrator who rewrites everything before the next anchor is still out of scope. Signed receipts stay off the roadmap for the reason `SPEC-v0.6.md` §11 gives.
+
+Do not build: a SIEM · dashboards over receipts · a receipt query language · export formats beyond JSON and OTel.
+
+Exit: the truncation and append cases that `SPEC-v0.6.md` §6.4 lists as undetected now detect, with the anchor as the positive control; a prune across a checkpoint verifies; a held range refuses to prune.
+
+Standards: RFC 3161 consumed as code. None claimed.
+
+## v0.12 — Hardening
 
 Fuzzing, property tests, concurrency stress, failure injection, benchmarks, external security review, upgrade testing, compatibility guarantees, CodeQL/SAST/SBOM/signed artifacts.
+
+One addition to that list: the external review's scope names the approver path (v0.8) explicitly, because it is the surface a governance product is attacked through.
 
 Standards: none new.
 
 ## v1.0 — Stable contracts
 
-1.0 means stable contracts, not feature count: Action schema, Receipt schema, effect semantics, Policy API, StateStore API, Adapter API. MCP production-grade. Authority model documented. Threat model published. Security audit complete. Upgrade path tested.
+1.0 means stable contracts, not feature count: Action schema, Receipt schema, effect semantics, Policy API, StateStore API, Adapter API — and, added on 2026-09-10, the **Grant schema** (v0.3, which a product selling action governance cannot leave unfrozen) and the **Approval record schema** (v0.8). Eight. MCP production-grade. Authority model documented. Threat model published. Security audit complete. Upgrade path tested.
 
 Standards: external security audit, then an EU controls pack. Phrased as "technical controls supporting a compliance program".
+
+## Pro and Enterprise: the commercial layer, its own line
+
+**What the marketing surfaces promise, recorded here so the kernel and the sales pages stop disagreeing.** `ctrlrun.dev`, `/protect-my-agent` and `adopt.ctrlrun.dev` sell two things around the boundary, both closed source: **ctrlrun Pro**, a managed product for centralized governance, and **ctrlrun Enterprise**, Pro plus a scoped engineering engagement. None of it ships in the `ctrlrun` wheel, none of it gates a kernel release, and none of it sits on a kernel version line. The wording every surface uses is "built on ctrlrun's open-source foundation" — never that the managed layer is itself open source.
+
+| Promised on a marketing surface | Where | Status against shipped code |
+|---|---|---|
+| Policies and approvals managed from one dashboard | Pro card on `/`, `/protect-my-agent`, adopt deck | Not built, and labelled *in development* on every surface. It is the management plane the *Beyond v1.0* line keeps off this roadmap — deliberately, because it is built on the closed-source track. |
+| Activity investigated across agents from one place | Pro card, `/protect-my-agent`, adopt deck | Partly shipped. The receipt chain and `OTelEventSink` (v0.2) are the primitives; tenant-aware ingestion, indexing, retention and the views above them are product work. |
+| Operational risk understood across connected agents | Pro card, adopt deck | Not built. It reads receipts, writes nothing and decides nothing. |
+| A supported set of maintained connectors | Pro card, `/protect-my-agent` coverage table | Partly shipped. The MCP gateway (v0.2), the adapter contract (v0.5) and `WebhookApprovalProvider` are the primitives; managed connection lifecycle, health and compatibility support are product work. |
+| Approvals in the tools a team already uses | `/protect-my-agent`, adopt deck | Partly shipped. `WebhookApprovalProvider` (v0.2) is the primitive; each destination is delivery work. |
+| Custom policies, integrations and deployment options | Enterprise card on `/`, `/protect-my-agent`, adopt deck | Not built as library code, and not intended to be. Per-engagement delivery work scoped to one deployment. |
+| Connections to payment and ledger systems | adopt deck, automotive use case | Not built. Per-deployment integration work, never a library module. |
+
+**The rule that keeps this honest.** Every row is either a service delivered around the boundary or a layer sold separately. A row moves onto a kernel version line only when it becomes library code with tests, and at that point it stops being a commercial row. Nothing here is described as shipped, on any surface, before that happens. An availability label is part of the claim: *in development* and *engagements open* are the two the surfaces use, and neither may become *available* on a page before it is true in code.
+
+**Two rows left the table on 2026-09-10** rather than being reclassified, because the surfaces stopped promising them: prompt-injection checks (it reads the prompt, and the kernel decides the action) and an HTTP API. If either returns to a sales page it returns to this table first.
 
 ## Beyond v1.0
 
 A management plane — organization-wide policy, approval center, fleet views, central evidence — is not on this roadmap. It gets built only if users pull toward it, and `VISION.md` describes the shape it would take.
+
+**This roadmap covers the open-source kernel, and only that.** The ctrlrun Pro dashboard is a separate, closed-source product built around the boundary; it is not a kernel deliverable and never appears on a version line here. That is not a contradiction with the paragraph above — it is the same decision seen from two sides. A management plane stays off this roadmap *because* the managed one is commercial work, and the kernel is not shaped to make a product possible.
+
+What the split costs is a rule, and the rule is the point: **the kernel gains nothing in order to serve the dashboard.** If the product ever needs a primitive the library does not have, it arrives here as its own specification amendment on its own version line, reviewed on its own merits, exactly as any other kernel change would be. Receipts stay portable JSON so the evidence a customer keeps works with or without the product, which is what makes the two tracks separable at all.
+
+**`Receipts are portable JSON. No dashboard. No web UI.` therefore stays binding in full** — for this repository, which is the only thing it has ever governed.

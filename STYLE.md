@@ -37,7 +37,8 @@ reviewer reads for.
 - **The fixed copy** is fixed. The tagline, the principle, the category line, the promise and
   the opener are quoted from `IA.md` and are not paraphrased.
 - **The forbidden list** is enforced by `tools/docs_audit/lint.py`. In a heading, a title, a
-  description or a hero line: never *runtime control*, *governance*, *guardrails*,
+  description or a hero line: never *runtime control*, *governance* other than *action
+  governance*, *guardrails*,
   *compliant*, *secure* as a bare adjective, *exactly-once*, *transaction*. Anywhere at all:
   never a compliance or standards claim, never *pack* or *sector*, never a regulation named as
   supported, never social proof that does not exist.

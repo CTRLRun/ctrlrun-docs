@@ -9,7 +9,7 @@
 
 **Not yet:**
 
-- No external security audit. (planned for v0.8 or v0.9)
+- No external security audit. (planned for v0.12)
 - No third-party review of the kernel. (every review so far was run inside this project)
 - No sector packs. (the policy templates are starting points, not a product)
 <!-- end generated -->

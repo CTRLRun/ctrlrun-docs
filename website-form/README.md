@@ -1,9 +1,11 @@
-# CTRLRun review-form endpoint
+# CTRLRun website form endpoints
 
-A dependency-free Vercel Node.js Function for the Mintlify website. There is no frontend here.
+Dependency-free Vercel Node.js Functions for the Mintlify website. There is no frontend here.
 
 - Project: `arpanghoshals-projects/ctrlrun-review-form`
-- Endpoint: `https://ctrlrun-review-form.vercel.app/api/review`
+- Endpoints:
+  - `https://ctrlrun-review-form.vercel.app/api/review` — the architecture review brief
+  - `https://ctrlrun-review-form.vercel.app/api/interest` — the Pro waiting list and Enterprise enquiry
 - Sender: `CTRLRun <reviews@updates.arpanghoshal.com>`
 - Recipient: `contact@arpanghoshal.com`, fixed in server code
 - Reply-to: the validated work email submitted by the visitor
@@ -17,9 +19,11 @@ The handler restricts CORS to the production Mintlify domains and the exact rede
 
 The browser generates a UUID per reviewed brief. The server uses it as Resend's idempotency key. Retry without changing the brief after an uncertain response; editing a brief creates a new request. No form contents or credentials are logged by the handler.
 
+`/api/interest` applies the same rules and adds one of its own: the `intent` field must be `pro-waitlist` or `enterprise-contact`, and the server -- not the request -- decides the subject line, which fields are required, and the idempotency prefix from it. An Enterprise enquiry must say what the deployment needs; the waiting list asks for nothing beyond a work email and a company. Both share the review endpoint's rate limit only per instance, not across them.
+
 ```bash
-node --test integrations/website-form/review.test.mjs
 cd integrations/website-form
+npm test
 vercel link --project ctrlrun-review-form
 vercel env add RESEND_API_KEY production --sensitive
 vercel deploy --prod

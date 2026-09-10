@@ -14,7 +14,7 @@ This repository is the Mintlify site root, so a file's path here is the URL it s
 | Path | What it is |
 |---|---|
 | `docs.json` | Site configuration and the whole navigation tree |
-| `index.mdx`, `try.mdx`, `risk-check.mdx`, `protect-my-agent.mdx` | The top-level pages |
+| `index.mdx`, `execution-boundary.mdx`, `risk-check.mdx`, `protect-my-agent.mdx` | The top-level pages |
 | `docs/` | Every documentation page: guides, concepts, cookbook, reference, architecture |
 | `snippets/`, `images/`, `style.css`, `*.js` | Components, media and the browser demos |
 | `capabilities.yaml` | The capability matrix's source. Edit the YAML, never a rendered table |
@@ -77,8 +77,10 @@ Apache-2.0, the same as the library. See [LICENSE](LICENSE).
 
 - `index.mdx` serves `/`: the homepage, the hallucinated-refund example, the execution
   boundary and its four rules, and the integration entry point.
-- `try.mdx` serves `/try`: the scenario explorer. Controls and a decision first; the
-  agent/boundary/system context sits in a disclosure below them.
+- `execution-boundary.mdx` serves `/execution-boundary`: the boundary in three sections -- the drawing, the three
+  ways it goes into a codebase, and the four steps by which autonomy widens. The drawing lives
+  in `snippets/execution-boundary.jsx` and is chosen by one control, the domain: it carries the
+  action, the five checks and the refusal each one raises, so the prose beside it stays short.
 - `docs.mdx` serves `/docs`: the technical overview.
 - `docs/` is every technical page, published under `/docs/...`.
 - `risk-check.mdx` and `protect-my-agent.mdx` are custom-mode product pages.
@@ -121,8 +123,11 @@ synthetic; release decisions and receipts execute in Python.
 `assets/verify-medical-workbench.cjs` exercises browser Python, both downloads, error
 recovery and all six stages at three viewport widths.
 
-The scenario explorer holds 48 domains and 238 actions, all illustrative client-side
-simulations.
+The boundary page holds 12 domains, which between them name the 48 narrower domains the
+picker used to list one by one, and 102 actions. An older `/try?domain=Finance` link still
+resolves: `/try` redirects to `/execution-boundary`, and the alias map built from those names
+carries the domain. Every decision on the page is an
+illustrative client-side simulation.
 
 The risk check stores no answers and sends nothing until a visitor submits a review request.
 Its result distinguishes an indicated pattern from an unknown answer, and explains the score.

@@ -1,6 +1,7 @@
 ---
 title: "Authority and delegation"
 description: "Grants, containment and the omission rule in plain language: who may propose an action, and how a delegated grant can only narrow."
+sidebarTitle: "Authority in depth"
 ---
 
 Until v0.3, a CTRLRun policy could see the action and nothing else. It answered *how much
