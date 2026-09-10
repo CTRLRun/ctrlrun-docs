@@ -28,6 +28,10 @@ export const HomeSlides = () => {
     slide.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'start' });
   };
 
+  // Scrolling is the browser's: `scroll-snap-type` in style.css does the snapping, for wheel,
+  // trackpad and touch alike. This adds keyboard navigation and the dots, and tracks which
+  // section is in view. Nothing here intercepts a scroll -- a wheel handler that stepped one
+  // slide per gesture fought every scroll it did not recognise.
   useEffect(() => {
     const root = document.documentElement;
     const home = document.querySelector('.cr-home');
@@ -35,10 +39,6 @@ export const HomeSlides = () => {
     const sections = SLIDES.map(slide => document.getElementById(slide.id));
     let frame = 0;
     let headerHeight = 64;
-    let wheelTimer;
-    let wheelTotal = 0;
-    let wheelHandled = false;
-    let wheelLockedUntil = 0;
 
     const updateActive = () => {
       frame = 0;
@@ -79,46 +79,12 @@ export const HomeSlides = () => {
       if (!event.repeat) goTo(next);
     };
 
-    const onWheel = (event) => {
-      if (event.ctrlKey || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-      if (!window.matchMedia('(min-width: 801px)').matches) return;
-      const direction = Math.sign(event.deltaY);
-      if (!direction) return;
-      // Preserve scrolling inside a code block or another independently scrollable control.
-      let target = event.target instanceof Element ? event.target : null;
-      while (target && target !== home && target !== document.body) {
-        const style = getComputedStyle(target);
-        if (/(auto|scroll)/.test(style.overflowY) && target.scrollHeight > target.clientHeight + 1) {
-          const room = direction > 0 ? target.scrollTop + target.clientHeight < target.scrollHeight - 1 : target.scrollTop > 1;
-          if (room) return;
-        }
-        target = target.parentElement;
-      }
-      const current = activeRef.current;
-      const rect = sections[current].getBoundingClientRect();
-      const withinTallSlide = direction > 0 ? rect.bottom > innerHeight + 2 : rect.top < headerHeight - 2;
-      if (!wheelHandled && performance.now() >= wheelLockedUntil && withinTallSlide) return;
-      event.preventDefault();
-      clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => { wheelHandled = false; wheelTotal = 0; }, 180);
-      if (wheelHandled || performance.now() < wheelLockedUntil) return;
-      const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1);
-      if (Math.sign(wheelTotal) !== direction) wheelTotal = 0;
-      wheelTotal += delta;
-      if (Math.abs(wheelTotal) < 36) return;
-      const next = Math.max(0, Math.min(LAST, current + direction));
-      wheelHandled = true;
-      wheelLockedUntil = performance.now() + 700;
-      if (next !== current) goTo(next);
-    };
-
     onResize();
     root.classList.add('cr-slides-active');
     setReady(true);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
     window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('wheel', onWheel, { passive: false });
     const header = document.getElementById('navbar');
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(onResize);
     if (header && observer) observer.observe(header);
@@ -132,8 +98,6 @@ export const HomeSlides = () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('wheel', onWheel);
-      clearTimeout(wheelTimer);
       observer?.disconnect();
       cancelAnimationFrame(frame);
     };

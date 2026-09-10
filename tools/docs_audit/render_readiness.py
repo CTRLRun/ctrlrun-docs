@@ -47,7 +47,7 @@ _CLOSE = re.compile(r"end generated")
 #: done and nothing in the repository can measure an absence. Removing one is its own pull
 #: request, with the CLAIMS.md row that makes the new sentence true.
 NOT_YET: tuple[tuple[str, str], ...] = (
-    ("No external security audit.", "planned for v0.12"),
+    ("No external security audit.", "optional, and no release waits for one"),
     ("No third-party review of the kernel.", "every review so far was run inside this project"),
     ("No sector packs.", "the policy templates are starting points, not a product"),
 )

@@ -8,10 +8,12 @@
 # word to say what CTRLRun is *not* — a negation — and never for a sentence that makes the
 # claim. The regex is deliberately narrow: it names the negating phrase, not the word.
 #
-# Two documents are exempt by the rule itself and are not listed here:
-# docs/OWASP-AGENTIC-TOP10.md and docs/THREAT_MODEL.md, which exist to list what is not
-# covered. The lint hard-codes them (EXEMPT_BY_RULE) so that this file cannot un-exempt them
-# by accident or exempt a third by analogy.
+# Three documents are exempt by the rule itself and are not listed here:
+# docs/OWASP-AGENTIC-TOP10.md, docs/OWASP-SOLUTIONS-LANDSCAPE.md and docs/THREAT_MODEL.md,
+# which exist to list what is not covered. The landscape page quotes another body's checkbox
+# wording verbatim in order to say, box by box, which ones CTRLRun does not tick. The lint
+# hard-codes them (EXEMPT_BY_RULE) so that this file cannot un-exempt them by accident or
+# exempt another by analogy.
 
 # --- files the lint does not read ---------------------------------------------------------
 

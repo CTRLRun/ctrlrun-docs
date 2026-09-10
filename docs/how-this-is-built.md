@@ -68,8 +68,8 @@ exercise is reported not applicable, with the reason, and never counted as a pas
 
 There has been no external security audit and no third-party review of the kernel. Every
 review so far was run inside this project, by sessions that did not write the code under
-review but that follow the same specifications and the same rules. An external audit is on the
-roadmap for v0.12. Until it happens, the evidence for the guarantees is the suite, the
+review but that follow the same specifications and the same rules. An external review is optional
+and no release waits for one; if one happens, its report is published here. Until then the evidence for the guarantees is the suite, the
 mutation tables, the review records in the changelog, and `ctrlrun verify` against your own
 configuration. Read `docs/THREAT_MODEL.md` for what the guarantees do not cover.
 

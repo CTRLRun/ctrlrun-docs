@@ -336,7 +336,8 @@
             "group": "Standards",
             "pages": [
               "docs/ACS",
-              "docs/OWASP-AGENTIC-TOP10"
+              "docs/OWASP-AGENTIC-TOP10",
+              "docs/OWASP-SOLUTIONS-LANDSCAPE"
             ]
           },
           {

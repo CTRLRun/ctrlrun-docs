@@ -127,6 +127,7 @@ that page's frontmatter, never here.
 | `docs/ROADMAP` | ctrlrun roadmap v1.0 | What each version asked and answered, and what is not on the list. |
 | `docs/ACS` | agent control standard ctrlrun | What was read, what maps, and where the standard is silent. |
 | `docs/OWASP-AGENTIC-TOP10` | OWASP agentic top 10 mapping | A reading of somebody else's taxonomy against the guarantees CTRLRun tests. |
+| `docs/OWASP-SOLUTIONS-LANDSCAPE` | OWASP agentic solutions landscape | Which boxes on somebody else's checklist CTRLRun ticks, and which it does not. |
 
 ## The words that appear once
 

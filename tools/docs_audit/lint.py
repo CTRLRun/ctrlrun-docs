@@ -40,9 +40,13 @@ from _files import DOCUMENT_PATTERNS, documents, outside_fences, relative
 
 ALLOWLIST = Path(__file__).with_name("lint-allowlist.txt")
 
-#: The two documents the rules exempt by name. Not in the allowlist file, because an entry
+#: The three documents the rules exempt by name. Not in the allowlist file, because an entry
 #: there could be deleted by a session that found it inconvenient; these are the rule.
-EXEMPT_BY_RULE: tuple[str, ...] = ("docs/OWASP-AGENTIC-TOP10.md", "docs/THREAT_MODEL.md")
+EXEMPT_BY_RULE: tuple[str, ...] = (
+    "docs/OWASP-AGENTIC-TOP10.md",
+    "docs/OWASP-SOLUTIONS-LANDSCAPE.md",
+    "docs/THREAT_MODEL.md",
+)
 
 
 @dataclass(frozen=True)

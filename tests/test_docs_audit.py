@@ -304,9 +304,9 @@ def test_the_allowlist_file_parses_and_names_only_known_keywords(tmp_path):
         lint.load_allowlist(bad)
 
 
-def test_the_two_documents_the_rule_exempts_are_skipped(tmp_path):
-    """The OWASP mapping and threat-model pages list what is *not* covered, so
-    they are allowed to name what they do not cover."""
+def test_the_documents_the_rule_exempts_are_skipped(tmp_path):
+    """The OWASP mapping, OWASP landscape and threat-model pages list what is *not*
+    covered, so they are allowed to name what they do not cover."""
     for name in lint.EXEMPT_BY_RULE:
         path = REPO_ROOT / name
         assert path.exists(), name

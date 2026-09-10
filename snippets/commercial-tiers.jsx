@@ -39,7 +39,7 @@ export const CommercialTiers = () => {
       name: 'ctrlrun Enterprise',
       status: 'ENGAGEMENTS OPEN',
       promise: 'AI governance tailored to your deployment.',
-      body: 'Everything in Pro, with ctrlrun engineers to design, integrate, and maintain the additional controls your business needs. Custom policies, integrations, deployment options, and insights — scoped to your requirements.',
+      body: 'Everything in Pro, with ctrlrun engineers to design, integrate, and maintain the additional controls your business needs. Custom policies, integrations, deployment options, and insights, scoped to your requirements.',
       who: 'Our engineers, with your team.',
       cta: 'Discuss your deployment',
       field: 'message',

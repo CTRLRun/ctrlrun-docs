@@ -67,6 +67,7 @@ LONG_FORM = frozenset(
         "authority",
         "ACS",
         "OWASP-AGENTIC-TOP10",
+        "OWASP-SOLUTIONS-LANDSCAPE",
         "how-this-is-built",
     }
 )
