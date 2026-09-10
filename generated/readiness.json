@@ -1,5 +1,14 @@
 {
   "guarantees": 11,
+  "python": {
+    "floor": "3.11",
+    "tested": [
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14"
+    ]
+  },
   "released": "0.6.1",
   "soak": {
     "actions": 889735,

@@ -1,5 +1,5 @@
 <!-- generated from the suite, pyproject and the soak (readme) — run the generator -->
-- **Version 0.6.1**, on [PyPI](https://pypi.org/project/ctrlrun/), Python 3.11 and later.
+- **Version 0.6.1**, on [PyPI](https://pypi.org/project/ctrlrun/), Python 3.11 and later, tested on 3.11 to 3.14.
 - **4,408 tests**, every version specified before it was written and every requirement mutation-tested.
 - **11 guarantees you can check in your own setup**, with `ctrlrun verify` against your policy, on your store's backend, in a scratch store it creates.
 - **One host: a file.** SQLite, no server, no ops. **Many hosts: Postgres**, the same guarantees, graded by the same suite.

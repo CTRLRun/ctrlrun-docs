@@ -4,6 +4,7 @@ The block is the first thing a stranger reads about whether CTRLRun can be run f
 every number in it comes from something that measures itself:
 
 - the version and the dependency floor from `pyproject.toml`;
+- the Python floor from `requires-python`, and the Pythons tested from CI's `check` matrix;
 - the test count from `pytest --collect-only`, recorded in `generated/readiness.json`;
 - the soak's duration, actions and unattributed count from `research/soak/results/*.json`;
 - what `ctrlrun verify` checks from the guarantee catalogue itself.
@@ -32,6 +33,8 @@ import sys
 import tomllib
 from pathlib import Path
 
+import yaml
+
 from _core import CORE_ROOT
 from _files import REPO_ROOT, relative
 
@@ -56,6 +59,37 @@ NOT_YET: tuple[tuple[str, str], ...] = (
 def _version() -> str:
     with (CORE_ROOT / "pyproject.toml").open("rb") as handle:
         return str(tomllib.load(handle)["project"]["version"])
+
+
+def _python() -> dict:
+    """The Python floor the package declares, and the Pythons CI's `check` job runs the suite on.
+
+    The block said *"Python 3.11 and later"* as a literal, which stays true when CI adds a
+    version and so never drifted into a failure. The tested list is read from the matrix rather
+    than the classifiers because the matrix is what runs the suite; a classifier is a label.
+    """
+    with (CORE_ROOT / "pyproject.toml").open("rb") as handle:
+        requires = str(tomllib.load(handle)["project"]["requires-python"])
+    if not re.fullmatch(r">=3\.\d+", requires):
+        raise SystemExit(f"requires-python is {requires!r}; the block can only state a >=3.N floor")
+    workflow = CORE_ROOT / ".github" / "workflows" / "ci.yml"
+    matrix = yaml.safe_load(workflow.read_text(encoding="utf-8"))["jobs"]["check"]["strategy"]
+    tested = matrix["matrix"]["python-version"]
+    # Unquoted in YAML, `3.10` is the float 3.1. Refused rather than repaired.
+    if not all(isinstance(version, str) for version in tested):
+        raise SystemExit(f"CI's python-version matrix must be quoted strings, got {tested!r}")
+    floor = requires.removeprefix(">=")
+    if floor not in tested:
+        raise SystemExit(f"requires-python is {requires} and CI's check job does not test {floor}")
+    return {"floor": floor, "tested": sorted(tested, key=lambda v: tuple(map(int, v.split("."))))}
+
+
+def _tested(versions: list[str]) -> str:
+    """`3.11 to 3.14` for a contiguous run of minors, `3.11, 3.12 and 3.14` otherwise."""
+    minors = [int(version.split(".")[1]) for version in versions]
+    if len(versions) > 2 and minors == list(range(minors[0], minors[-1] + 1)):
+        return f"{versions[0]} to {versions[-1]}"
+    return versions[0] if len(versions) == 1 else f"{', '.join(versions[:-1])} and {versions[-1]}"
 
 
 #: A changelog heading: `## [0.6.0] - unreleased — Durable runtime`, or with a date. The file
@@ -141,6 +175,7 @@ def measure() -> dict:
     run = soak()
     return {
         "version": _version(),
+        "python": _python(),
         "released": released(),
         "tests": collected(),
         "guarantees": _guarantees(),
@@ -167,6 +202,7 @@ def _lines(data: dict, *, full: bool) -> list[str]:
     version, tests, guarantees = data["version"], data["tests"], data["guarantees"]
     run, published = data["soak"], data.get("released")
     link = "https://pypi.org/project/ctrlrun/"
+    python = f"Python {data['python']['floor']} and later, tested on {_tested(data['python']['tested'])}."
 
     def where(text: str, page: str) -> str:
         """`full` adds a Read-more link; the other formats carry the sentence alone.
@@ -183,10 +219,10 @@ def _lines(data: dict, *, full: bool) -> list[str]:
 
     lines = [
         (
-            f"- **Version {version}**, on [PyPI]({link}), Python 3.11 and later."
+            f"- **Version {version}**, on [PyPI]({link}), {python}"
             if published == version
             else f"- **Version {version} is in development**; [PyPI]({link}) has {published}. "
-            "Python 3.11 and later."
+            + python
         ),
         where(
             f"- **{tests:,} tests**, every version specified before it was written and every "
@@ -278,7 +314,7 @@ def check(data: dict, pages: list[Path] | None = None) -> list[str]:
             f"the block claims {recorded['tests']:,} tests and the suite collects {current:,}; "
             "run --write"
         )
-    for key in ("version", "released", "guarantees", "soak"):
+    for key in ("version", "python", "released", "guarantees", "soak"):
         if recorded.get(key) != data.get(key):
             drift.append(f"{key} changed since the block was generated; run --write")
     for fmt in FORMATS:
