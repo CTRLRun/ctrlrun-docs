@@ -304,11 +304,13 @@ body:has(.cr-site) { --topbar-tabs-height:0px; }
 .cr-try-page .cr-boundary-note { font-size:13px; }
 /* Keep documentation tools in documentation; product pages use the main links. The rule
    named two of the four product pages, so risk-check and protect-my-agent carried a docs
-   search box the other two did not. `.cr-subpage` is the other two. */
-body:has(.cr-home) #search-bar-entry,body:has(.cr-home) #assistant-entry,
+   search box the other two did not. `.cr-subpage` is the other two.
+   The homepage is the exception: Ask Assistant stays, because a first visitor asks a
+   question before they know which page answers it. Search still belongs to the docs. */
+body:has(.cr-home) #search-bar-entry,
 body:has(.cr-try-page) #search-bar-entry,body:has(.cr-try-page) #assistant-entry,
 body:has(.cr-subpage) #search-bar-entry,body:has(.cr-subpage) #assistant-entry,
-body:has(.cr-home) #search-bar-entry-mobile,body:has(.cr-home) #assistant-entry-mobile,
+body:has(.cr-home) #search-bar-entry-mobile,
 body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistant-entry-mobile,
 body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-entry-mobile { display:none; }
 @media (max-width:1000px) {
