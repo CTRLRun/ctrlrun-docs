@@ -110,7 +110,53 @@ def test_a_block_that_reaches_for_the_network_fails(tmp_path):
     )
 
     assert not outcome.ok
-    assert "offline" in outcome.failures[0].message
+    assert "no network" in outcome.failures[0].message
+
+
+def test_a_block_may_reach_a_loopback_listener_it_bound_itself(tmp_path):
+    """What the guard admits since v0.7, and the reason it had to: `ctrlrun verify`'s G12 needs
+    a peer that can receive a byte, and the widening is exactly the library's own
+    (SPEC-v0.7 §12.2.7). A self-bound loopback port is not a network and never leaves the host.
+
+    The negative half stays next door. This is the half that says the widening is real rather
+    than a guard somebody quietly deleted.
+    """
+    block = (
+        "```python runnable\n"
+        "import socket\n"
+        "listener = socket.socket()\n"
+        "listener.bind(('127.0.0.1', 0))\n"
+        "listener.listen(1)\n"
+        "client = socket.create_connection(listener.getsockname())\n"
+        "client.close()\n"
+        "listener.close()\n"
+        "```\n"
+    )
+
+    outcome = snippets.run_document(_page(tmp_path, block))
+
+    assert outcome.ok, [str(failure) for failure in outcome.failures]
+
+
+def test_the_guard_still_refuses_a_loopback_port_nothing_here_bound(tmp_path):
+    """The other edge of the same widening: admitting *any* loopback port would admit a local
+    forwarding proxy, an SSH tunnel or a container's published port, each of which leaves the
+    host. Only a port this process bound is admitted."""
+    block = (
+        "```python runnable\n"
+        "import socket\n"
+        "probe = socket.socket()\n"
+        "probe.bind(('127.0.0.1', 0))\n"
+        "port = probe.getsockname()[1]\n"
+        "probe.close()\n"
+        "socket.create_connection(('127.0.0.1', port))\n"
+        "```\n"
+    )
+
+    outcome = snippets.run_document(_page(tmp_path, block))
+
+    assert not outcome.ok
+    assert "no network" in outcome.failures[0].message
 
 
 def test_the_network_guard_is_what_made_it_fail(tmp_path):

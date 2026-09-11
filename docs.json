@@ -308,6 +308,11 @@
               "docs/reference/api/parse_conditions",
               "docs/reference/api/postgres-PostgresStateStore",
               "docs/reference/api/protect",
+              "docs/reference/api/transport-HTTPConnection",
+              "docs/reference/api/transport-HTTPSConnection",
+              "docs/reference/api/transport-Transport",
+              "docs/reference/api/transport-effect_state",
+              "docs/reference/api/transport-urlopen",
               "docs/reference/api/verify-run",
               "docs/reference/api/with_approval"
             ],
