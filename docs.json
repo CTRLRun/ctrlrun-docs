@@ -301,6 +301,7 @@
               "docs/reference/api/conformance-store-run",
               "docs/reference/api/context",
               "docs/reference/api/gateway-serve",
+              "docs/reference/api/idempotency_token",
               "docs/reference/api/jwt_identity-JWTIdentityProvider",
               "docs/reference/api/needs_approval",
               "docs/reference/api/otel-OTelEventSink",

@@ -69,6 +69,7 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.canonical_bytes`](/docs/reference/api/canonical_bytes) | function | The canonical form of an arbitrary mapping: UTF-8 JSON, sorted keys, no whitespace. |
 | [`ctrlrun.canonicalize`](/docs/reference/api/canonicalize) | function | Return the canonical form of an Action: UTF-8 JSON, sorted keys, no whitespace. |
 | [`ctrlrun.context`](/docs/reference/api/context) | function | Bind the principal for calls made inside the block. |
+| [`ctrlrun.idempotency_token`](/docs/reference/api/idempotency_token) | function | The provider idempotency token for the attempt this executor is running (SPEC-v0.7 §4). |
 | [`ctrlrun.needs_approval`](/docs/reference/api/needs_approval) | function | Does this call need a human? For a framework that asks before it invokes (SPEC-v0.5 §3.5). |
 | [`ctrlrun.parse_conditions`](/docs/reference/api/parse_conditions) | function | Parse a `when:`-shaped mapping into conditions, keyed by the raw condition key. |
 | [`ctrlrun.protect`](/docs/reference/api/protect) | function | Bind a function to an action name: every call becomes a decided, recorded Action. |
