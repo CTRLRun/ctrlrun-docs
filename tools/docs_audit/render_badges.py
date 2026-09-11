@@ -31,9 +31,12 @@ Stars are deliberately absent: `STYLE.md` forbids social proof that does not exi
 count is a popularity number with no reading behind it. The two adoption counts that are here
 each name what they measure and link to the data rather than to a page that repeats them:
 
-- `downloads` is PyPI's own monthly figure via shields.io, which reads pypistats. It counts
-  installs by mirrors and by CI as well as by people, so it is an upper bound on adoption and
-  is labelled `downloads/month` rather than users.
+- `downloads` is pypistats' `last_month`, counted by PyPI. It was `img.shields.io/pypi/dm` for
+  about an hour, which renders live and asks pypistats on behalf of every project shields
+  serves: it came back `rate limited by upstream service` the same day. The workflow now asks
+  pypistats once a day and publishes the answer, so the badge reads a document instead of a
+  third party's cache. It counts installs by mirrors and by CI as well as by people, so it is
+  an upper bound on adoption and says `/month` rather than users.
 - `clones` is this repository's own, published to the `badges` branch by `.github/workflows/
   traffic.yml`. GitHub's traffic API keeps fourteen days and needs push access, so the workflow
   reads it daily with a token, merges each day into `clones-history.json` on that branch, and
@@ -96,7 +99,7 @@ BADGES: tuple[Badge, ...] = (
     ),
     Badge(
         "Downloads",
-        "https://img.shields.io/pypi/dm/ctrlrun?color=B8730A&label=downloads",
+        f"https://img.shields.io/endpoint?url={BADGES_BRANCH}/downloads-badge.json",
         "https://pypistats.org/packages/ctrlrun",
     ),
     Badge(
