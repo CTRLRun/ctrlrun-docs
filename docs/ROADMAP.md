@@ -304,7 +304,7 @@ Do not build: a consequence taxonomy — a budget names a metric, not a class ·
 
 Exit: `ctrlrun.guarantees/v5` — G22 a budget exhausted by ambiguity refuses the next reserve until reconciled, and releases on `FAILED`, under the v0.6 multi-process standard against Postgres · G23 a scope provider that raises leaves nothing reserved and nothing executed · G24 a task-bound grant is refused on a task it does not name, by name — each with a positive control, each `N/A` with a reason on a grant that carries no budget, no scope, or no task.
 
-**This is the gate for the homepage.** The H1 stays *Execution safety for AI agents* until v0.9 exits. After it, *action governance* is true in code, and only then does the category line move up.
+**This is the gate for the category line, and it used to be the gate for the H1.** Recorded 2026-09-12: the H1 moved ahead of v0.9, to *CTRLRun stops AI agents from taking wrong, restricted, or malicious actions in your workflows*, because it states what the shipped kernel does today and claims nothing about authority. *Action governance* still waits: after v0.9 it is true in code, and only then does the category line move up.
 
 Standards: none new.
 
