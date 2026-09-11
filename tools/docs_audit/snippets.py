@@ -55,6 +55,17 @@ TIMEOUT_SECONDS = 120
 #: guards of different widths is the drift the library's own fixture exists to prevent, so
 #: this is a copy of that one rather than a second rule: IPv4 to the literal `127.0.0.1`, at
 #: a port this process bound through a stream socket that is still open, and nothing else.
+#:
+#: **A review finding declined here on purpose, recorded rather than left to be rediscovered.**
+#: `_bound` forgets a pair when the socket that holds it closes, detaches or is collected, so
+#: a snippet that closed the *descriptor* behind the socket's back — `os.close(sock.fileno())`
+#: — would leave the pair admitted while the port went back to the kernel. That is true, and it
+#: is true of the library's guard too, because this is the same text. **Fixing it here and not
+#: there would fork the two guards again**, which is the whole defect this copy exists to
+#: remove (SPEC-v0.7 §12.2.7, §12.2.11), and the edit belongs in `tests/conftest.py` applied to
+#: both at once. It is also not what this guard defends against: it runs the snippets in this
+#: repository's own pages, not code somebody else supplied, and reaching the gap needs a
+#: snippet that deliberately closes a file descriptor out from under a live socket.
 NO_NETWORK = '''\
 """Imported by `site` at startup: no connection except to a loopback listener bound here."""
 

@@ -51,9 +51,10 @@ with a shared store a **different** process may finish it. One resumption is adm
 more, because the token is consumed in the transaction that admits it. If the lease lapsed first, the resumption is refused
 and the effect becomes `AMBIGUOUS` by the ordinary path.
 
-**A continuation leg can never record `FAILED`, since v0.7.** A continuation exists only because
-the remote answered once already and is holding the exchange, so nothing on the second leg can
-say the remote did nothing. `ctrlrun.transport` refuses to claim `NotExecuted` on a resumed run,
+**Nothing in the library hands a continuation leg a `FAILED`, since v0.7.** A continuation exists
+only because the remote answered once already and is holding the exchange, so nothing on the
+second leg can say the remote did nothing. `ctrlrun.transport` refuses to claim `NotExecuted` on
+a resumed run,
 and the MCP gateway records an unknown outcome for every path that could otherwise reach `FAILED`
 there: a connection it never established, a pre-dispatch JSON-RPC code, the `401` rule, and a
 tool error under an operator's `not_executed_on_error: true`, which is a claim about the call

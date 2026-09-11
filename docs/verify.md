@@ -162,7 +162,9 @@ none. G12 to G16 arrived with v0.7, one per item of that milestone.
 idempotency token, the attempt ceiling and precondition fingerprints. Two of them need a word
 about what they do *not* grade.
 
-**G12 is the only guarantee that opens a socket**, and it opens one it bound itself. It needs a
+**G12 is the only guarantee that binds and drives a peer of its own.** It is not the only one
+that opens a socket: G13 needs a store with a clock of its own, so it runs over the connection
+`--store-url` names. It needs a
 peer that can receive a byte and then die, so verify binds loopback listeners at ephemeral ports
 and drives `ctrlrun.transport.HTTPConnection` straight at them, never `urlopen`, which would
 honour a `HTTP_PROXY` your host happens to set. Four observable rows and one control: a peer that
