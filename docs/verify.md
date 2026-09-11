@@ -14,7 +14,7 @@ what could not be tested at all.
 
 ```console
 $ ctrlrun verify
-CTRLRun verify — ctrlrun 0.6.1, catalogue ctrlrun.guarantees/v2
+CTRLRun verify — ctrlrun 0.6.1, catalogue ctrlrun.guarantees/v3
 policy     examples/authority/payments.yaml (ctrlrun.policy/v3, mode: enforce)
 authority  same document, 3 grants
 store      sqlite, scratch (created and destroyed for this run)
@@ -30,8 +30,9 @@ G8   expired authority refused        PASS  head-of-support
 G9   delegation cannot escalate       PASS  head-of-support (6 of 6 dimensions)
 G10  unknown exception is ambiguous   PASS  stripe.refund
 G11  an altered receipt is detected   PASS  stripe.refund
+G13  clock divergence is named        N/A   the store verify was given reads only the application's clock, so there is no second clock to diverge from; pass --store-url postgresql://… to grade this
 
-11/11 declared guarantees pass. 0 not applicable.
+11/11 declared guarantees pass. 1 not applicable: G13.
 ```
 
 It reads the policy document — `$CTRLRUN_CONFIG`, else `./ctrlrun.yaml` — and the authority
