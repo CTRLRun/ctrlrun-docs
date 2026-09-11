@@ -1,4 +1,9 @@
+// Slides are a desktop presentation. Below this query the page is a plain document: on a
+// phone the sections are taller than the screen, and `scroll-snap-stop: always` together with
+// a slide height pinned to `innerHeight` (which moves every time the address bar collapses)
+// made each flick re-snap mid-scroll.
 export const HomeSlides = () => {
+  const SLIDE_MEDIA = '(min-width: 801px) and (hover: hover)';
   const SLIDES = [
     { id: 'overview', label: 'Overview' },
     { id: 'how-it-works', label: 'How it works' },
@@ -39,6 +44,7 @@ export const HomeSlides = () => {
     const sections = SLIDES.map(slide => document.getElementById(slide.id));
     let frame = 0;
     let headerHeight = 64;
+    const media = window.matchMedia(SLIDE_MEDIA);
 
     const updateActive = () => {
       frame = 0;
@@ -59,11 +65,14 @@ export const HomeSlides = () => {
     };
     const onResize = () => {
       headerHeight = Math.max(0, Math.round(home.getBoundingClientRect().top + window.scrollY));
-      root.style.setProperty('--cr-slide-top', `${headerHeight}px`);
-      root.style.setProperty('--cr-slide-height', `${Math.max(240, window.innerHeight - headerHeight)}px`);
+      if (media.matches) {
+        root.style.setProperty('--cr-slide-top', `${headerHeight}px`);
+        root.style.setProperty('--cr-slide-height', `${Math.max(240, window.innerHeight - headerHeight)}px`);
+      }
       onScroll();
     };
     const onKeyDown = (event) => {
+      if (!media.matches) return;
       if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
       const target = event.target;
       if (target instanceof Element && target.closest('input, textarea, select, video, a, [contenteditable], [role="dialog"], [role="slider"]')) return;
@@ -79,9 +88,19 @@ export const HomeSlides = () => {
       if (!event.repeat) goTo(next);
     };
 
-    onResize();
-    root.classList.add('cr-slides-active');
-    setReady(true);
+    const applyMedia = () => {
+      if (media.matches) {
+        onResize();
+        root.classList.add('cr-slides-active');
+      } else {
+        root.classList.remove('cr-slides-active');
+        root.style.removeProperty('--cr-slide-top');
+        root.style.removeProperty('--cr-slide-height');
+      }
+      setReady(media.matches);
+    };
+    applyMedia();
+    media.addEventListener('change', applyMedia);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
     window.addEventListener('keydown', onKeyDown);
@@ -98,6 +117,7 @@ export const HomeSlides = () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('keydown', onKeyDown);
+      media.removeEventListener('change', applyMedia);
       observer?.disconnect();
       cancelAnimationFrame(frame);
     };

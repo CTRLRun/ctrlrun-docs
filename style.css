@@ -559,15 +559,20 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 }
 
 
-/* Native slide snapping keeps wheel and touch scrolling available, including
-   sections taller than a small viewport. The controller adds keyboard navigation. */
-html.cr-slides-active { scroll-snap-type:y mandatory; scroll-padding-top:var(--cr-slide-top,64px); }
-.cr-slides-active .cr-home > section {
-  min-height:var(--cr-slide-height,calc(100svh - 64px));
-  scroll-snap-align:start;
-  scroll-snap-stop:always;
-  scroll-margin-top:0;
-  padding-block:clamp(28px,4svh,48px);
+/* Native slide snapping on desktop: wheel and trackpad scrolling stay the browser's, the
+   controller adds keyboard navigation and the dots. Phones and tablets get the plain page.
+   The controller only adds the class under the same query, and the query here guards the
+   rules themselves: mandatory snapping over sections taller than the screen made every
+   flick re-snap mid-scroll. */
+@media (min-width:801px) and (hover:hover) {
+  html.cr-slides-active { scroll-snap-type:y mandatory; scroll-padding-top:var(--cr-slide-top,64px); }
+  .cr-slides-active .cr-home > section {
+    min-height:var(--cr-slide-height,calc(100svh - 64px));
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    scroll-margin-top:0;
+    padding-block:clamp(28px,4svh,48px);
+  }
 }
 .cr-slides-active .cr-home > .cr-home-how { justify-content:center; }
 .cr-slide-dots {
@@ -636,12 +641,6 @@ html.cr-slides-active { scroll-snap-type:y mandatory; scroll-padding-top:var(--c
 @media (max-width:1400px) {
   .cr-slides-active .cr-home { padding-inline:64px; }
   .cr-slide-dots { right:8px; }
-}
-@media (max-width:800px) {
-  .cr-slides-active .cr-home { padding-left:20px; padding-right:52px; }
-  .cr-slide-dots { right:0; gap:0; }
-  .cr-slide-dot { width:6px; height:6px; }
-  .cr-slide-dots [aria-current="step"] .cr-slide-dot { height:20px; }
 }
 @media (prefers-reduced-motion:reduce) {
   .cr-slide-dot,.cr-slide-dot-label { transition:none; }
