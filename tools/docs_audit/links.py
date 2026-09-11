@@ -8,7 +8,8 @@ Checked, with no network:
 - `[text](/path)` and `href="/path"` — the docs site's own root-relative form, resolved against
   `docs/` with `.mdx` then `.md` appended, and against the repository root as a fallback;
 - `https://github.com/CTRLRun/ctrlrun/blob/<ref>/<path>` and `/tree/<ref>/<path>`, which are
-  internal links wearing an absolute URL, resolved against the checkout.
+  internal links wearing an absolute URL, resolved against the checkout. A `<ref>` no checkout
+  holds is skipped instead: the `badges` branch is an orphan CI writes and nobody clones.
 
 Every other absolute URL is skipped: an external link is somebody else's to keep, and a check
 that opened sockets would be a check that failed in CI for reasons nobody here can fix.
@@ -49,8 +50,13 @@ _HREF = re.compile(r"""href=["']([^"']+)["']""")
 #: repository, so a page can cite `LICENSE` in the library and `docs.json` here and
 #: both are checked. Named groups rather than two regexes: one place decides.
 _GITHUB = re.compile(
-    r"^https://github\.com/CTRLRun/(?P<repo>ctrlrun|ctrlrun-docs)/(?:blob|tree)/[^/]+/(?P<path>.*)$"
+    r"^https://github\.com/CTRLRun/(?P<repo>ctrlrun|ctrlrun-docs)/(?:blob|tree)/(?P<ref>[^/]+)/(?P<path>.*)$"
 )
+#: Refs no checkout contains, so a link into one is external however much it looks internal.
+#: `badges` is the orphan branch CI publishes the endpoint documents to: `clones-history.json`
+#: is real and is the receipt the clones badge links to, and resolving it against a worktree
+#: that holds `main` would report a working link as broken.
+_DETACHED_REFS: frozenset[str] = frozenset({"badges"})
 _HEADING = re.compile(r"^\s{0,3}(#{1,6})\s+(.*?)\s*#*\s*$")
 _EXPLICIT_ID = re.compile(r"\{#([A-Za-z0-9_-]+)\}\s*$")
 _ID_ATTRIBUTE = re.compile(r"""\bid=["']([A-Za-z0-9_-]+)["']""")
@@ -132,6 +138,8 @@ def _resolve(target: str, source: Path) -> tuple[Path | None, str | None] | None
     if path_part.startswith(("http://", "https://")):
         matched = _GITHUB.match(path_part)
         if matched is None:
+            return None
+        if matched.group("ref") in _DETACHED_REFS:
             return None
         root = REPO_ROOT if matched.group("repo") == "ctrlrun-docs" else CORE_ROOT
         return root / unquote(matched.group("path")), anchor
