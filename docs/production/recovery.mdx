@@ -51,6 +51,18 @@ with a shared store a **different** process may finish it. One resumption is adm
 more, because the token is consumed in the transaction that admits it. If the lease lapsed first, the resumption is refused
 and the effect becomes `AMBIGUOUS` by the ordinary path.
 
+**A continuation leg can never record `FAILED`, since v0.7.** A continuation exists only because
+the remote answered once already and is holding the exchange, so nothing on the second leg can
+say the remote did nothing. `ctrlrun.transport` refuses to claim `NotExecuted` on a resumed run,
+and the MCP gateway records an unknown outcome for every path that could otherwise reach `FAILED`
+there: a connection it never established, a pre-dispatch JSON-RPC code, the `401` rule, and a
+tool error under an operator's `not_executed_on_error: true`, which is a claim about the call
+that tool answers and not about the one carrying the effect. At 0.6.1 each of those recorded
+`FAILED`, and the gateway answered `-41011` "not executed", which permitted a retry of an effect
+the upstream may have been part-way through; it is `-41010` and a `ctrlrun resolve` now. An
+executor that raises `NotExecuted` on its own evidence is still believed, as it always was. What
+changed is that nothing in the library will hand it one on a continuation.
+
 ## What this does not do
 
 - **Nothing sweeps.** No background thread, no timer, no cron, no reap command. The lapse is

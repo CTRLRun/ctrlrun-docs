@@ -190,6 +190,40 @@ model. They shipped in 0.2.0 and every one of them describes behaviour you can r
   proposal and execution does not invalidate one. Matching a grant on a claim is out of scope
   (§13): it needs an answer to "what does a missing claim mean" that v0.3 does not have.
 
+## Known v0.7 limitations
+
+- **A precondition fingerprint narrows the window between a human's approval and the action's
+  execution, and does not close it.** The recheck is a network call to the operator's provider,
+  so it runs strictly before `consume_approval_and_reserve` and cannot run inside it. A change
+  to the resource that lands after the comparison and before the reservation is **not** refused.
+  What the mechanism buys is the difference between minutes of human deliberation and
+  milliseconds of kernel work, which is worth having and is attribution rather than prevention.
+  `ctrlrun verify`'s G16 grades a change made before the comparison, because that is the half a
+  correct kernel refuses; the residual half is pinned by a test (`SPEC-v0.7.md` §6.7) and is not
+  graded, because there is nothing there for a correct kernel to do.
+- **The `NotExecuted` classifier speaks only for the requests it sent.** `ctrlrun.transport`
+  claims `NotExecuted` only where a connection it opened was handed no request byte and no send
+  went out anywhere in the executor run. It can only see **this library's own sends**. An
+  executor that sends part of the effect through `requests`, through httpx directly, or on a raw
+  socket, and then uses the classifier, can be handed a claim that is true of these connections
+  and false of the effect. So can one that raises a claim while a sibling thread's request is
+  still in flight. The claim holds where every request of the effect goes through the classifier
+  on the executor's context, and the module says so where a reader would look. The error is in
+  the same direction as the integration bug above, and for the same reason it is the most
+  dangerous one available.
+- **A classifier that cannot observe does not claim, and that costs true refusals.** Outside an
+  executor run nothing is claimed at all, and a send on a thread that did not copy the
+  executor's context marks *every* open run, so an unrelated concurrent run can lose a claim it
+  was entitled to. Both are deliberate: the cost is `AMBIGUOUS` where `FAILED` was true, never
+  the other way round.
+- **A reused `action_id` leaves late writes attributable to the wrong attempt.** Attempt numbers
+  never repeat since v0.7, on every backend, but a transition still names its holder by
+  `action_id` alone. A caller that rebuilds the same `Action` after a retry reuses the id, so a
+  write from a lapsed attempt can land on a newer one. `SPEC-v0.7.md` §12.3a states the
+  consequences, including the one where a late `FAILED` permits a renewal beside a dispatch that
+  is still running, and records why the fix is a schema change deferred rather than an
+  unavailable one.
+
 ## Disclosure
 
 Report vulnerabilities privately to contact@arpanghoshal.com. Do not open public issues for security reports. `SECURITY.md` has the process and what counts as a vulnerability.

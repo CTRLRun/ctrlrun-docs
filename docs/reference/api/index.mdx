@@ -74,6 +74,11 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.parse_conditions`](/docs/reference/api/parse_conditions) | function | Parse a `when:`-shaped mapping into conditions, keyed by the raw condition key. |
 | [`ctrlrun.protect`](/docs/reference/api/protect) | function | Bind a function to an action name: every call becomes a decided, recorded Action. |
 | [`ctrlrun.with_approval`](/docs/reference/api/with_approval) | function | Present a granted approval to the calls made inside the block (SPEC-v0.1 §4.3). |
+| [`ctrlrun.transport.Transport`](/docs/reference/api/transport-Transport) | class | What a transport observed, where no answer came back (SPEC-v0.2 §6.8, SPEC-v0.7 §2.1). |
+| [`ctrlrun.transport.effect_state`](/docs/reference/api/transport-effect_state) | function | The rule (SPEC-v0.7 §2.1): `FAILED` for `NEVER_CONNECTED`, `AMBIGUOUS` for everything else. |
+| [`ctrlrun.transport.urlopen`](/docs/reference/api/transport-urlopen) | function | `urllib.request.urlopen` for `http` and `https`, classified (SPEC-v0.7 §2.3). |
+| [`ctrlrun.transport.HTTPConnection`](/docs/reference/api/transport-HTTPConnection) | class | `http.client.HTTPConnection`, plus `NotExecuted` from `connect()` where it is proven. |
+| [`ctrlrun.transport.HTTPSConnection`](/docs/reference/api/transport-HTTPSConnection) | class | `http.client.HTTPSConnection`, counting above TLS. |
 | [`ctrlrun.postgres.PostgresStateStore`](/docs/reference/api/postgres-PostgresStateStore) | class | Approvals, effects and evidence in a Postgres schema (SPEC-v0.6 §4). |
 | [`ctrlrun.otel.OTelEventSink`](/docs/reference/api/otel-OTelEventSink) | class | Export every `Event` and `Receipt` as OpenTelemetry spans (SPEC-v0.2 §8). |
 | [`ctrlrun.jwt_identity.JWTIdentityProvider`](/docs/reference/api/jwt_identity-JWTIdentityProvider) | class | Verify a bearer JWT and map its verified claims onto a `Principal` (SPEC-v0.3 §3.4). |

@@ -4,8 +4,8 @@ description: "Run ctrlrun verify against your policy on every push with the CTRL
 ---
 
 `ctrlrun verify` runs the kernel's own failure scenarios against your policy, in a scratch
-store, with fake executors and no network, and reports what passed, what failed, and what it
-could not check. In CI that is one step, and the badge it writes means one thing: the declared
+store, with fake executors and nothing reached outside the runner. It reports what passed,
+what failed, and what it could not check. The badge it writes means one thing: the declared
 guarantees pass.
 
 **Prerequisites:** a repository with a `ctrlrun.yaml`, and GitHub Actions.
@@ -32,7 +32,7 @@ guarantees pass.
     ```
 
     ```text
-    CTRLRun verify — ctrlrun 0.6.1, catalogue ctrlrun.guarantees/v3
+    CTRLRun verify — ctrlrun 0.7.0, catalogue ctrlrun.guarantees/v3
     policy     /home/you/agent/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
     authority  none
     store      sqlite, scratch (created and destroyed for this run)
@@ -47,6 +47,7 @@ guarantees pass.
     G9   delegation cannot escalate       N/A   no authority section
     G10  unknown exception is ambiguous   PASS  k8s.delete_namespace
     G11  an altered receipt is detected   PASS  k8s.delete_namespace
+    G12  a byte written is ambiguous      PASS  k8s.delete_namespace
     G13  clock divergence is named        N/A   the store verify was given reads only the application's clock, so there is no second clock to diverge from; pass --store-url postgresql://… to grade this
     G14  token changes across a renewal   PASS  k8s.delete_namespace (attempt 1 and its renewal carry different tokens)
     G15  renewal past the ceiling refused N/A   no action verify can drive to allow or approve declares both `effect:` and `max_attempts`
@@ -60,18 +61,17 @@ guarantees pass.
                                                 two stores sharing a provider account must not produce the
                                                 same effect-key string for different effects, and nothing
                                                 here can check that)
-    11/11 declared guarantees pass. 4 not applicable: G8, G9, G13, G15.
+    12/12 declared guarantees pass. 4 not applicable: G8, G9, G13, G15.
     ```
 
     The first line is on **stderr**, from G7's own scenario: an action with no principal is
     refused and the refusal logs, which is the guarantee passing. Every row names
     `k8s.delete_namespace` because verify takes the **first action that fits, in alphabetical
-    order**, not because of anything about the refund.
+    order**.
 
     Four guarantees are not applicable: no `authority:` section (G8, G9), no second clock in a
     scratch store (G13), no `max_attempts` to refuse past (G15). Each is reported with its
-    reason, excluded from the denominator and listed separately. Never `15/15`, and no flag
-    folds them in.
+    reason and excluded from the denominator. Never `16/16`, and no flag folds them in.
   </Step>
 
   <Step title="Add the action">

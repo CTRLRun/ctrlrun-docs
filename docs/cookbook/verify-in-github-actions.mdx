@@ -4,8 +4,8 @@ description: "Run ctrlrun verify against your policy on every push with the CTRL
 ---
 
 Your policy lives in the repository with the agent. Every push should prove the guarantees it
-declares still hold against it, in a scratch store, with no network, and fail the build if one
-does not. That is one workflow step.
+declares still hold against it, in a scratch store, reaching nothing outside the runner, and
+fail the build if one does not. That is one workflow step.
 
 ## The policy
 
@@ -62,7 +62,7 @@ by tag where you want a ref nobody can move.
 The agent sees nothing; this is the operator's check. The build sees:
 
 ```text
-CTRLRun verify — ctrlrun 0.6.1, catalogue ctrlrun.guarantees/v3
+CTRLRun verify — ctrlrun 0.7.0, catalogue ctrlrun.guarantees/v3
 policy     /home/runner/work/agent/agent/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
 authority  none
 store      sqlite, scratch (created and destroyed for this run)
@@ -77,6 +77,7 @@ G8   expired authority refused        N/A   no authority section
 G9   delegation cannot escalate       N/A   no authority section
 G10  unknown exception is ambiguous   PASS  k8s.delete_namespace
 G11  an altered receipt is detected   PASS  k8s.delete_namespace
+G12  a byte written is ambiguous      PASS  k8s.delete_namespace
 G13  clock divergence is named        N/A   the store verify was given reads only the application's clock, so there is no second clock to diverge from; pass --store-url postgresql://… to grade this
 G14  token changes across a renewal   PASS  k8s.delete_namespace (attempt 1 and its renewal carry different tokens)
 G15  renewal past the ceiling refused N/A   no action verify can drive to allow or approve declares both `effect:` and `max_attempts`
@@ -90,7 +91,7 @@ G16  a moved fingerprint is refused   PASS  k8s.delete_namespace
                                             two stores sharing a provider account must not produce the
                                             same effect-key string for different effects, and nothing
                                             here can check that)
-11/11 declared guarantees pass. 4 not applicable: G8, G9, G13, G15.
+12/12 declared guarantees pass. 4 not applicable: G8, G9, G13, G15.
 ```
 
 The first line is on stderr, from G7's own scenario driving an action with no principal — the

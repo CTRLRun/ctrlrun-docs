@@ -14,7 +14,7 @@ what could not be tested at all.
 
 ```console
 $ ctrlrun verify
-CTRLRun verify — ctrlrun 0.6.1, catalogue ctrlrun.guarantees/v3
+CTRLRun verify — ctrlrun 0.7.0, catalogue ctrlrun.guarantees/v3
 policy     examples/authority/payments.yaml (ctrlrun.policy/v3, mode: enforce)
 authority  same document, 3 grants
 store      sqlite, scratch (created and destroyed for this run)
@@ -30,6 +30,7 @@ G8   expired authority refused        PASS  head-of-support
 G9   delegation cannot escalate       PASS  head-of-support (6 of 6 dimensions)
 G10  unknown exception is ambiguous   PASS  stripe.refund
 G11  an altered receipt is detected   PASS  stripe.refund
+G12  a byte written is ambiguous      PASS  stripe.refund
 G13  clock divergence is named        N/A   the store verify was given reads only the application's clock, so there is no second clock to diverge from; pass --store-url postgresql://… to grade this
 G14  token changes across a renewal   PASS  stripe.refund (attempt 1 and its renewal carry different tokens)
 G15  renewal past the ceiling refused N/A   no action verify can drive to allow or approve declares both `effect:` and `max_attempts`
@@ -44,12 +45,15 @@ G16  a moved fingerprint is refused   PASS  stripe.refund
                                             same effect-key string for different effects, and nothing
                                             here can check that)
 
-13/13 declared guarantees pass. 2 not applicable: G13, G15.
+14/14 declared guarantees pass. 2 not applicable: G13, G15.
 ```
 
 It reads the policy document — `$CTRLRUN_CONFIG`, else `./ctrlrun.yaml` — and the authority
-document beside it. It executes nothing real: every executor is an in-process fake, no scenario
-opens a socket, and it writes nothing outside a temporary directory.
+document beside it. It executes nothing real: every executor is an in-process fake and it writes
+nothing outside a temporary directory. It opens **no connection except to the store
+`--store-url` names and to loopback listeners it bound itself**, which is G12's peer and nothing
+else. That sentence read *no scenario opens a socket* until v0.7, and it was already untrue
+under a `--store-url postgresql://remote-host/…`.
 
 ---
 
@@ -106,13 +110,22 @@ G4   one winner under concurrency     N/A   no action declares an `effect:` temp
 G5   ambiguous blocks a blind retry   N/A   no action declares an `effect:` template
 G8   expired authority refused        N/A   no authority section
 G9   delegation cannot escalate       N/A   no authority section
+G13  clock divergence is named        N/A   the store verify was given reads only the
+                                            application's clock, so there is no second clock to
+                                            diverge from; pass --store-url postgresql://… to
+                                            grade this
+G14  token changes across a renewal   N/A   no action declares an `effect:` template
+G15  renewal past the ceiling refused N/A   no action verify can drive to allow or approve
+                                            declares both `effect:` and `max_attempts`
 
-6/6 declared guarantees pass. 5 not applicable: G3, G4, G5, G8, G9.
+8/8 declared guarantees pass. 8 not applicable: G3, G4, G5, G8, G9, G13, G14, G15.
 ```
 
-That run is `6/6`, never `11/11`. There is no flag that folds an N/A into the count, and there
+That run is `8/8`, never `16/16`. There is no flag that folds an N/A into the count, and there
 will not be one: a number that counts guarantees nobody exercised is a number that means
-nothing.
+nothing. Point the same document at Postgres and G13 becomes a graded `PASS`, so the run reads
+`9/9` with seven not applicable: the denominator moves with what the setup can actually
+exercise, which is the whole idea.
 
 An N/A is always a statement about your **document**, derived from it. A scenario verify could
 not build for any other reason is an internal error and exits 3 — never an N/A, and never a
@@ -122,9 +135,9 @@ failure attributed to your kernel.
 
 ## The guarantees
 
-Eleven, in `ctrlrun.guarantees/v2`. Every one is the deployed form of an acceptance test that
+Sixteen, in `ctrlrun.guarantees/v3`. Every one is the deployed form of an acceptance test that
 already exists and passes in this repository; verify adds no guarantee of its own and weakens
-none.
+none. G12 to G16 arrived with v0.7, one per item of that milestone.
 
 | id | invariant | N/A when |
 |---|---|---|
@@ -139,6 +152,29 @@ none.
 | **G9** | A delegated grant is valid only if it is provably a subset of its parent on every dimension — and a child that **drops** a dimension its parent constrains is rejected rather than treated as unconstrained. | No `authority:` section, or no grant is delegable. |
 | **G10** | `NotExecuted` is the only outcome that means "the remote did nothing". Everything else, timeouts included, is `AMBIGUOUS`. | Every action in the policy is denied. |
 | **G11** | Each receipt carries the hash of the one before it, so altering one is detected and **named** — `content_altered`, `hash_missing`, `link_broken`, `missing`, `head_mismatch`, `unchained`. Its positive control is that the unaltered chain verifies. | The policy declares no actions at all. A denied action still writes a receipt, so a policy that denies everything is still checked. |
+| **G12** | `ctrlrun.transport` claims `NotExecuted` only for a connection it opened that was handed no request byte, in an executor run that had offered none. After one byte every failure is `AMBIGUOUS`: a reset, a read timeout, a reused connection, a second connection in the same run. | No action verify can drive to `allow` or `approve` can be selected: every action is denied, or none that reaches a decision is covered by a grant. **Never `N/A` because of the environment** — a sandbox that refuses a loopback bind is exit 3, an internal error, because that is a fact about the machine and not about your document. |
+| **G13** | A store with a clock of its own that disagrees with this host's by more than the threshold, beyond the measurement's own bound, is reported by `CLOCK_SKEW_DETECTED`, and a lease is decided exactly as it would be without the report. | The store verify was given reads only the application's clock, so there is no second clock to diverge from. Pass `--store-url postgresql://…` to grade it. |
+| **G14** | The provider idempotency token an executor reads is stable within an attempt and **different after a renewal**, so a provider cannot answer the one retry the kernel permits with the failed attempt's cached result. | As G3, or the ceiling on the only selectable action forbids a renewal. |
+| **G15** | A renewal past the action's `max_attempts` is refused before the executor is called, on the attempt number the store assigned. | No action verify can drive to `allow` or `approve` declares both `effect:` and `max_attempts`, or every declared ceiling is above the bound verify can reach. |
+| **G16** | An approval whose precondition fingerprint has moved since it was granted is refused **before** the reservation, with `ApprovalMismatch` and a reason of its own, and the approval is left granted. | No action requires approval. |
+
+**G12 to G16 arrived with v0.7**, one per item: the transport classifier, clock skew, the
+idempotency token, the attempt ceiling and precondition fingerprints. Two of them need a word
+about what they do *not* grade.
+
+**G12 is the only guarantee that opens a socket**, and it opens one it bound itself. It needs a
+peer that can receive a byte and then die, so verify binds loopback listeners at ephemeral ports
+and drives `ctrlrun.transport.HTTPConnection` straight at them, never `urlopen`, which would
+honour a `HTTP_PROXY` your host happens to set. Four observable rows and one control: a peer that
+reads a byte and resets, a read that times out after the request was delivered, a reused
+connection whose next connect fails, and a second connection in the same run. The control is a
+port verify bound and never listened on, which is refused on Linux and times out on macOS, and
+there `NotExecuted` **is** the right answer. The guarantee is the asymmetry, so both halves are
+asserted or neither is.
+
+**G16 grades a change before the comparison, and there is nothing else to grade.** A precondition
+that moves *after* the recheck and before the reservation is not refused by a correct kernel, so
+verify does not report it as a failure. That residual is stated wherever the feature is described.
 
 G9 reports **which dimensions it exercised**. A parent that constrains one dimension does not
 score as though it had covered six, because that would be the N/A rule violated one level down.
