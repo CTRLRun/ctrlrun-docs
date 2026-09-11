@@ -38,6 +38,7 @@ that page's frontmatter, never here.
 | `docs` | ctrlrun · AI agent safety layer | The last check before an AI agent does something it can't undo. |
 | `docs/why` | why do AI agents double execute · AI agent consequential actions | Everyone is rushing to ship AI agents without thinking about consequences. |
 | `docs/not-only-agents` | celery task retried twice · webhook delivered twice duplicate · retry safe background job python | Every page on this site says agent, and the failure underneath them does not require one. |
+| `docs/agents-you-cant-modify` | control AI agents you can't modify · whatsapp slack teams bot approval · claude code cursor codex mcp approval · chatgpt connector approval | CTRLRun works with agents you can't modify as well as the ones you can, because it checks the action, not the agent. |
 | `docs/get-started/install` | install ctrlrun | `pip install ctrlrun` installs the kernel and exactly two dependencies, `pyyaml` and `click`. |
 | `docs/get-started/quickstart` | protect an AI agent action python · ctrlrun quickstart | In sixty seconds you will write a policy, protect a refund function, and watch a mutated approval be refused. |
 | `docs/get-started/three-ways-in` | do I need a ctrlrun adapter · ctrlrun langgraph | There are three ways to put CTRLRun in front of a consequential action, and only one of them is an adapter. |
@@ -147,7 +148,7 @@ not needed; the assistants that do read `llms.txt` get Mintlify's.
 
 | Page | Search intent |
 |---|---|
-| `index` | Execution safety for AI agents · control AI agents running in your platform |
+| `index` | Execution safety for AI agents · control AI agents running in your platform · works with agents you can and can't modify · any AI agent whatsapp slack claude code cursor codex chatgpt |
 | `execution-boundary` | what stops an agent action · AI agent execution boundary · how an agent execution boundary is adopted |
 | `risk-check` | AI agent execution risk assessment |
 | `protect-my-agent` | AI agent execution boundary, connection coverage and ctrlrun Pro/Enterprise governance for businesses |

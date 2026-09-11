@@ -199,6 +199,53 @@ among and contradicted by.
 
 Standards: none new.
 
+## Agents you cannot modify: no version line (page ✅ shipped, one run owed)
+
+Added 2026-09-11, recorded here rather than left implicit, because the question keeps arriving
+in the form "does this work with a WhatsApp agent, a Slack agent, a hosted OpenAI or Claude
+agent I only configure". The answer is a property of what already ships, not a feature to build,
+and a roadmap that never states it leaves every reader to derive it from `v0.2 §6.3`.
+
+**The claim, worded so it can be tested.** CTRLRun controls any agent whose consequential
+actions pass through a tool or an API the operator runs. The agent's code, language, framework
+and vendor do not enter into it: the gateway checks a `tools/call` on the wire (v0.2), and
+`@protect` checks a call at the endpoint that acts (v0.1). An agent nobody can program, a
+no-code builder, a vendor's bot on WhatsApp or Slack, a hosted assistant with a custom
+connector, all reach their tools the same way, and that is where the check is. It is the same
+sentence the v0.2 adoption story already makes, *existing MCP server + one CTRLRun gateway =
+action safety*, with the agent named as the thing that does not matter.
+
+**Where it stops, stated so nobody sells past it.** An action that never leaves the platform,
+Meta AI sending a WhatsApp message, Slack's own assistant posting to a channel, passes nothing
+the operator runs and is not interceptable by anything, this project included. The way to a
+yes there is deployment, not code: remove the platform's built-in capability from the agent,
+give the same capability back as a custom tool pointing at the gateway or at a protected
+endpoint, and the built-in call has become a gated one. Whether a given platform allows both
+halves is a fact about that platform, and the per-platform answers are connector work on the
+commercial track below, not kernel work here. Audit logs and event feeds a platform emits after
+the fact are observation and are never described as control; the four rules are about what may
+happen, and none of them can be kept for an action that has already happened.
+
+**What this track owes, all of it documentation and proof, none of it a guarantee.** A page
+beside `not-only-agents` stating the three cases (the agent connects to a tool server you
+choose; the agent calls an API you own; the agent uses its platform's built-ins) and the
+remove-and-replace pattern: **shipped 2026-09-11** as
+[`docs/agents-you-cant-modify`](/docs/agents-you-cant-modify), linked from the home page and
+the enterprise deck covers under the line *Works with agents you can and can't modify*, and saying on
+the page that the run below has not happened. And one end-to-end run, **still owed**, of a hosted MCP client through a public
+gateway (`--allow-remote`, TLS in front, `--identity-jwt` for the principal) to a tool server
+that requires OAuth, because `v0.2 §6.3` relays `Authorization` and the `401` challenge
+untouched while the tool server's protected-resource metadata names the tool server's URL and
+the client connected to the gateway's, and nobody has yet watched a strict client resolve that.
+If the run passes it is a cookbook recipe; if it does not, a gateway that publishes its own
+resource metadata is a kernel change, and it arrives as its own specification amendment on its
+own version line after v1.0, reviewed on its own merits, as the *Beyond v1.0* rule requires.
+
+It gates no release and none gates it. It adds no public name, no flag and no guarantee ID.
+
+Standards: none new. RFC 9728 is consumed by the tool server, not by the gateway, and this
+track does not change that unless the run above says it must.
+
 ## v0.7 — Execution boundary
 
 Every guarantee shipped so far is a guarantee about what happens *inside* CTRLRun. But the kernel does not decide whether the remote side acted — an executor does, by raising `NotExecuted` or not. It does not own the clock its leases are measured against, once the store is on another host. It does not know whether the world still looks the way it did when a human said yes. v0.7 asks what the kernel owes at each of those edges.
@@ -308,7 +355,7 @@ Standards: an EU controls pack, phrased as "technical controls supporting a comp
 
 ## Pro and Enterprise: the commercial layer, its own line
 
-**What the marketing surfaces promise, recorded here so the kernel and the sales pages stop disagreeing.** `ctrlrun.dev`, `/protect-my-agent` and `adopt.ctrlrun.dev` sell two things around the boundary, both closed source: **ctrlrun Pro**, a managed product for centralized governance, and **ctrlrun Enterprise**, Pro plus a scoped engineering engagement. None of it ships in the `ctrlrun` wheel, none of it gates a kernel release, and none of it sits on a kernel version line. The wording every surface uses is "built on ctrlrun's open-source foundation" — never that the managed layer is itself open source.
+**What the marketing surfaces promise, recorded here so the kernel and the sales pages stop disagreeing.** `ctrlrun.dev`, `/protect-my-agent` and `enterprise.ctrlrun.dev` sell two things around the boundary, both closed source: **ctrlrun Pro**, a managed product for centralized governance, and **ctrlrun Enterprise**, Pro plus a scoped engineering engagement. None of it ships in the `ctrlrun` wheel, none of it gates a kernel release, and none of it sits on a kernel version line. The wording every surface uses is "built on ctrlrun's open-source foundation" — never that the managed layer is itself open source.
 
 | Promised on a marketing surface | Where | Status against shipped code |
 |---|---|---|

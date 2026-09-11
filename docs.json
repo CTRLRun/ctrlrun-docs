@@ -58,7 +58,8 @@
             "pages": [
               "docs",
               "docs/why",
-              "docs/not-only-agents"
+              "docs/not-only-agents",
+              "docs/agents-you-cant-modify"
             ]
           },
           {
@@ -374,6 +375,11 @@
     {
       "source": "/not-only-agents",
       "destination": "/docs/not-only-agents",
+      "permanent": true
+    },
+    {
+      "source": "/agents-you-cant-modify",
+      "destination": "/docs/agents-you-cant-modify",
       "permanent": true
     },
     {
