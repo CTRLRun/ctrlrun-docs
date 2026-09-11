@@ -31,8 +31,20 @@ G9   delegation cannot escalate       PASS  head-of-support (6 of 6 dimensions)
 G10  unknown exception is ambiguous   PASS  stripe.refund
 G11  an altered receipt is detected   PASS  stripe.refund
 G13  clock divergence is named        N/A   the store verify was given reads only the application's clock, so there is no second clock to diverge from; pass --store-url postgresql://… to grade this
+G14  token changes across a renewal   PASS  stripe.refund (attempt 1 and its renewal carry different tokens)
+G15  renewal past the ceiling refused N/A   no action verify can drive to allow or approve declares both `effect:` and `max_attempts`
+G16  a moved fingerprint is refused   PASS  stripe.refund
+                                            (verify supplies its own precondition provider; whether
+                                            your @protect declares one is in your code, which verify
+                                            does not read. The gateway and the ACS hook cannot name a
+                                            provider at all, and refuse an approval that carries a
+                                            fingerprint)
+                                            (a token is unique only as far as your effect keys are:
+                                            two stores sharing a provider account must not produce the
+                                            same effect-key string for different effects, and nothing
+                                            here can check that)
 
-11/11 declared guarantees pass. 1 not applicable: G13.
+13/13 declared guarantees pass. 2 not applicable: G13, G15.
 ```
 
 It reads the policy document — `$CTRLRUN_CONFIG`, else `./ctrlrun.yaml` — and the authority
