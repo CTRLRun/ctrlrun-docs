@@ -391,6 +391,29 @@ def test_a_github_blob_url_into_either_repository_is_an_internal_link(tmp_path):
     ]
 
 
+def test_a_link_into_the_badges_branch_is_external(tmp_path):
+    """The `badges` branch is an orphan CI writes and no checkout holds, so a link into it is
+    somebody else's to keep however internal the URL looks. `clones-history.json` is the
+    receipt the README's clones badge links to: resolved against a worktree that holds `main`
+    it is a working link reported as broken, and the rest of the branch must stay skipped with
+    it. A path missing on a ref this checkout *does* hold is still broken, which is the half
+    that fails if the skip is widened to every absolute github.com URL.
+    """
+    page = tmp_path / "a.md"
+    page.write_text(
+        "[clones](https://github.com/CTRLRun/ctrlrun/blob/badges/clones-history.json)\n"
+        "[tests](https://github.com/CTRLRun/ctrlrun/blob/badges/tests-badge.json)\n"
+        "[bad](https://github.com/CTRLRun/ctrlrun/blob/main/clones-history.json)\n",
+        encoding="utf-8",
+    )
+
+    broken = links.check_text(page.read_text(), page)
+
+    assert [b.target for b in broken] == [
+        "https://github.com/CTRLRun/ctrlrun/blob/main/clones-history.json"
+    ]
+
+
 def test_a_root_relative_docs_path_resolves_under_docs(tmp_path, monkeypatch):
     monkeypatch.setattr(links, "REPO_ROOT", tmp_path)
     (tmp_path / "docs" / "concepts").mkdir(parents=True)

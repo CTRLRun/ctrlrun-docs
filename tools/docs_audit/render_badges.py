@@ -17,13 +17,30 @@ push to `main`:
 - `tests-badge.json`, written by `--write-count` **after** `scripts/check.sh` has passed, so no
   number is published for a run whose suite was red.
 
-Two are static, and a static badge is a self-assertion unless something enforces it. These two
-are enforced: `scripts/check.sh` runs `ruff format --check`, `ruff check` and `mypy --strict
-src`, CI calls that file rather than naming the tools itself, and `test_ci_runs_the_check_script`
-fails if it stops. The `docs` badge is a link and claims nothing.
+One badge is static: `docs`, which is a link and claims nothing. The row carried `ruff` and
+`mypy --strict` as well until 2026-09-11. Both were enforced rather than asserted, and both are
+still enforced now that the badges are gone: `scripts/check.sh` runs `ruff format --check`,
+`ruff check` and `mypy --strict src`, CI calls that file rather than naming the tools itself,
+and `test_ci_runs_the_check_script` fails if it stops. They were removed because how a library
+is written is not what a stranger decides in the first five seconds, and because a row that
+wraps to three lines on a phone is a row nobody reads to the end. `pypi/pyversions` went with
+them: it was metadata rather than a claim, and the PyPI page the badge beside it links to
+carries it anyway.
 
-Downloads and stars are deliberately absent. `STYLE.md` forbids social proof that does not
-exist, and a count published four days after the first release measures mirrors.
+Stars are deliberately absent: `STYLE.md` forbids social proof that does not exist, and a star
+count is a popularity number with no reading behind it. The two adoption counts that are here
+each name what they measure and link to the data rather than to a page that repeats them:
+
+- `downloads` is PyPI's own monthly figure via shields.io, which reads pypistats. It counts
+  installs by mirrors and by CI as well as by people, so it is an upper bound on adoption and
+  is labelled `downloads/month` rather than users.
+- `clones` is this repository's own, published to the `badges` branch by `.github/workflows/
+  traffic.yml`. GitHub's traffic API keeps fourteen days and needs push access, so the workflow
+  reads it daily with a token, merges each day into `clones-history.json` on that branch, and
+  the badge links to that file: the number is a sum of days anybody can re-add. It counts every
+  `git clone`, and `actions/checkout` is one, so this repository's own CI is in the figure
+  alongside everybody else's; a reader who wants people rather than clones has the per-day
+  file and the workflow run history to subtract with.
 
 `--write-count` is what CI calls, and what it counts is what `pytest` **collects**. That is not
 the same as what passed: the suite skips a handful of tests on a machine without a framework
@@ -61,19 +78,26 @@ class Badge:
     href: str
 
 
-#: The row, in reading order: what it is, where it is documented, that it builds and is
-#: analysed, that its own suite is this big, that its guarantees were checked, how its supply
-#: chain scores, how it is written, and the licence.
+#: The row, in reading order: how often it is cloned, what it is, how often it is installed,
+#: where it is documented, that it builds, is analysed and is fuzzed, that its own suite is this
+#: big, that its guarantees were checked, how its supply chain scores, and the licence. Every entry is a
+#: claim a reader can follow to the thing that measured it; an entry that is not stops being a
+#: badge and becomes decoration, which is the test the three removed ones failed.
 BADGES: tuple[Badge, ...] = (
+    Badge(
+        "Clones",
+        f"https://img.shields.io/endpoint?url={BADGES_BRANCH}/clones-badge.json",
+        "https://github.com/CTRLRun/ctrlrun/blob/badges/clones-history.json",
+    ),
     Badge(
         "PyPI",
         "https://img.shields.io/pypi/v/ctrlrun?color=B8730A&label=pypi",
         "https://pypi.org/project/ctrlrun/",
     ),
     Badge(
-        "Python versions",
-        "https://img.shields.io/pypi/pyversions/ctrlrun?color=B8730A",
-        "https://pypi.org/project/ctrlrun/",
+        "Downloads",
+        "https://img.shields.io/pypi/dm/ctrlrun?color=B8730A&label=downloads",
+        "https://pypistats.org/packages/ctrlrun",
     ),
     Badge(
         "Docs",
@@ -91,6 +115,11 @@ BADGES: tuple[Badge, ...] = (
         "https://github.com/CTRLRun/ctrlrun/actions/workflows/codeql.yml",
     ),
     Badge(
+        "Fuzz",
+        "https://github.com/CTRLRun/ctrlrun/actions/workflows/fuzz.yml/badge.svg?branch=main",
+        "https://github.com/CTRLRun/ctrlrun/actions/workflows/fuzz.yml",
+    ),
+    Badge(
         "Tests",
         f"https://img.shields.io/endpoint?url={BADGES_BRANCH}/tests-badge.json",
         "https://ctrlrun.dev/docs/how-this-is-built",
@@ -104,16 +133,6 @@ BADGES: tuple[Badge, ...] = (
         "OpenSSF Scorecard",
         "https://api.scorecard.dev/projects/github.com/CTRLRun/ctrlrun/badge",
         "https://scorecard.dev/viewer/?uri=github.com/CTRLRun/ctrlrun",
-    ),
-    Badge(
-        "Ruff",
-        "https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json",
-        "https://github.com/astral-sh/ruff",
-    ),
-    Badge(
-        "Checked with mypy --strict",
-        "https://img.shields.io/badge/mypy-strict-B8730A",
-        "https://github.com/CTRLRun/ctrlrun/blob/main/scripts/check.sh",
     ),
     Badge(
         "License",
