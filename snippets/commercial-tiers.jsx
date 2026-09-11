@@ -1,4 +1,5 @@
-// The two commercial tiers, each with the form its button asks for. The comparison table
+// The three tiers. Open Source is a link to the quickstart and asks for nothing; the two
+// commercial tiers each carry the form their button asks for. The comparison table
 // that used to sit under them is gone; the one row a reader acted on -- who does the work --
 // is now a line on each card. Pro takes a place on the
 // waiting list, so it asks for as little as a place requires; Enterprise is the start of a
@@ -18,11 +19,22 @@ export const CommercialTiers = () => {
 
   const TIERS = [
     {
+      intent: 'open-source',
+      name: 'ctrlrun Open Source',
+      status: 'FREE · OPEN SOURCE',
+      promise: 'Free. Run it yourself.',
+      body: 'The boundary itself, at no cost. No account, no card, no call with us. Every rule that decides is code you can read, and every action leaves a receipt you keep. Free to use and free to change, under the Apache-2.0 licence.',
+      who: 'Your team, on your machines.',
+      cta: 'Install it',
+      href: '/docs/get-started/quickstart',
+      event: 'open_source_install_clicked'
+    },
+    {
       intent: 'pro-waitlist',
       name: 'ctrlrun Pro',
       status: 'IN DEVELOPMENT',
-      promise: 'Centralized governance for your AI agents.',
-      body: 'Connect your agents and workflows, manage policies, investigate activity, and understand operational risk from one dashboard. Built on ctrlrun’s open-source foundation.',
+      promise: 'Integrate, analyze, protect. One dashboard.',
+      body: 'Connect your agents and workflows and see what each connection covers. Search every action, decision and outcome across your agents. Manage policies and approvals from one place, test a rule in observe mode, then turn enforcement on. Built on the open-source foundation, run by us.',
       who: 'Your team, on our dashboard.',
       cta: 'Request early access',
       field: 'agents',
@@ -38,8 +50,8 @@ export const CommercialTiers = () => {
       intent: 'enterprise-contact',
       name: 'ctrlrun Enterprise',
       status: 'ENGAGEMENTS OPEN',
-      promise: 'AI governance tailored to your deployment.',
-      body: 'Everything in Pro, with ctrlrun engineers to design, integrate, and maintain the additional controls your business needs. Custom policies, integrations, deployment options, and insights, scoped to your requirements.',
+      promise: 'The same product, shaped to your company.',
+      body: 'Everything in Pro, with CTRLRun engineers who design, integrate and maintain the controls your business needs: custom policies and approval chains, connectors to your internal systems, your deployment options, the reports you ask for. Scoped to your requirements, delivered with your team.',
       who: 'Our engineers, with your team.',
       cta: 'Discuss your deployment',
       field: 'message',
@@ -101,11 +113,14 @@ export const CommercialTiers = () => {
           <p className="cr-tier-promise">{tier.promise}</p>
           <p className="cr-tier-body">{tier.body}</p>
           <p className="cr-tier-who"><span>Who does the work</span> {tier.who}</p>
+          {tier.href && (
+            <a className="cr-button" href={tier.href} data-cr-event={tier.event}>{tier.cta} <span aria-hidden="true">→</span></a>
+          )}
           {sentIntent === tier.intent && <p className="cr-tier-done" role="status">{tier.done}</p>}
-          {sentIntent !== tier.intent && open !== tier.intent && (
+          {!tier.href && sentIntent !== tier.intent && open !== tier.intent && (
             <button type="button" className="cr-button" onClick={() => openTier(tier)}>{tier.cta} <span aria-hidden="true">→</span></button>
           )}
-          {sentIntent !== tier.intent && open === tier.intent && (
+          {!tier.href && sentIntent !== tier.intent && open === tier.intent && (
             <form className="cr-tier-form" onSubmit={event => send(event, tier)}>
               <fieldset disabled={sending}>
                 <label className="cr-field">Work email<input type="email" autoComplete="email" required maxLength={254} value={email} onChange={event => { setEmail(event.target.value); setError(''); }} /></label>
