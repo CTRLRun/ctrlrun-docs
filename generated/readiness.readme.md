@@ -1,7 +1,7 @@
 <!-- generated from the suite, pyproject and the soak (readme) — run the generator -->
 - **Version 0.7.0**, on [PyPI](https://pypi.org/project/ctrlrun/), Python 3.11 and later.
-- **5,167 tests**, every version specified before it was written and every requirement mutation-tested.
-- **16 guarantees you can check in your own setup**, with `ctrlrun verify` against your policy, on your store's backend, in a scratch store it creates.
+- **5,528 tests**, every version specified before it was written and every requirement mutation-tested.
+- **19 guarantees you can check in your own setup**, with `ctrlrun verify` against your policy, on your store's backend, in a scratch store it creates.
 - **One host: a file.** SQLite, no server, no ops. **Many hosts: Postgres**, the same guarantees, graded by the same suite.
 - **Soaked for 20m 0s on postgres**: 889,735 actions, 0 unattributed ambiguous outcomes, positive control fired. Nothing here establishes what only accumulates over days. [What it does not establish](https://ctrlrun.dev/docs/production/soak).
 - **Each receipt carries the hash of the one before it**, so an alteration is detected and named.

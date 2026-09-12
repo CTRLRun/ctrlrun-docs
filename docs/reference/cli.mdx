@@ -23,6 +23,7 @@ Options:
 
 Commands:
   approve       Grant a pending approval request.
+  break-glass   Open a break-glass grant beneath a declared envelope.
   delegate      Create a delegated grant beneath an existing one.
   demo          Run the five scenarios, in process, with no network.
   deny          Refuse a pending approval request.
@@ -232,10 +233,41 @@ Options:
   --help            Show this message and exit.
 ```
 
+## ctrlrun break-glass
+
+```text
+Usage: ctrlrun break-glass [OPTIONS]
+
+  Open a break-glass grant beneath a declared envelope.
+
+  An incident needs authority nobody was granted in advance, and the wrong
+  answer is a flag: a flag leaves no record, expires never and cannot be
+  revoked. What this creates is an ordinary delegation, bounded by the envelope
+  on every dimension, expiring within its 'max_ttl', revocable, attenuable, and
+  named on the receipt of every action taken under it.
+
+  **There is no --as.** Whoever opens one is the principal the deployment's
+  approver identity resolves, and a deployment that names none cannot open one
+  at all: an assertion typed at a shell is exactly what break-glass must not
+  accept (SPEC-v0.8 §5.3.1).
+
+Options:
+  --envelope TEXT   The break-glass envelope declared under 'authority:
+                    break_glass:'.  [required]
+  --file FILE       A one-grant YAML document, as --file takes for delegate.
+                    'expires_at' is required.  [required]
+  --reason TEXT     Free text recorded on the DELEGATION_CREATED event.
+  --json            Emit one JSON object instead.
+  --store-url TEXT  The store to open. Default: $CTRLRUN_STORE_URL, else the
+                    SQLite database beside the policy (.ctrlrun/state.db, or
+                    wherever $CTRLRUN_STATE points).
+  --help            Show this message and exit.
+```
+
 ## ctrlrun revoke
 
 ```text
-Usage: ctrlrun revoke [OPTIONS] DELEGATION_ID
+Usage: ctrlrun revoke [OPTIONS] [DELEGATION_ID]
 
   Revoke a delegation, and with it every delegation beneath it.
 
@@ -243,12 +275,26 @@ Usage: ctrlrun revoke [OPTIONS] DELEGATION_ID
   the operation whose safety matters is the one taken in a hurry (SPEC-v0.3
   §5.7). Revoking an already-revoked delegation is idempotent and exits 0.
 
+  `--created-by` and `--under` are selectors over rows that already exist
+  (SPEC-v0.8 §7). Each match is revoked **exactly as one id is**: one
+  revocation, one record, one event, in turn, so a run that stops halfway leaves
+  the rows it reached revoked and the rest untouched, and a second run finishes.
+  A selector that matches nothing exits non-zero (§7.5), because during an
+  incident a mistyped name that exits 0 reads as "done".
+
+  `--by` is unchanged and means what it has always meant: who performed the
+  revocation.
+
 Options:
-  --by TEXT         Who revoked it.  [default: cli:local]
-  --store-url TEXT  The store to open. Default: $CTRLRUN_STORE_URL, else the
-                    SQLite database beside the policy (.ctrlrun/state.db, or
-                    wherever $CTRLRUN_STATE points).
-  --help            Show this message and exit.
+  --by TEXT          Who revoked it.  [default: cli:local]
+  --created-by TEXT  Revoke every delegation this principal created: AGENT or
+                     AGENT/USER.
+  --under TEXT       Revoke every delegation beneath this grant or delegation
+                     id, at any depth.
+  --store-url TEXT   The store to open. Default: $CTRLRUN_STORE_URL, else the
+                     SQLite database beside the policy (.ctrlrun/state.db, or
+                     wherever $CTRLRUN_STATE points).
+  --help             Show this message and exit.
 ```
 
 ## ctrlrun mcp-operator
@@ -302,6 +348,10 @@ Options:
                                   [default: 30.0]
   --identity-jwt-http-timeout FLOAT
                                   [default: 5.0]
+  --approver-roles-claim TEXT     Which verified claim carries this issuer's
+                                  roles, for the approver entitlement of
+                                  SPEC-v0.8 §3. Without it no role can be read,
+                                  so any cited control naming one refuses.
   --store-url TEXT                The store to open. Default:
                                   $CTRLRUN_STORE_URL, else the SQLite database
                                   beside the policy (.ctrlrun/state.db, or
