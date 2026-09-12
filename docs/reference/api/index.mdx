@@ -21,6 +21,7 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.ApprovalRequest`](/docs/reference/api/ApprovalRequest) | class | A pending question for a human: may this exact action run? (SPEC-v0.1 §4.1) |
 | [`ctrlrun.ApprovalRequired`](/docs/reference/api/ApprovalRequired) | class | The action needs a human. `request_id` is what `ctrlrun approve` takes (SPEC §4.3). |
 | [`ctrlrun.ApprovalTimeout`](/docs/reference/api/ApprovalTimeout) | class | Nobody answered the approval request in time (SPEC-v0.1 §4.3). |
+| [`ctrlrun.ApproverIdentity`](/docs/reference/api/ApproverIdentity) | class | How a deployment verifies who answered an approval (SPEC-v0.8 §2.3). |
 | [`ctrlrun.Authority`](/docs/reference/api/Authority) | class | The `authority:` section, loaded and evaluable (SPEC-v0.3 §4). |
 | [`ctrlrun.AuthorityDenied`](/docs/reference/api/AuthorityDenied) | class | The principal holds no grant that covers this action (SPEC-v0.3 §4.3). |
 | [`ctrlrun.AuthorityEscalation`](/docs/reference/api/AuthorityEscalation) | class | A delegation that may not exist: it is not contained in its parent (SPEC-v0.3 §5.3). |
@@ -63,6 +64,7 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.StaticIdentityProvider`](/docs/reference/api/StaticIdentityProvider) | class | A fixed principal, for development, tests and single-tenant demonstrations (§3.3). |
 | [`ctrlrun.Subject`](/docs/reference/api/Subject) | class | Who a grant is addressed to: an agent pattern, a user pattern, or both (§4.2). |
 | [`ctrlrun.Suspended`](/docs/reference/api/Suspended) | class | Raised by an executor: the remote asked for something before it will finish. |
+| [`ctrlrun.VerifiedApprover`](/docs/reference/api/VerifiedApprover) | class | Who answered, as the surface that took the answer verified them (SPEC-v0.8 §2.5). |
 | [`ctrlrun.WebhookApprovalProvider`](/docs/reference/api/WebhookApprovalProvider) | class | Notify a human system on `APPROVAL_REQUESTED`, and let it answer (SPEC-v0.2 §7). |
 | [`ctrlrun.action_hash`](/docs/reference/api/action_hash) | function | Return the action hash used to bind approvals to an exact action (SPEC-v0.1 §2.3). |
 | [`ctrlrun.banner`](/docs/reference/api/banner) | function | Log SPEC-v0.3 §6.5's observe banner, once per `Control`. An adapter MUST call it (§3.6). |

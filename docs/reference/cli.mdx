@@ -31,6 +31,7 @@ Commands:
   init          Write a starter ctrlrun.yaml and create .ctrlrun/.
   inspect       Show one action's whole history: proposal, decision,...
   mcp-operator  Answer approvals from an MCP client, over loopback...
+  policy        Propose a policy change, or replay one against what already...
   receipts      Show the receipts this store holds.
   resolve       Say what actually happened to an effect with an unknown...
   revoke        Revoke a delegation, and with it every delegation beneath it.
@@ -232,10 +233,35 @@ Options:
   --help            Show this message and exit.
 ```
 
+## ctrlrun policy
+
+```text
+Usage: ctrlrun policy [OPTIONS] COMMAND [ARGS]...
+
+  Propose a policy change, or replay one against what already happened.
+
+  A policy is the one file that decides every other decision, and until v0.8 it
+  was changed by editing it. v0.6 made the change evidenced: every receipt
+  records the hash of the policy that decided it. v0.8 makes it approved: **a
+  policy nobody approved decides nothing**, in a deployment that asks for that
+  with `Control(require_approved_policy=True)`.
+
+  There is no `ctrlrun policy approve`. A proposal is an ordinary approval
+  request, so the command that answers it is `ctrlrun approve`, and a second one
+  would be a second approval path (SPEC-v0.8 §8.3).
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  propose  Propose a policy change under the policy currently in force.
+  replay   Report which recorded decisions would change under a proposed...
+```
+
 ## ctrlrun revoke
 
 ```text
-Usage: ctrlrun revoke [OPTIONS] DELEGATION_ID
+Usage: ctrlrun revoke [OPTIONS] [DELEGATION_ID]
 
   Revoke a delegation, and with it every delegation beneath it.
 
@@ -243,12 +269,26 @@ Usage: ctrlrun revoke [OPTIONS] DELEGATION_ID
   the operation whose safety matters is the one taken in a hurry (SPEC-v0.3
   §5.7). Revoking an already-revoked delegation is idempotent and exits 0.
 
+  `--created-by` and `--under` are selectors over rows that already exist
+  (SPEC-v0.8 §7). Each match is revoked **exactly as one id is**: one
+  revocation, one record, one event, in turn, so a run that stops halfway leaves
+  the rows it reached revoked and the rest untouched, and a second run finishes.
+  A selector that matches nothing exits non-zero (§7.5), because during an
+  incident a mistyped name that exits 0 reads as "done".
+
+  `--by` is unchanged and means what it has always meant: who performed the
+  revocation.
+
 Options:
-  --by TEXT         Who revoked it.  [default: cli:local]
-  --store-url TEXT  The store to open. Default: $CTRLRUN_STORE_URL, else the
-                    SQLite database beside the policy (.ctrlrun/state.db, or
-                    wherever $CTRLRUN_STATE points).
-  --help            Show this message and exit.
+  --by TEXT          Who revoked it.  [default: cli:local]
+  --created-by TEXT  Revoke every delegation this principal created: AGENT or
+                     AGENT/USER.
+  --under TEXT       Revoke every delegation beneath this grant or delegation
+                     id, at any depth.
+  --store-url TEXT   The store to open. Default: $CTRLRUN_STORE_URL, else the
+                     SQLite database beside the policy (.ctrlrun/state.db, or
+                     wherever $CTRLRUN_STATE points).
+  --help             Show this message and exit.
 ```
 
 ## ctrlrun mcp-operator
@@ -302,6 +342,10 @@ Options:
                                   [default: 30.0]
   --identity-jwt-http-timeout FLOAT
                                   [default: 5.0]
+  --approver-roles-claim TEXT     Which verified claim carries this issuer's
+                                  roles, for the approver entitlement of
+                                  SPEC-v0.8 §3. Without it no role can be read,
+                                  so any cited control naming one refuses.
   --store-url TEXT                The store to open. Default:
                                   $CTRLRUN_STORE_URL, else the SQLite database
                                   beside the policy (.ctrlrun/state.db, or

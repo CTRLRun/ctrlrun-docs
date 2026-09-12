@@ -32,10 +32,11 @@ guarantees pass.
     ```
 
     ```text
-    CTRLRun verify — ctrlrun 0.7.0, catalogue ctrlrun.guarantees/v3
+    CTRLRun verify — ctrlrun 0.8.0, catalogue ctrlrun.guarantees/v4
     policy     /home/you/agent/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
     authority  none
     store      sqlite, scratch (created and destroyed for this run)
+
     G1   mutated approval refused         PASS  k8s.delete_namespace
     G2   replayed approval refused        PASS  k8s.delete_namespace
     G3   duplicate effect refused         PASS  k8s.delete_namespace
@@ -57,11 +58,23 @@ guarantees pass.
                                                 does not read. The gateway and the ACS hook cannot name a
                                                 provider at all, and refuse an approval that carries a
                                                 fingerprint)
+    G17  an unentitled approver refused   N/A   no cited control names an approver role
+    G18  the requester cannot approve     PASS  k8s.delete_namespace
+    G19  one principal counts once        N/A   no action requires more than one approval
+    G20  revoked before its exp: no       PASS  k8s.delete_namespace
+                                                (G20 is graded against a revocation feed verify supplies:
+                                                whether this deployment configures one is a fact about its
+                                                own code, which verify cannot read)
+    G21  unapproved policy decides no     PASS  stripe.refund
+                                                (G21 is graded with require_approved_policy set by verify:
+                                                whether this deployment sets it is a fact about its own
+                                                code, which verify cannot read)
                                                 (a token is unique only as far as your effect keys are:
                                                 two stores sharing a provider account must not produce the
                                                 same effect-key string for different effects, and nothing
                                                 here can check that)
-    12/12 declared guarantees pass. 4 not applicable: G8, G9, G13, G15.
+
+    15/15 declared guarantees pass. 6 not applicable: G8, G9, G13, G15, G17, G19.
     ```
 
     The first line is on **stderr**, from G7's own scenario: an action with no principal is

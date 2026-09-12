@@ -74,7 +74,12 @@ LONG_FORM = frozenset(
 CONCEPTS = sorted((DOCS / "docs" / "concepts").glob("*.mdx"))
 WORD_BUDGET = 900
 _FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n", re.S)
-_FENCE = re.compile(r"^```.*?^```", re.M | re.S)
+#: A fenced code block, **indented or not**. The `^```` spelling required column 0, so every
+#: fence inside a `<Steps>` block -- which Mintlify indents -- counted as prose against the word
+#: budget. It went unnoticed while those blocks were short; a verify transcript that grew from
+#: twelve guarantees to twenty-one pushed `verify-in-ci.mdx` to 999 words of "prose", 600 of
+#: which were a transcript nobody reads as prose. Indented fences are code too.
+_FENCE = re.compile(r"^[ \t]*```.*?^[ \t]*```", re.M | re.S)
 
 
 def _frontmatter(page: Path) -> dict[str, str]:

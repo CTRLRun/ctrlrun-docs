@@ -14,8 +14,8 @@ what could not be tested at all.
 
 ```console
 $ ctrlrun verify
-CTRLRun verify — ctrlrun 0.7.0, catalogue ctrlrun.guarantees/v3
-policy     examples/authority/payments.yaml (ctrlrun.policy/v3, mode: enforce)
+CTRLRun verify — ctrlrun 0.8.0, catalogue ctrlrun.guarantees/v4
+policy     examples/authority/payments.yaml (ctrlrun.policy/v6, mode: enforce)
 authority  same document, 3 grants
 store      sqlite, scratch (created and destroyed for this run)
 
@@ -40,12 +40,23 @@ G16  a moved fingerprint is refused   PASS  stripe.refund
                                             does not read. The gateway and the ACS hook cannot name a
                                             provider at all, and refuse an approval that carries a
                                             fingerprint)
+G17  an unentitled approver refused   PASS  stripe.refund
+G18  the requester cannot approve     PASS  stripe.refund
+G19  one principal counts once        PASS  stripe.refund
+G20  revoked before its exp: no       PASS  stripe.refund
+                                            (G20 is graded against a revocation feed verify supplies:
+                                            whether this deployment configures one is a fact about its
+                                            own code, which verify cannot read)
+G21  unapproved policy decides no     PASS  stripe.refund
+                                            (G21 is graded with require_approved_policy set by verify:
+                                            whether this deployment sets it is a fact about its own
+                                            code, which verify cannot read)
                                             (a token is unique only as far as your effect keys are:
                                             two stores sharing a provider account must not produce the
                                             same effect-key string for different effects, and nothing
                                             here can check that)
 
-14/14 declared guarantees pass. 2 not applicable: G13, G15.
+19/19 declared guarantees pass. 2 not applicable: G13, G15.
 ```
 
 It reads the policy document — `$CTRLRUN_CONFIG`, else `./ctrlrun.yaml` — and the authority
