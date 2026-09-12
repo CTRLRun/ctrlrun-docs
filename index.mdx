@@ -50,17 +50,18 @@ import { CommercialTiers } from "/snippets/commercial-tiers.jsx";
         </div>
       </div>
     </div>
-    <a className="cr-any-agent" href="/docs/agents-you-cant-modify" data-cr-event="any_agent_clicked">
+    <div className="cr-any-agent">
       <h2 id="cr-any-agent-title">Works with agents you can and can't modify.</h2>
       <p>WhatsApp, Slack, Teams, Claude Code, Cursor, Codex, ChatGPT, OpenAI Agents. <b>Any AI agent you have.</b> If it acts through your systems, it is checked.</p>
-      <span className="cr-any-agent-link">How it works <span aria-hidden="true">→</span></span>
-    </a>
+      <a className="cr-any-agent-link" href="/docs/agents-you-cant-modify" data-cr-event="any_agent_clicked">How it works <span aria-hidden="true">→</span></a>
+    </div>
   </section>
 
   <section className="cr-section cr-home-how" id="how-it-works" aria-labelledby="cr-how-title">
     <div className="cr-how-intro">
       <p className="cr-eyebrow">HOW CTRLRUN WORKS</p>
       <h2 id="cr-how-title">Let it run. Ask a human. Or stop it cold.</h2>
+      <p className="cr-how-lede">CTRLRun stops an agent from taking an action your rules do not allow. Every action that leaves your agents, tools and workflows is normalized into one action, decided against your policy, held for a person where you require it, reserved so it cannot run twice, executed, resolved and recorded. An action with no rule is blocked, arguments changed after sign-off void the approval, and an outcome nobody knows is never retried on a guess.</p>
     </div>
     <HowDiagram />
     <p className="cr-how-after"><a className="cr-text-link" href="/execution-boundary" data-cr-event="try_clicked">Interactive walkthrough: follow one agent action through every check →</a></p>
@@ -72,7 +73,32 @@ import { CommercialTiers } from "/snippets/commercial-tiers.jsx";
         <p className="cr-eyebrow">FREE, PRO, ENTERPRISE</p>
         <h2 id="cr-commercial-title">Free and open source: the boundary. Pro: the boundary, run for you. Enterprise: the boundary, shaped to you.</h2>
       </div>
-      <CommercialTiers />
+      <div className="cr-tiers">
+        <div className="cr-tier">
+          <span className="cr-step">FREE &middot; OPEN SOURCE</span>
+          <h3>ctrlrun Open Source</h3>
+          <p className="cr-tier-promise">Free. Run it yourself.</p>
+          <p className="cr-tier-body">The boundary itself, at no cost. No account, no card, no call with us. Every rule that decides is code you can read, and every action leaves a receipt you keep. Free to use and free to change, under the Apache-2.0 licence.</p>
+          <p className="cr-tier-who"><span>Who does the work</span> Your team, on your machines.</p>
+          <a className="cr-button" href="/docs/get-started/quickstart" data-cr-event="open_source_install_clicked">Install it <span aria-hidden="true">→</span></a>
+        </div>
+        <div className="cr-tier">
+          <span className="cr-step">IN DEVELOPMENT</span>
+          <h3>ctrlrun Pro</h3>
+          <p className="cr-tier-promise">Integrate, analyze, protect. One dashboard.</p>
+          <p className="cr-tier-body">Connect your agents and workflows and see what each connection covers. Search every action, decision and outcome across your agents. Manage policies and approvals from one place, test a rule in observe mode, then turn enforcement on. Built on the open-source foundation, run by us.</p>
+          <p className="cr-tier-who"><span>Who does the work</span> Your team, on our dashboard.</p>
+          <CommercialTiers intent="pro-waitlist" />
+        </div>
+        <div className="cr-tier">
+          <span className="cr-step">ENGAGEMENTS OPEN</span>
+          <h3>ctrlrun Enterprise</h3>
+          <p className="cr-tier-promise">The same product, shaped to your company.</p>
+          <p className="cr-tier-body">Everything in Pro, with CTRLRun engineers who design, integrate and maintain the controls your business needs: custom policies and approval chains, connectors to your internal systems, your deployment options, the reports you ask for. Scoped to your requirements, delivered with your team.</p>
+          <p className="cr-tier-who"><span>Who does the work</span> Our engineers, with your team.</p>
+          <CommercialTiers intent="enterprise-contact" />
+        </div>
+      </div>
     </div>
     <div className="cr-footer" role="contentinfo"><span>Let agents act.<br /><strong>Keep the consequences yours to decide.</strong></span><div><a href="/docs" data-cr-event="documentation_clicked">Docs →</a><a href="https://github.com/CTRLRun/ctrlrun" data-cr-event="github_clicked">GitHub ↗</a><a href="mailto:contact@arpanghoshal.com?subject=CTRLRun" data-cr-event="contact_email_clicked">Contact ↗</a></div></div>
   </section>

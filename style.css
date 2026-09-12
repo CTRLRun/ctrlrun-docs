@@ -368,6 +368,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-site .cr-example-label { margin:0 0 12px; font:600 12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.07em; color:var(--cr-accent); }
 
 .cr-how-intro { max-width:780px; margin-bottom:48px; }
+.cr-site .cr-how-lede { margin:0; max-width:80ch; font-size:15.5px; line-height:1.7; color:var(--cr-muted); }
 .cr-site .cr-how-intro h2 { margin:0 0 24px; letter-spacing:-.03em; }
 /* How it works: the boundary, drawn. Two ends we do not own, one box we do. */
 /* How it works, drawn. Two variants: the wide one keeps seven stages on one spine, the
@@ -439,7 +440,8 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-site .cr-tier-who { display:flex; flex-wrap:wrap; gap:4px 10px; margin:2px 0 0; font-size:13.5px; color:var(--cr-ink); }
 .cr-tier-who span { font:600 10px/2 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--cr-muted); }
 .cr-tier > .cr-button { margin-top:auto; }
-.cr-tier-open { border-color:var(--cr-accent); }
+.cr-tier-action { display:flex; flex-direction:column; align-items:flex-start; gap:10px; width:100%; margin-top:auto; }
+.cr-tier:has(.cr-tier-form) { border-color:var(--cr-accent); }
 .cr-tier-form { width:100%; margin-top:6px; }
 .cr-tier-form fieldset { display:flex; flex-direction:column; gap:12px; border:0; margin:0; padding:0; }
 .cr-tier-form .cr-button { align-self:flex-start; }
@@ -508,13 +510,18 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 /* Agents you can and can't modify: one compact band across both hero columns, so it is read
    with the pitch and the first slide still fits a 720px-tall screen. */
 .cr-home > .cr-home-hero { row-gap:28px; }
-.cr-site .cr-any-agent { grid-column:1 / -1; display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:10px 28px; padding:14px 22px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-paper); text-decoration:none; transition:border-color .15s; }
+.cr-site .cr-any-agent { position:relative; grid-column:1 / -1; display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:10px 28px; padding:14px 22px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-paper); text-decoration:none; transition:border-color .15s; }
 .cr-site .cr-any-agent:hover { border-color:var(--cr-accent); }
 .cr-site .cr-any-agent h2 { margin:0; font-size:clamp(17px,1.45vw,20px); line-height:1.25; letter-spacing:-.015em; white-space:nowrap; }
 .cr-site .cr-any-agent p { margin:0; font-size:14px; line-height:1.5; }
 .cr-any-agent p b { color:var(--cr-ink); font-weight:600; }
 .cr-any-agent-link { color:var(--cr-accent); font-size:14px; font-weight:600; white-space:nowrap; text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px; }
 .cr-any-agent:hover .cr-any-agent-link { text-decoration-thickness:2px; }
+/* The card was one <a> wrapping heading, paragraph and link: 205 characters of anchor text for
+   one destination. The link is now just its own words, stretched over the card so the whole of
+   it still clicks. */
+.cr-any-agent-link::after { content:""; position:absolute; inset:0; border-radius:6px; }
+.cr-site .cr-any-agent:focus-within { border-color:var(--cr-accent); }
 @media (max-width:1100px) {
   .cr-site .cr-any-agent { grid-template-columns:minmax(0,1fr) auto; }
   .cr-site .cr-any-agent p { grid-column:1 / -1; grid-row:2; }
@@ -543,6 +550,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-site .cr-how-after { margin-top:44px; text-align:right; }
 .cr-home .cr-how-after .cr-text-link { font-size:15px; }
 .cr-home .cr-how-intro h2 { font-size:clamp(28px,3.4vw,40px); line-height:1.15; }
+.cr-site .cr-home .cr-how-lede { font-size:16px; }
 .cr-home .cr-planned-work { display:grid; grid-template-columns:100px minmax(0,1fr); gap:24px; margin-top:28px; padding:22px 0; border-block:1px solid var(--cr-line); }
 .cr-home .cr-planned-work > .cr-step { padding-top:3px; }
 .cr-home .cr-planned-work > div { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; }
@@ -662,7 +670,8 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
   .cr-slides-active .cr-home > section { padding-block:24px; }
   .cr-slides-active .cr-home .cr-how-intro { margin-bottom:26px; }
   .cr-slides-active .cr-home .cr-how-intro h2 { font-size:clamp(24px,2.5vw,32px); margin-bottom:0; max-width:none; }
-  .cr-slides-active .cr-home .cr-diagram { max-height:calc(100svh - 290px); }
+  .cr-slides-active .cr-home .cr-how-lede { margin-top:12px; font-size:14.5px; line-height:1.6; }
+  .cr-slides-active .cr-home .cr-diagram { max-height:calc(100svh - 420px); }
   .cr-slides-active .cr-home .cr-commercial-head { margin-bottom:20px; }
   .cr-slides-active .cr-home .cr-commercial-head h2 { font-size:clamp(22px,2.3vw,28px); }
   .cr-slides-active .cr-home .cr-tier { padding:18px 20px; gap:8px; }
