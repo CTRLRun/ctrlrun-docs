@@ -1,6 +1,6 @@
 {
-  "guarantees": 19,
-  "released": "0.7.0",
+  "guarantees": 21,
+  "released": "0.8.0",
   "soak": {
     "actions": 889735,
     "backend": "postgres",
@@ -9,6 +9,6 @@
     "positive_control": true,
     "unexplained": 0
   },
-  "tests": 5528,
-  "version": "0.7.0"
+  "tests": 5653,
+  "version": "0.8.0"
 }

@@ -1,6 +1,6 @@
 ---
 title: "Policy YAML reference"
-description: "Every key of ctrlrun.yaml, from ctrlrun.policy/v1 to v5: schema, actions, decision, rules, max_attempts, when conditions and their seven operators."
+description: "Every key of ctrlrun.yaml, from ctrlrun.policy/v1 to v6: actions, decision, rules, max_attempts, approver_role, approvals_required and the when operators."
 ---
 
 `ctrlrun.yaml` is one document: a `schema`, an `actions` map, and from `ctrlrun.policy/v3` the
@@ -61,7 +61,30 @@ Exactly one of `decision` and `rules`, plus the optional keys.
 | `mcp` | mapping with one key, `not_executed_on_error` (bool) | v2 | `false` | gateway only: whether an upstream's in-band error means the tool did nothing (`FAILED`) or nobody knows (`AMBIGUOUS`). Say `true` only for an upstream that rejects before acting |
 | `controls` | list of ids | v4 | none | cited on every receipt for this action, in registry order |
 | `data` | map of argument name → label, either a bare string or a mapping with the one key `label` | v4 | no labels; `data_scope` is empty | labels the arguments carry, for the `data_scope` condition below |
+| `approvals_required` | integer, at least 1 | v6 | one approval, exactly as before v6 | how many **distinct verified principals** must answer before the approval is consumable. A second yes from a principal that already answered is recorded, moves that entry's timestamp, and does not move the count. The count is decided inside the store's own write on all three backends, never by a read followed by a write. Above `1` in a deployment that configures no approver identity is a **denial**, not a silent downgrade: the kernel cannot tell two anonymous yeses apart. `ctrlrun approve` records no verified approver, so it never counts toward one, and says so when it is used. Inside the policy hash |
 | `max_attempts` | integer, at least 1 | v5 | no ceiling: a renewal after `FAILED` is unbounded, exactly as before v5 | the most **attempts** that may execute on one effect key, the first included: `3` is the first attempt and two renewals. Above it the executor is not called, the record is released as `FAILED`, a `blocked` receipt names the ceiling, and `ActionDenied(reason="attempt_ceiling")` is raised; the refused number is spent. `0`, a negative, a bool, a float, a string and a mapping are each a load error naming the key, the action and the line. An attempt is not an executor invocation: a suspended executor's resumes all run on one attempt. Inside the policy hash |
+
+## A control entry
+
+The registry `controls:` at the top level. v4 gave a control a `title` and a `source`, which name
+a requirement and decide nothing. v6 gives it one key that decides something.
+
+| Key | Type | Since | When omitted | Notes |
+|---|---|---|---|---|
+| `title` | string | v4 | required | what the control requires, in a sentence |
+| `source` | string | v4 | none | where the requirement comes from. CTRLRun does not interpret it |
+| `approver_role` | non-empty string | v6 | **this control gates nobody** | the role a principal must hold for their approval of an action citing this control to be consumable. Matched **byte for byte** against the claim the deployment names: no case folding, no trimming, no prefix matching and no pattern grammar, because a wildcard in a role would be an entitlement nobody wrote. Leading or trailing whitespace is a load error rather than a role that matches nothing for ever. Where an action cites several controls, **every** required role must be held, since any-of would let the weakest control in a set decide who may answer. Inside the policy hash |
+
+**Omission is not entitlement, and it is not refusal either.** A control with no `approver_role`
+gates nobody; a principal whose claims lack the role is not entitled. The two look alike in a diff
+and mean opposite things: the reading that merges them either refuses every approval in a
+deployment with one unroled control, or admits every approver in a deployment with one unclaimed
+principal.
+
+**What the kernel refuses is an approval whose *recorded* entitlement does not cover the role.**
+What entitled it was decided where the credential was verified — the operator MCP server, or an
+embedding application. CTRLRun does not interpret the role, does not check that such a role exists
+anywhere, and claims nothing about a standard or an audit on the strength of one.
 
 ## A rule
 
@@ -131,6 +154,7 @@ reader would have silently misread is one it refuses instead.
 | `ctrlrun.policy/v3` | `mode`, `environment`, `authority` at the top | enforce an observed deployment, or run with no authority check |
 | `ctrlrun.policy/v4` | `version`, `controls` at the top; `controls`, `data` on an entry and a rule | cite ids nothing defines, or evaluate a `data_scope` rule against nothing |
 | `ctrlrun.policy/v5` | `max_attempts` on an entry | bound renewal after `FAILED` on one effect key |
+| `ctrlrun.policy/v6` | `approver_role` on a control entry; `approvals_required` on an action entry; `break_glass` in the authority section | gate nobody while reporting a deployment as checking entitlement, consume on the first grant where several were required, or read an envelope as an ordinary grant |
 
 That is why the key sets are closed by version: each key is refused by every reader that would
 misread it.

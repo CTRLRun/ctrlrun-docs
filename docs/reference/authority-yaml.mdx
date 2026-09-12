@@ -1,6 +1,6 @@
 ---
 title: "Authority YAML reference"
-description: "Every key of the authority: section: max_delegation_depth and grants, and on a grant id, subject (agent, user), actions, resources, constraints."
+description: "Every key of the authority: section: max_delegation_depth, grants and break_glass, and on a grant subject, actions, resources and constraints."
 ---
 
 The `authority:` section says which principal may propose which action. It lives at the top of
@@ -15,6 +15,53 @@ asserts this page names every key the loader accepts.
 |---|---|---|---|
 | `max_delegation_depth` | non-negative integer | `3` | how long a chain of delegations may be; recomputed on every evaluation by walking to the root, never read from the stored row |
 | `grants` | list of grants | **error** if missing | the whole of who may ask |
+| `break_glass` | map of envelope id → envelope | none | since v6: the widest authority an incident may reach, declared in advance. **Never consulted when deciding an action** |
+
+## Break-glass envelopes
+
+An incident needs authority nobody was granted in advance. The wrong answer is a flag: a flag
+leaves no record, expires never, cannot be revoked and cannot be narrowed. What an envelope
+declares is the **ceiling** for a grant opened beneath it during an incident.
+
+```yaml
+authority:
+  grants: []
+  break_glass:
+    incident-payments:
+      subject: { agent: "oncall-*" }       # who a grant opened here may be FOR
+      actions: ["payments.*"]
+      resources: ["payment:*"]
+      constraints: { amount_lte: 50000 }
+      environments: ["prod"]
+      max_ttl: PT4H                        # the longest expiry a grant beneath it may carry
+      controls: [incident-response]        # whose approver_role gates who may OPEN it
+```
+
+| Key | Type | Notes |
+|---|---|---|
+| `max_ttl` | ISO-8601 duration, positive | **required**. `PT4H`, `PT30M`, `PT90S`, `P2D`; months and years are refused, because they are not durations a clock can add without a calendar. Re-checked on every evaluation, so narrowing it cuts grants already open |
+| `controls` | list of control ids | which controls' `approver_role` gates who may open one. A citation that resolves to nothing, or to a control naming no role, is refused: here the citation **is** the gate, so an omission that gates nobody fails closed, which is the opposite of what the same omission means on an action |
+| everything a grant has | | minus `id`, which is the mapping key, and minus `delegable` and `expires_at`, which are **refused by name** |
+
+**The envelope decides nothing, by construction.** It lives in a mapping separate from `grants:`,
+and the candidate set an evaluation walks is `grants:` unconditionally — so an envelope cannot
+authorize an action even by accident. A deployment with an envelope and nothing opened beneath it
+evaluates exactly as one without it.
+
+**It carries no `delegable` and no `expires_at`, and both are load errors.** An envelope exists
+only to be a parent, so "delegable" is what it means rather than a key it sets; and what bounds it
+in time is `max_ttl`, which every grant beneath it obeys. It is covered by the policy hash,
+`max_ttl` included, so widening the widest authority an incident can reach moves every receipt.
+
+**Opening one is an act with its own command**, `ctrlrun break-glass --envelope <id> --file
+grant.yaml --reason "<incident>"`. There is no `--as`: the opener is the principal the deployment's
+approver identity resolves, and a deployment that names none cannot open one at all. A grant opened
+beneath an envelope **must** carry an `expires_at` inside `max_ttl`, is contained on every
+dimension, is revocable, attenuates, and is named on the receipt of every action taken under it.
+
+An id declared in both `grants:` and `break_glass:` is a load error naming both, and a standalone
+`--authority` document may not declare `break_glass` at all: it carries no control registry to
+resolve the gate against, so the only envelope it could express is an ungated one.
 
 ## A grant
 
