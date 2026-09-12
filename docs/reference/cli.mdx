@@ -23,7 +23,6 @@ Options:
 
 Commands:
   approve       Grant a pending approval request.
-  break-glass   Open a break-glass grant beneath a declared envelope.
   delegate      Create a delegated grant beneath an existing one.
   demo          Run the five scenarios, in process, with no network.
   deny          Refuse a pending approval request.
@@ -257,37 +256,6 @@ Options:
 Commands:
   propose  Propose a policy change under the policy currently in force.
   replay   Report which recorded decisions would change under a proposed...
-```
-
-## ctrlrun break-glass
-
-```text
-Usage: ctrlrun break-glass [OPTIONS]
-
-  Open a break-glass grant beneath a declared envelope.
-
-  An incident needs authority nobody was granted in advance, and the wrong
-  answer is a flag: a flag leaves no record, expires never and cannot be
-  revoked. What this creates is an ordinary delegation, bounded by the envelope
-  on every dimension, expiring within its 'max_ttl', revocable, attenuable, and
-  named on the receipt of every action taken under it.
-
-  **There is no --as.** Whoever opens one is the principal the deployment's
-  approver identity resolves, and a deployment that names none cannot open one
-  at all: an assertion typed at a shell is exactly what break-glass must not
-  accept (SPEC-v0.8 §5.3.1).
-
-Options:
-  --envelope TEXT   The break-glass envelope declared under 'authority:
-                    break_glass:'.  [required]
-  --file FILE       A one-grant YAML document, as --file takes for delegate.
-                    'expires_at' is required.  [required]
-  --reason TEXT     Free text recorded on the DELEGATION_CREATED event.
-  --json            Emit one JSON object instead.
-  --store-url TEXT  The store to open. Default: $CTRLRUN_STORE_URL, else the
-                    SQLite database beside the policy (.ctrlrun/state.db, or
-                    wherever $CTRLRUN_STATE points).
-  --help            Show this message and exit.
 ```
 
 ## ctrlrun revoke
