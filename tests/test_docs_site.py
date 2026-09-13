@@ -59,6 +59,9 @@ LONG_FORM = frozenset(
     {
         "ARCHITECTURE",
         "THREAT_MODEL",
+        # The assurance case argues every requirement with its evidence; it is read beside the
+        # threat model and cited by criterion, not in one sitting.
+        "security/assurance-case",
         "CLAIMS",
         "ROADMAP",
         "verify",
