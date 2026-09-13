@@ -1,6 +1,15 @@
 {
-  "guarantees": 24,
-  "released": "0.9.0",
+  "guarantees": 27,
+  "python": {
+    "floor": "3.11",
+    "tested": [
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14"
+    ]
+  },
+  "released": "0.10.0",
   "soak": {
     "actions": 889735,
     "backend": "postgres",
@@ -9,6 +18,6 @@
     "positive_control": true,
     "unexplained": 0
   },
-  "tests": 5975,
-  "version": "0.9.0"
+  "tests": 6131,
+  "version": "0.10.0"
 }
