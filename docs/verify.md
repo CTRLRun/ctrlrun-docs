@@ -58,6 +58,9 @@ G23  a failing scope provider refuses PASS  stripe.refund
                                             own code, which verify cannot read. The gateway and the
                                             ACS hook cannot name a provider at all (SPEC-v0.9 §5.2.2))
 G24  grant refused off its task       PASS  head-of-support
+G25  a hop narrows or it is refused   PASS  head-of-support
+G26  a hop is named on both sides     PASS  head-of-support
+G27  a swapped upstream is denied     PASS  payouts
                                             (a token is unique only as far as your effect keys are:
                                             two stores sharing a provider account must not produce the
                                             same effect-key string for different effects, and nothing

@@ -332,7 +332,36 @@ graded on what this repository ships rather than only on a fixture.
 
 Standards: none new.
 
-## v0.10 — Multi-agent
+## v0.10 — Multi-agent ✅ shipped
+
+**Reconciled against what shipped.** Three things differ from what this section promised, and each
+is recorded rather than quietly adjusted.
+
+**A hop is a record in the issuer's store, not a token on the wire.** This section said "propagated
+across agent hops" without saying how. `SPEC-v0.10.md` §3.2 settles it: what crosses is a
+**reference**, two strings in whatever metadata the transport already carries, and the envelope
+itself never travels. The budget rule forces it, because charging every ancestor happens in one
+transaction. **The cost is that both agents decide against the same store**, and a deployment where
+they do not is refused fail-closed rather than approximated.
+
+**Upstream pinning is enforced at the gateway, and refuses in-process.** The row below says a
+swapped server "is a `DENY`". It is, at `ctrlrun gateway`, which is the surface that holds the
+connection. In-process there is no upstream to observe, so a pinned action refuses on **every**
+call with `upstream_unverified`, and the ACS hook refuses such a policy at construction: ACS is
+advisory and the platform runs the tool, so the hook holds no connection to pin.
+
+**The first hop is a one-way step.** `SPEC-v0.10.md` §9.3: `created_via` is a closed vocabulary and
+the authority walk reads every delegation row before filtering any of them, so a 0.9.x binary
+meeting one `hop` row answers `authority_unreadable` for **every action in the deployment**.
+Installing 0.10.0 is reversible; creating the first hop is not.
+
+Exit criteria met: `ctrlrun.guarantees/v6` with G25, G26 and G27 each grading `PASS` on
+`examples/authority-escalation` and each grading the same under `--only` as in a full run; one
+shipped example exercises a hop and one pins an upstream; a two-hop chain charges every ancestor
+under the multi-process standard against Postgres; and observe mode reports the refusal enforce mode
+raises. The upgrade was checked against the **released** 0.9.0 from PyPI rather than a fixture.
+
+## v0.10 — Multi-agent, as planned
 
 - A2A integration: task-bound delegated authority (v0.9) with limits, expiry, and depth, propagated across agent hops.
 - Authority propagation across hops: the envelope a second agent receives is `⊆` the envelope the first agent held, checked at the hop and again at every evaluation, exactly as v0.3 checks a delegation.
