@@ -72,6 +72,8 @@ purpose.
 | `constraints` | the action's arguments, in the same syntax a rule's `when:` uses |
 | `environments` | the deployment the action is running in |
 | `expires_at` | when the grant stops working |
+| `tasks` | the unit of work the action was bound to, as patterns |
+| `budgets` | **not a match: a sum.** How much this grant's actions may add up to, over a rolling window |
 
 **Patterns are deliberately small**, because containment between two of them has to be
 decidable: a literal, a `prefix*` that cannot cross a separator, and a final `**`. So
@@ -82,6 +84,45 @@ in review, and impossible to write by accident.
 **The environment is not the caller's to state.** It is set once on the `Control` and stamped
 on every Action, so a grant scoped to `["staging"]` cannot be satisfied by a call that
 describes itself as staging. An authorization dimension the subject can set is not one.
+
+## How much, not just whether
+
+Every key above except one answers *may this principal do this?* A budget answers a different
+question, and it is the one a grant could not ask before v0.9: **how much, in total?**
+
+```yaml
+- id: head-of-support
+  subject: { agent: "support-agent" }
+  actions: ["stripe.refund"]
+  constraints: { amount_lte: 10000000 }     # one refund, up to 100,000.00
+  budgets:
+    - { metric: amount, limit: 50000000, window: PT24H }   # 500,000.00 a day, across the grant
+```
+
+`constraints` bounds one action. `budgets` bounds the aggregate. A grant that answers only the
+first permits a thousand actions that each pass it, which is how an agent acting entirely within
+its permissions empties an account one permitted refund at a time.
+
+Four things worth knowing, because each one is a decision that could have gone the other way.
+
+**It is consumed when the effect is reserved**, in the same transaction, not checked on one line
+and consumed on another. Two processes cannot both pass a check and then both spend.
+
+**It is released only when the effect reaches `FAILED`** — the one state in which the executor
+proved nothing happened. A committed spend is a spend, permanently.
+
+**Ambiguity is not a refund.** An `AMBIGUOUS` effect holds its charge until a human or a
+`reconcile` hook says what happened, because otherwise an agent that can manufacture ambiguity
+can manufacture authority. This is the one that surprises people, and it is why
+`ctrlrun inspect --grant` exists: a budget refusing while it looks nowhere near its limit is
+almost always one unresolved effect, and the view names it and the command that clears it.
+
+**Every grant in the chain is charged.** A delegation spends its own budget and its parent's, so
+a holder cannot mint children to spend the same budget over again.
+
+A daily budget *smaller* than one action the same grant permits is legal and almost always a
+mistake: the first action of the day exhausts it, and any rule band above it becomes unreachable.
+`ctrlrun verify` reports that rather than failing.
 
 ## Delegation, and the rule that makes it safe
 

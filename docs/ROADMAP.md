@@ -268,7 +268,7 @@ Standards: none new.
 
 **Renumbered on 2026-09-10, and the reason is recorded here rather than made silently.** The chain below used to run *boundary → multi-agent → hardening → 1.0*, and nowhere in it did the kernel learn who may say yes or how much. An approval is a string somebody typed; a grant limits one action and says nothing about a thousand of them. Both are what a reader means by governance, and the homepage now says *action governance* — so the two milestones that make it true go in, before multi-agent, because propagating authority across hops needs authority that can be bounded and a yes that can be attributed underneath it. Nothing already shipped moves. A2A moves once more, to v0.10, and v0.10 says why. The homepage H1 stays *Execution safety for AI agents* until v0.9 exits; `internal/POSITIONING.md` carries that gate.
 
-## v0.8 — Oversight
+## v0.8 — Oversight ✅ shipped
 
 One question: who may say yes, and can the kernel tell?
 
@@ -290,7 +290,7 @@ Exit: `ctrlrun.guarantees/v4` — G17 unentitled approver refused · G18 self-ap
 
 Standards: none new. RFC 8935 and RFC 8936 (SSF push and poll delivery) and CAEP are consumed as code; they appear in a mapping doc only after the test above exists, and "SSF-compatible" is unearned until a conformance suite says otherwise.
 
-## v0.9 — Envelope
+## v0.9 — Envelope ✅ shipped
 
 One question: how much, over which records, for which task?
 
@@ -305,6 +305,28 @@ A grant today limits one action — `amount_lte: 5000` — and says nothing abou
 Do not build: a consequence taxonomy — a budget names a metric, not a class · compensation or saga · a fleet-wide budget across stores · anything that reads a prompt to decide which task an agent is on.
 
 Exit: `ctrlrun.guarantees/v5` — G22 a budget exhausted by ambiguity refuses the next reserve until reconciled, and releases on `FAILED`, under the v0.6 multi-process standard against Postgres · G23 a scope provider that raises leaves nothing reserved and nothing executed · G24 a task-bound grant is refused on a task it does not name, by name — each with a positive control, each `N/A` with a reason on a grant that carries no budget, no scope, or no task.
+
+**Reconciled against what shipped.** Three things differed from this section, and each is
+recorded where it was decided rather than quietly adjusted here.
+
+- **A budget is a metric, a limit and a window.** This section said "a metric, a scope and a
+  window", which conflated two of v0.9's three dimensions: a budget bounds an aggregate and a
+  scope provider answers about a record, and nothing about the budget is scoped.
+- **Scope providers are a second hook, not the precondition mechanism.** This section said they
+  would go "through v0.7's fingerprint mechanism". They do not: `SPEC-v0.9.md` §5.2.1 records the
+  amendment to `SPEC-v0.7.md` §6.9 and the three mechanical differences that justify it, the
+  first being that a precondition answers *has this changed* and a scope answers *is this yours*.
+  A deployment may declare both over the same mapping, which is why the scope hash carries its
+  own domain tag.
+- **Two refusals, not one.** `scope_unavailable` and `out_of_scope` are distinct reasons, because
+  a deployment whose scope source is down and one whose agent reached for somebody else's record
+  are different incidents, and observe mode reported the wrong one until an independent review
+  found it.
+
+The exit criteria are met: `ctrlrun.guarantees/v5`, G22, G23 and G24, each with a positive
+control and each `N/A` with a true reason on a configuration that carries no budget, scope or
+task. All three PASS on `examples/authority/payments.yaml`, so the milestone's own guarantees are
+graded on what this repository ships rather than only on a fixture.
 
 **This is the gate for the category line, and it used to be the gate for the H1.** Recorded 2026-09-12: the H1 moved ahead of v0.9, to *CTRLRun stops AI agents from taking wrong, restricted, or malicious actions in your workflows*, because it states what the shipped kernel does today and claims nothing about authority. *Action governance* still waits: after v0.9 it is true in code, and only then does the category line move up.
 
