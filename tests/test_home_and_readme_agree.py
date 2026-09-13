@@ -4,8 +4,8 @@ ctrlrun.dev's homepage is the marketing surface and the library's README is the 
 one. Until 2026-09-14 they led with different sentences: the site said *stops AI agents from
 taking wrong, restricted, or malicious actions in your workflows* and the README said
 *Execution safety for AI agents*, so a stranger arriving from one to the other met a second
-pitch. The README now opens with the homepage's H1 and lede, verbatim, closes on its footer
-line, and walks the seven steps of its diagram in the same order. This file is what keeps the
+pitch. The README now opens with the homepage's H1 and lede, verbatim, and walks the seven
+steps of its diagram in the same order; nothing commercial crosses over. This file is what keeps the
 two from drifting apart again: it reads the sentences out of `index.mdx` and the diagram, so a
 rewrite of the homepage fails here until the README follows. The library pins the same strings
 on its side, in `tests/test_readme_assets.py`, so a rewrite of the README fails there first.
@@ -49,14 +49,6 @@ def test_the_readme_opens_with_the_homepage_h1_and_lede():
     assert h1.startswith("CTRLRun ") and h1.endswith("."), h1
     assert h1 in head, f"the README header does not carry the homepage H1: {h1!r}"
     assert lede in head, f"the README header does not carry the homepage lede: {lede!r}"
-
-
-def test_the_readme_closes_on_the_homepage_footer_line():
-    footer = _homepage(r'<div className="cr-footer" role="contentinfo"><span>(.*?)</span>')
-    tail = _prose(_readme().rsplit("## License", 1)[1])
-
-    assert footer, "the homepage footer is empty"
-    assert footer in tail, f"the README does not close on the homepage's line: {footer!r}"
 
 
 def test_the_readme_walks_the_homepage_seven_steps_in_order():
