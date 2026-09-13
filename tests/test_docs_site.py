@@ -69,6 +69,11 @@ LONG_FORM = frozenset(
         "OWASP-AGENTIC-TOP10",
         "OWASP-SOLUTIONS-LANDSCAPE",
         "how-this-is-built",
+        # An assurance case is a security argument with its evidence attached, and it is
+        # long for the same reason `THREAT_MODEL` and `ARCHITECTURE` are: cutting it to
+        # 900 words would mean dropping either a claim or the evidence under one, and a
+        # claim without its evidence is what this page exists to refuse.
+        "security/assurance-case",
     }
 )
 CONCEPTS = sorted((DOCS / "docs" / "concepts").glob("*.mdx"))

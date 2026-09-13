@@ -1,0 +1,118 @@
+---
+title: "Assurance case"
+description: "The argument, with its evidence, that CTRLRun's guarantees hold: the trust boundary, the principles applied, and where each piece of evidence sits."
+---
+
+An assurance case is the argument, with its evidence, that a system meets its security
+requirements. This page is CTRLRun's. It adds no guarantee; it says why the ones the
+[threat model](/docs/THREAT_MODEL) states can be relied on, and where the evidence for each
+sits. Read it beside that page and the [architecture](/docs/ARCHITECTURE).
+
+## The requirements
+
+The threat model names three assets, and each one is a requirement on the kernel:
+
+| Requirement | What it means for one call |
+|---|---|
+| **R1. Correctness of consequential effects** | An effect happens at most once per intent, and only as authorized. After an unknown outcome a retry is refused until a human or a `reconcile` hook resolves it. |
+| **R2. Integrity of human approval** | What a human approved is what executes. An approval binds to the hash of the canonical action, is consumed once, and expires. |
+| **R3. Integrity of evidence** | Receipts reflect what happened, in order, and an edit, a reordering or a deletion within the retained chain is detected. Erasing the end of the log and rewinding the head is outside this guarantee, and the [receipt chain page](/docs/security/receipt-chain) says so. |
+
+Everything below argues these three. What CTRLRun does not defend against is listed in the
+threat model under *Out of scope* and is not argued here.
+
+## The trust boundary
+
+Untrusted: agent reasoning, model outputs, tool outputs, retry logic, other agents, and every
+token or header a caller presents. Trusted: the CTRLRun process, the policy file, the state
+store, and the approver's shell.
+
+Data crosses the boundary in one place: the proposed action with its arguments, and whatever
+identity the caller presents. Nothing the agent asserts is trusted. Everything it proposes is
+normalized, checked against the policy, and checked against authority before anything is
+reserved. Inside the boundary the kernel trusts its own store, and the receipt chain (R3) is
+what lets an operator check that trust afterwards.
+
+The boundary has an edge the model states plainly: a compromised host, process or Python
+environment is inside it, and so is an administrator with write access to the policy or the
+store. The kernel does not defend against itself.
+
+## Design principles, applied
+
+Saltzer and Schroeder's principles, each with where it shows in the design and where a
+regression would be caught.
+
+| Principle | Where it shows | Where it is checked |
+|---|---|---|
+| Fail-safe defaults | Unknown action, missing policy, expired or mismatched approval, unresolvable effect key, an inconsistent record: `deny`. There is no `default: allow`. A store that is unavailable raises before anything executes. | The fail-closed table in the threat model is the acceptance section of `SPEC-v0.1.md`; `ctrlrun verify` G6, G7 and G8 replay three of its rows against your own configuration. |
+| Complete mediation | Every entry point that can grant, reserve or commit is enumerated by name in `SPEC-v0.3.md` §4.3.1, and a new one adds its row before its code. Approval consumption and effect reservation are one store write, so there is no window between *approved* and *reserved* for a second caller. | The entry-point list is tested. It exists because `Control.delegate` once let an expired credential mint authority: the check was specified against one method and nothing enumerated the others. |
+| Least privilege | Authority is per action and per principal, and it attenuates: a delegated grant may not be wider than its parent on any dimension, at creation and at every evaluation; a budget bounds an aggregate; a task binding bounds a unit of work. | G9, and the v0.3 and v0.9 acceptance tests. |
+| Economy of mechanism | Six comparison operators, first match wins, one policy file. An approval binds to a hash, not a ticket. One decorator, one `Control`. The threat model's *What a budget does not do* is this principle written down. | Architecture, decisions 4.1 and 4.2. |
+| Open design | The specifications, the threat model, this page and the suite are public. Receipts are portable JSON. No guarantee depends on a secret in the code. | This repository. |
+| Separation of privilege | A consequential action needs a policy rule and, where the rule says so, a human approval bound to that exact action. Authority needs a grant and a verified identity, and a hook that receives authority without an identity provider refuses to start. | G1, G2, G7. |
+| Least common mechanism | Every process reserves through the store's own atomic write, `BEGIN IMMEDIATE` on SQLite and a per-grant lock taken in a fixed order on Postgres. Nothing is shared in memory between agents. | G4: eight OS processes racing for one effect key. |
+| Psychological acceptability | Three outcomes, spelled `COMMITTED`, `FAILED` and `AMBIGUOUS`. The safe outcome is the default; an executor opts into `FAILED` by raising `NotExecuted`. `ctrlrun verify` reports a guarantee a configuration cannot exercise as not applicable, with the reason, never as a pass. | Architecture, decisions 4.4 and 4.5; [what verify guarantees](/docs/security/verify-guarantees). |
+
+## Implementation weaknesses, countered
+
+The common ways a sound design goes wrong in code, what the kernel does about each, and
+where a regression would be caught.
+
+| Weakness | Counter | Check |
+|---|---|---|
+| Replayed approval | An approval is single-use and consumed in the same atomic write that reserves the effect. | G2; the `SPEC-v0.1.md` acceptance tests. |
+| Approval for a different action | The approval binds to `action_hash` over the canonical action; any material change re-hashes. | G1. |
+| Hash ambiguity | Canonical JSON with sorted keys and a schema tag inside the hashed content. Floats are refused as argument and claim values, because equal money can hash differently. | `fuzz/fuzz_canonical.py` under Atheris on every pull request and weekly; the action tests. |
+| Time of check to time of use | Reservation is one atomic store write under a unique constraint, and approval consumption is in that write. | G3, G4. |
+| Lost update under concurrency | Cross-process locks, not thread locks. Budget charges are written inside the reservation. | G4; the multi-process Postgres tests, against a real server, in CI. |
+| Silent duplicate after a timeout | An unknown outcome is `AMBIGUOUS`, a terminal state that refuses a blind retry. A lease that expires is `AMBIGUOUS`, never released. | G5, G10. |
+| Timing side channel on a secret | Every MAC and every continuation token is compared with `hmac.compare_digest`. | The webhook and store tests. |
+| Weak or exposed secret | The webhook secret is read from the environment or from a file named on the command line, never from the policy file, and a secret shorter than 32 bytes is refused. Identifiers come from `secrets.token_hex`. | The webhook tests. |
+| Plaintext transport | Signing keys are fetched over HTTPS only, and a redirect is refused outright. An `http://` webhook URL is refused unless it is loopback and the operator passed `--allow-http`. The operator surfaces listen on loopback unless `--allow-remote` is given. TLS uses Python's default context, which verifies the certificate chain and the hostname and refuses anything below TLS 1.2. | The identity and webhook tests. |
+| Token confusion | The verification algorithm comes from the provider's own allow-list, never from the token's header. `typ` is checked, so an ID token cannot pass as an access token. `aud`, `iss` and `exp` are required and matched exactly. A duplicate `kid` is refused rather than resolved. | The v0.3 acceptance tests; the RFC 8725 rows of the threat model. |
+| Unsafe deserialization | Policy and grant documents are read with a `yaml.SafeLoader` subclass that also refuses a repeated key, because PyYAML resolves one silently to the last value, which is a fail-open in an authority document. Nothing on the request path calls `eval`, `exec` or `pickle`. | `fuzz/fuzz_policy.py`; the policy tests. |
+| SQL injection | Every statement is a constant with bound parameters. The one name that reaches SQL, the Postgres schema, is validated as a plain identifier at construction, before it is quoted. | The Postgres tests; CodeQL's security-and-quality suite on every pull request. |
+| Tampered evidence | Each receipt carries the hash of the one before it, with its sequence number inside the hashed content. `ctrlrun receipts --verify-chain` names a break within the retained chain; it cannot detect an erased tail. | G11; [the receipt chain](/docs/security/receipt-chain). |
+| Vulnerable dependency | Every install in CI is by hash, from locks written by `uv pip compile`. Dependabot refreshes them weekly. The Scorecard gate on every pull request refuses a known vulnerability, and CodeQL runs on every pull request. | `scorecard-gate.yml`, `codeql.yml`. |
+| Type confusion | `mypy --strict` over `src/`, with unreachable code reported. | `scripts/check.sh`, on every CI run. |
+
+## The evidence
+
+- **The suite.** Every specification's acceptance section has tests; the README's tests
+  badge carries the live count. CI runs it on four Python versions with a Postgres service,
+  and a separate step proves the Postgres tests will actually run rather than skip.
+- **Mutation tables.** For every MUST a change touches, the guard is removed, its test is
+  confirmed red, and the guard is restored, with the table in the pull request. CONTRIBUTING.md,
+  *Tests first*, lists the four shapes of a false green the tables are checked against.
+- **Fuzzing.** The canonicalizer and the policy parser run under Atheris on every pull request
+  and weekly, asserting the invariants in `fuzz/properties.py`.
+- **Static analysis.** CodeQL, `ruff` with the bugbear rules, and `mypy --strict`.
+- **Coverage.** Measured in CI and held at the floors CONTRIBUTING.md states.
+- **`ctrlrun verify`.** The eleven guarantees, replayed against the operator's own policy and
+  grants in a scratch instance of the configured store backend, with fake executors and no
+  network.
+- **Review.** Every change is reviewed by a person who did not write it. A change to
+  authorization, identity, delegation, the gateway, an adapter or the store gets the deeper
+  review CONTRIBUTING.md describes before its pull request opens.
+- **Provenance.** Releases carry signed SLSA provenance and PyPI attestations, and
+  CONTRIBUTING.md says how to rebuild a release and compare it.
+
+## What this argument does not cover
+
+- Everything under *Out of scope* in the threat model: a compromised host, process or
+  environment; an administrator with write access; a compromised remote or identity provider;
+  a wrong approver; an executor that raises `NotExecuted` when it did execute.
+- **No external review yet.** Every review so far ran inside the project, by sessions that
+  did not write the code under review. [How this is built](/docs/how-this-is-built) says so,
+  and will carry the report if an external review happens.
+- The argument is for the kernel. An adapter or a gateway deployment adds a boundary of its
+  own. The adapter conformance kit checks an adapter's behaviour; `ctrlrun verify` checks only
+  the kernel guarantees the configured policy, grants and store backend can exercise.
+
+## Next
+
+- [Why](/docs/why): the problem this argument is about, before the argument.
+- [Threat model](/docs/THREAT_MODEL): the boundary every claim above is stated against.
+- [Verify the guarantees](/docs/security/verify-guarantees): the evidence, run against your own
+  configuration rather than read here.
+- [Get started](/docs/get-started/quickstart): the shortest path to a receipt of your own.

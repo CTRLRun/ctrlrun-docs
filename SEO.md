@@ -105,6 +105,7 @@ that page's frontmatter, never here.
 | `docs/verify/get-the-badge` | ctrlrun verified badge | Two minutes, three steps: verify on every push, publish the badge JSON, point Shields at it. |
 | `docs/study/does-your-framework-double-execute` | does langgraph retry tool calls · agent framework double execution | When a remote commits a refund and the reply is lost, what does an agent framework do? |
 | `docs/faq` | ctrlrun faq, and each question verbatim | The twelve questions that come up first, answered in under eighty words each. |
+| `docs/security/assurance-case` | AI agent security assurance case | An assurance case is the argument, with its evidence, that a system meets its security requirements. |
 | `docs/security/receipt-chain` | tamper evident audit log AI agent | The receipt chain is a hash chain over the evidence log. |
 | `docs/security/verify-guarantees` | ctrlrun verify guarantees | `ctrlrun verify` runs eleven guarantees against the configuration in front of it. |
 | `docs/security/disclosure` | ctrlrun security report | Report vulnerabilities privately to contact@arpanghoshal.com. |
