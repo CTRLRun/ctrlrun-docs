@@ -1,6 +1,6 @@
 ---
 title: "Assurance case"
-description: "Why the three guarantees hold: the threat model and its trust boundary, the design principles the kernel applies, the implementation weaknesses it counters, and where the evidence for each one sits."
+description: "Why the three guarantees hold: the threat model and its boundary, the design principles applied, the weaknesses countered, and where the evidence sits."
 ---
 
 An assurance case is the argument, with its evidence, that a system meets its security
@@ -108,3 +108,9 @@ where a regression would be caught.
 - The argument is for the kernel. An adapter or a gateway deployment adds a boundary of its
   own. The adapter conformance kit checks an adapter's behaviour; `ctrlrun verify` checks only
   the kernel guarantees the configured policy, grants and store backend can exercise.
+
+## Next
+
+- [Threat model](/docs/THREAT_MODEL): what is defended and what is not, in full.
+- [What verify guarantees](/docs/security/verify-guarantees): the eleven guarantees, replayed against your own configuration.
+- [Get started](/docs/get-started/quickstart) · [Why](/docs/why).
