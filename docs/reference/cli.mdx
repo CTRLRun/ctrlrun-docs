@@ -166,6 +166,8 @@ Usage: ctrlrun inspect [OPTIONS] [ACTION_ID]
 Options:
   --grant TEXT      Show this grant's budgets instead: consumed, held, and what
                     holds it.
+  --hop TEXT        Show this hop or delegation instead: who issued it, and what
+                    each link narrowed.
   --json            Emit one JSON object instead.
   --store-url TEXT  The store to open. Default: $CTRLRUN_STORE_URL, else the
                     SQLite database beside the policy (.ctrlrun/state.db, or

@@ -1,5 +1,5 @@
 {
-  "guarantees": 24,
+  "guarantees": 27,
   "released": "0.9.0",
   "soak": {
     "actions": 889735,
@@ -9,6 +9,6 @@
     "positive_control": true,
     "unexplained": 0
   },
-  "tests": 5975,
+  "tests": 6033,
   "version": "0.9.0"
 }
