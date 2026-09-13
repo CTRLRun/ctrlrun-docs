@@ -83,7 +83,8 @@ class Badge:
 
 #: The row, in reading order: how often it is cloned, what it is, how often it is installed,
 #: where it is documented, that it builds, is analysed and is fuzzed, that its own suite is this
-#: big, that its guarantees were checked, how its supply chain scores, and the licence. Every entry is a
+#: big, that its guarantees were checked, how its supply chain scores, which best practices it
+#: self-certifies (each answer is a URL a reader can check), and the licence. Every entry is a
 #: claim a reader can follow to the thing that measured it; an entry that is not stops being a
 #: badge and becomes decoration, which is the test the three removed ones failed.
 BADGES: tuple[Badge, ...] = (
@@ -136,6 +137,11 @@ BADGES: tuple[Badge, ...] = (
         "OpenSSF Scorecard",
         "https://api.scorecard.dev/projects/github.com/CTRLRun/ctrlrun/badge",
         "https://scorecard.dev/viewer/?uri=github.com/CTRLRun/ctrlrun",
+    ),
+    Badge(
+        "OpenSSF Best Practices",
+        "https://www.bestpractices.dev/projects/14615/badge",
+        "https://www.bestpractices.dev/projects/14615",
     ),
     Badge(
         "License",
