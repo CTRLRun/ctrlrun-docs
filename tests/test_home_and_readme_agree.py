@@ -42,22 +42,38 @@ def _readme() -> str:
 
 
 def test_the_readme_opens_with_the_homepage_h1_and_lede():
+    """In sequence, not merely present: the README's prose opens with the H1 and the lede
+    follows it directly. Prose before the H1, or the lede ahead of it, fails here."""
     head = _prose(_readme().split("\n## ", 1)[0])
     h1 = _homepage(r'<h1 id="cr-title">(.*?)</h1>')
     lede = _homepage(r'<p className="cr-lede">(.*?)</p>')
 
     assert h1.startswith("CTRLRun ") and h1.endswith("."), h1
-    assert h1 in head, f"the README header does not carry the homepage H1: {h1!r}"
-    assert lede in head, f"the README header does not carry the homepage lede: {lede!r}"
+    assert head.startswith(h1), f"the README does not open with the homepage H1: {head[:120]!r}"
+    after_h1 = head[len(h1) :].lstrip()
+    assert after_h1.startswith(lede), (
+        f"the homepage lede does not follow the H1 directly: {after_h1[:120]!r}"
+    )
+
+
+def _diagram_steps() -> list[str]:
+    """The step names as the diagram draws them, in source order. The file carries the diagram
+    twice, wide and narrow, so the two sequences have to agree and one of them is the answer."""
+    names = re.findall(
+        r'className="cr-dia-name"[^>]*>([^<]+)<', DIAGRAM.read_text(encoding="utf-8")
+    )
+    assert names and len(names) % 2 == 0, names
+    wide, narrow = names[: len(names) // 2], names[len(names) // 2 :]
+    assert wide == narrow, f"the wide and narrow diagrams name different steps: {wide} vs {narrow}"
+    return wide
 
 
 def test_the_readme_walks_the_homepage_seven_steps_in_order():
     """The diagram names seven steps, normalize to record. The README's *How it works* is the
     same walk in prose, and a step the diagram gained or lost is a step the README follows."""
-    diagram = DIAGRAM.read_text(encoding="utf-8")
-    steps = ["Normalize", "Decide", "Approve", "Reserve", "Execute", "Resolve", "Record"]
-    for step in steps:
-        assert f"<b>{step}</b>" in diagram or f">{step}<" in diagram, step
+    steps = _diagram_steps()
+    assert len(steps) == 7, steps
+    assert steps[0] == "Normalize" and steps[-1] == "Record", steps
 
     section = _readme().split("## How it works", 1)[1].split("\n## ", 1)[0]
     positions = [section.find(f"**{step}:") for step in steps]
