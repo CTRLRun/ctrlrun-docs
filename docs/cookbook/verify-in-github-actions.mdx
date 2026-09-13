@@ -4,8 +4,8 @@ description: "Run ctrlrun verify against your policy on every push with the CTRL
 ---
 
 Your policy lives in the repository with the agent. Every push should prove the guarantees it
-declares still hold against it, in a scratch store, with no network, and fail the build if one
-does not. That is one workflow step.
+declares still hold against it, in a scratch store, reaching nothing outside the runner, and
+fail the build if one does not. That is one workflow step.
 
 ## The policy
 
@@ -62,8 +62,8 @@ by tag where you want a ref nobody can move.
 The agent sees nothing; this is the operator's check. The build sees:
 
 ```text
-CTRLRun verify — ctrlrun 0.6.1, catalogue ctrlrun.guarantees/v2
-policy     /home/runner/work/agent/agent/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
+CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v5
+policy     /private/var/folders/gp/jrq5dccs6xldv1jw839n7dsw0000gn/T/tmpmax85d9e/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
 authority  none
 store      sqlite, scratch (created and destroyed for this run)
 
@@ -78,8 +78,36 @@ G8   expired authority refused        N/A   no authority section
 G9   delegation cannot escalate       N/A   no authority section
 G10  unknown exception is ambiguous   PASS  k8s.delete_namespace
 G11  an altered receipt is detected   PASS  k8s.delete_namespace
+G12  a byte written is ambiguous      PASS  k8s.delete_namespace
+G13  clock divergence is named        N/A   the store verify was given reads only the application's clock, so there is no second clock to diverge from; pass --store-url postgresql://… to grade this
+G14  token changes across a renewal   PASS  k8s.delete_namespace (attempt 1 and its renewal carry different tokens)
+G15  renewal past the ceiling refused N/A   no action verify can drive to allow or approve declares both `effect:` and `max_attempts`
+G16  a moved fingerprint is refused   PASS  k8s.delete_namespace
+                                            (verify supplies its own precondition provider; whether
+                                            your @protect declares one is in your code, which verify
+                                            does not read. The gateway and the ACS hook cannot name a
+                                            provider at all, and refuse an approval that carries a
+                                            fingerprint)
+G17  an unentitled approver refused   N/A   no cited control names an approver role
+G18  the requester cannot approve     PASS  k8s.delete_namespace
+G19  one principal counts once        N/A   no action requires more than one approval
+G20  revoked before its exp: no       PASS  k8s.delete_namespace
+                                            (G20 is graded against a revocation feed verify supplies:
+                                            whether this deployment configures one is a fact about its
+                                            own code, which verify cannot read)
+G21  unapproved policy decides no     PASS  stripe.refund
+                                            (G21 is graded with require_approved_policy set by verify:
+                                            whether this deployment sets it is a fact about its own
+                                            code, which verify cannot read)
+G22  held budget refuses next reserve N/A   no authority section
+G23  a failing scope provider refuses N/A   no action this configuration admits carries a resource
+G24  grant refused off its task       N/A   no authority section
+                                            (a token is unique only as far as your effect keys are:
+                                            two stores sharing a provider account must not produce the
+                                            same effect-key string for different effects, and nothing
+                                            here can check that)
 
-9/9 declared guarantees pass. 2 not applicable: G8, G9.
+15/15 declared guarantees pass. 9 not applicable: G8, G9, G13, G15, G17, G19, G22, G23, G24.
 ```
 
 The first line is on stderr, from G7's own scenario driving an action with no principal — the
@@ -88,9 +116,9 @@ the first action that fits each scenario in alphabetical order; which one appear
 about it. The `policy` line is the resolved absolute path, so yours will differ.
 
 
-Two guarantees are not applicable because the policy has no `authority:` section; they are
-listed with the reason and excluded from the denominator. Green means nothing that could be
-checked was wrong.
+Four guarantees are not applicable: no `authority:` section (G8, G9), no second clock in a
+scratch store (G13), no `max_attempts` to refuse past (G15). Each is listed with its reason and
+excluded from the denominator. Green means nothing that could be checked was wrong.
 
 ## The receipt
 

@@ -87,7 +87,7 @@ def test_the_verify_page_says_what_not_applicable_means():
     page = " ".join(_repository_file(VERIFY_DOC).split())
 
     assert "Not applicable is not a pass" in page
-    assert "never `11/11`" in page
+    assert "never `16/16`" in page
     assert "no flag that folds an N/A into the count" in page
     assert "declared guarantees pass" in page
 

@@ -129,6 +129,8 @@ ANOTHER_SUBJECT: dict[str, tuple[str, ...]] = {
         "one `Control` each. `SPEC-v0.1.md` §8's frozen signature is amended in the same change, as the",  # noqa: E501
         "- **`WebhookApprovalProvider`** — core, over stdlib `urllib.request`. One signed POST on",
         "`APPROVAL_REQUESTED`; the gateway serves the signed inbound grant/deny at",
+        # v0.7 item 3: "the executor signature" is a function's parameters, not a receipt.
+        "re-derives it and a `reconcile` hook reads the attempt off the record. The executor signature is",  # noqa: E501
     ),
     "docs/THREAT_MODEL.md": (
         "| A forged or tampered token | `JWTIdentityProvider` verifies the signature against a JWKS or a pinned key, with the algorithm taken from its own allow-list and never from the token (RFC 8725 §3.1) |",  # noqa: E501

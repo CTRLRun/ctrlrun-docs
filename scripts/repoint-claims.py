@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Re-derive every line number in `docs/docs/CLAIMS.md` from the code it cites.
+"""Re-derive every line number in `docs/CLAIMS.md` from the code it cites.
 
 The table cites `file.py:NNN`, and `test_the_claims_table_line_numbers_point_at_what_they_name`
 requires the cited line to be where a named symbol is **defined**. Every commit that shifts a
@@ -34,11 +34,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools" / "docs_audit"))
 
-from claims import citations  # noqa: E402  — the path above is what makes it importable
+from _core import CORE_ROOT  # noqa: E402  — the path above is what makes it importable
+from claims import citations  # noqa: E402
 
 
 def main() -> int:
-    claims = ROOT / "docs" / "docs" / "CLAIMS.md"
+    claims = ROOT / "docs" / "CLAIMS.md"
     rows = claims.read_text(encoding="utf-8").splitlines(keepends=True)
     unresolved: list[str] = []
     repointed = 0
@@ -49,7 +50,7 @@ def main() -> int:
             if not cited.names:
                 unresolved.append(f"{cited.filename}:{cited.line} names no symbol at all")
                 continue
-            source = ROOT / "src" / "ctrlrun" / cited.filename
+            source = CORE_ROOT / "src" / "ctrlrun" / cited.filename
             if not source.exists():
                 continue
             lines = source.read_text(encoding="utf-8").splitlines()

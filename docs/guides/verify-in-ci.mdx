@@ -4,8 +4,8 @@ description: "Run ctrlrun verify against your policy on every push with the CTRL
 ---
 
 `ctrlrun verify` runs the kernel's own failure scenarios against your policy, in a scratch
-store, with fake executors and no network, and reports what passed, what failed, and what it
-could not check. In CI that is one step, and the badge it writes means one thing: the declared
+store, with fake executors and nothing reached outside the runner. It reports what passed,
+what failed, and what it could not check. The badge it writes means one thing: the declared
 guarantees pass.
 
 **Prerequisites:** a repository with a `ctrlrun.yaml`, and GitHub Actions.
@@ -32,8 +32,8 @@ guarantees pass.
     ```
 
     ```text
-    CTRLRun verify — ctrlrun 0.6.1, catalogue ctrlrun.guarantees/v2
-    policy     /home/you/agent/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
+    CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v5
+    policy     /private/var/folders/gp/jrq5dccs6xldv1jw839n7dsw0000gn/T/tmpdi6bvpqd/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
     authority  none
     store      sqlite, scratch (created and destroyed for this run)
 
@@ -48,19 +48,46 @@ guarantees pass.
     G9   delegation cannot escalate       N/A   no authority section
     G10  unknown exception is ambiguous   PASS  k8s.delete_namespace
     G11  an altered receipt is detected   PASS  k8s.delete_namespace
+    G12  a byte written is ambiguous      PASS  k8s.delete_namespace
+    G13  clock divergence is named        N/A   the store verify was given reads only the application's clock, so there is no second clock to diverge from; pass --store-url postgresql://… to grade this
+    G14  token changes across a renewal   PASS  k8s.delete_namespace (attempt 1 and its renewal carry different tokens)
+    G15  renewal past the ceiling refused N/A   no action verify can drive to allow or approve declares both `effect:` and `max_attempts`
+    G16  a moved fingerprint is refused   PASS  k8s.delete_namespace
+                                                (verify supplies its own precondition provider; whether
+                                                your @protect declares one is in your code, which verify
+                                                does not read. The gateway and the ACS hook cannot name a
+                                                provider at all, and refuse an approval that carries a
+                                                fingerprint)
+    G17  an unentitled approver refused   N/A   no cited control names an approver role
+    G18  the requester cannot approve     PASS  k8s.delete_namespace
+    G19  one principal counts once        N/A   no action requires more than one approval
+    G20  revoked before its exp: no       PASS  k8s.delete_namespace
+                                                (G20 is graded against a revocation feed verify supplies:
+                                                whether this deployment configures one is a fact about its
+                                                own code, which verify cannot read)
+    G21  unapproved policy decides no     PASS  stripe.refund
+                                                (G21 is graded with require_approved_policy set by verify:
+                                                whether this deployment sets it is a fact about its own
+                                                code, which verify cannot read)
+    G22  held budget refuses next reserve N/A   no authority section
+    G23  a failing scope provider refuses N/A   no action this configuration admits carries a resource
+    G24  grant refused off its task       N/A   no authority section
+                                                (a token is unique only as far as your effect keys are:
+                                                two stores sharing a provider account must not produce the
+                                                same effect-key string for different effects, and nothing
+                                                here can check that)
 
-    9/9 declared guarantees pass. 2 not applicable: G8, G9.
-    ```
+    15/15 declared guarantees pass. 9 not applicable: G8, G9, G13, G15, G17, G19, G22, G23, G24.
+```
 
-    Two things about that output. The first line is on **stderr**, from G7's own scenario: it
-    drives an action with no principal and the refusal logs, which is the guarantee passing and
-    not a problem. And every row names `k8s.delete_namespace` rather than the refund — verify
-    exercises one action per guarantee and takes the **first that fits, in alphabetical order**,
-    so which of your actions appears is not a judgement about it.
+    The first line is on **stderr**, from G7's own scenario: an action with no principal is
+    refused and the refusal logs, which is the guarantee passing. Every row names
+    `k8s.delete_namespace` because verify takes the **first action that fits, in alphabetical
+    order**.
 
-    Two guarantees are not applicable: this policy has no `authority:` section, so nothing
-    about grants can be exercised. They are reported with the reason, excluded from the
-    denominator and listed separately. Never `11/11`, and no flag folds them in.
+    Four guarantees are not applicable: no `authority:` section (G8, G9), no second clock in a
+    scratch store (G13), no `max_attempts` to refuse past (G15). Each is reported with its
+    reason and excluded from the denominator. Never `16/16`, and no flag folds them in.
   </Step>
 
   <Step title="Add the action">
@@ -121,10 +148,9 @@ acted is invisible to it. The badge does not mean secure, safe, compliant, certi
 - Exit 2, `mode: observe`: verify refuses an observed configuration, because observe mode
   executes what enforce mode would refuse and nothing can be proved about it.
 - Exit 2, *nothing was checked and nothing is claimed*: **no** guarantee was applicable, so
-  `0/0` — which is never a pass. In practice that means an `actions:` map with nothing in it. A
-  policy with one `allow` action and no `approve` rule, no `effect:` template and no grants is
-  not this case: it exits 0 with `4/4` and seven not applicable, because the fail-closed and
-  unknown-outcome guarantees still have something to exercise.
+  `0/0` — which is never a pass. In practice that means an `actions:` map with nothing in it;
+  a policy with one `allow` action still exercises the fail-closed and unknown-outcome
+  guarantees.
 - Exit 1: a guarantee failed. The report names the scenario and the action; that is a bug
   report, not a configuration problem.
 

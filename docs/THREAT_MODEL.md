@@ -61,6 +61,60 @@ they entitled to?* Everything above still holds; these are the threats the secon
 | An unauthenticated principal reaching an authorization decision | `--principal-from-client-info` removed; `AcsControlHook` refuses an `Authority` without an `identity` provider |
 | An environment chosen by the caller | The environment is set once on the `Control` and is never read off the wire |
 
+## In scope — CTRLRun v0.9 adds
+
+The authority model bounded **one action** and never an aggregate: a grant saying
+`amount_lte: 5000` is silent about the thousand actions that each pass it. v0.9 answers *how
+much, over which records, for which task?* Everything above still holds.
+
+| Threat | Control |
+|---|---|
+| An agent draining an account one permitted action at a time | A consequence budget on the grant: a metric, a limit, a rolling window. The sum is consumed when the effect is **reserved**, in the same transaction, so two processes cannot both pass a check and then both spend |
+| A budget check racing its own consumption across hosts | The charge is written inside the reservation's transaction, under a per-grant lock taken in a fixed order on Postgres. Verified multi-process against Postgres, not argued |
+| An agent buying authority by manufacturing ambiguity | An `AMBIGUOUS` effect **holds** its charge until a human or a `reconcile` hook resolves it. Ambiguity is not a refund |
+| A delegation spending its parent's budget over again | Every grant in the chain is charged on every reserve, so a child's spend is its parent's spend |
+| A child grant taking a higher rate than its parent | Containment on both axes: no higher limit, and no **shorter** window, because a shorter window over the same limit is a higher rate |
+| A negative amount refilling a budget | A metric value that is negative, missing, or not an integer is refused, with an event and a receipt. Absence is never counted as zero |
+| An agent reaching for a record that is not its principal's | Where a deployment configures a scope provider, the kernel asks it before reserving anything, and refuses `out_of_scope`. This is the bite on an identifier an attacker chose |
+| A scope source that is down failing open | `scope_unavailable`, a distinct refusal from `out_of_scope`, fail-closed. Observe mode reports which |
+| A grant or delegation issued for one unit of work being spent on another | `tasks:` on a grant, attenuated by the same `child ⊆ parent` rule as every other dimension |
+
+### What a budget does not do
+
+Stated here because a limit reads like more of a defence than it is.
+
+- **A budget cannot recall an action already in flight.** The window rolls forward, and a
+  reservation taken a second before it rolls commits regardless. A budget bounds what may
+  *start*, never what has started.
+- **A budget is fail-closed against its own principal.** An agent that can manufacture
+  ambiguity can pin a budget it is not entitled to spend, because R2 holds the charge until a
+  human resolves it. That is a denial of service against the operator's own agents, and it is
+  the deliberate side of the trade: the alternative is an agent that manufactures authority.
+- **A budget counts a metric an operator named**, an argument on the action. It is not a
+  consequence model: nothing ranks, scores or classifies what an action means, and a budget on
+  `amount` says nothing about an action whose damage is not in that field.
+- **A budget is per store.** Two deployments sharing a provider account and not a store each
+  enforce their own, and the provider sees the sum.
+- **A budget is not a rate limit on the remote.** It bounds authority, not traffic.
+
+### What a scope provider does not do
+
+- **It is worth what its source is worth.** It is the operator's own code answering from the
+  operator's own system of record. A poisoned source answers wrongly and the kernel cannot tell.
+- **The residual gap `SPEC-v0.7.md` states for preconditions applies unchanged**: the check
+  cannot run inside the atomic reservation write, so a record that changes hands in the window
+  between the answer and the reservation is not caught.
+- **Only the hash of the answer reaches the receipt.** An auditor can prove the scope was the
+  one the kernel matched against, and cannot read what it contained.
+
+### What task binding does not do
+
+- **It limits blast radius; it does not detect a hijack.** The task id is supplied by the
+  caller, and an agent talked into a different goal is usually still inside the task it was
+  legitimately given. `ASI01` stays partial for this reason.
+- **It does not propagate across agent hops.** A grant is evaluated where the action is
+  proposed; `docs/ROADMAP.md` puts propagation in v0.10.
+
 ## Out of scope — CTRLRun does not defend against
 
 - A compromised CTRLRun process, host, or Python environment.
@@ -73,7 +127,7 @@ they entitled to?* Everything above still holds; these are the threats the secon
 - Bypassing the decorator entirely (calling the raw function). v0.2 gateway mode narrows this; process-level enforcement is out of scope.
 - **A compromised identity provider.** CTRLRun *consumes* identities: it verifies a token somebody else issued and maps the verified claims onto a `Principal`. It issues nothing, and an issuer that signs a token for the wrong subject has told CTRLRun the truth as far as CTRLRun can tell. Everything downstream — grants, delegation, receipts — is then wrong, correctly and consistently.
 - **A `HeaderIdentityProvider` behind a proxy that does not overwrite the header.** It is worth exactly what the thing setting it is worth, and RFC 7239 §8.1 says the same of the header it standardizes. If the agent can set the header, the agent chooses its own authority. It warns at construction and it is still the operator's call.
-- **A revoked token before its `exp`.** There is no revocation channel: a verified token is valid until it expires, which is why one with no `exp` is refused. Shared-signals mechanisms exist and v0.3 implements none of them. Short lifetimes are the whole of the story.
+- **A revoked token before its `exp`, where no feed is configured.** Without one, a verified token is valid until it expires, which is why one with no `exp` is refused, and short lifetimes are the whole of the story. Since v0.8 a deployment may pass `JWTIdentityProvider(revocations=...)` a feed of Security Event Tokens, and a credential the issuer revoked is then refused at resolution. Two things that closes less than they sound: **a revoked credential leaves a log line and no receipt**, because resolution happens before an action exists, where an *expired* one leaves a receipt; and **a feed is worth what its source is worth**. Somebody who can write the file, or stand in front of the poll endpoint, can refuse the operator's own agents at will, which is a denial of service against them and is fail-closed. They cannot admit a principal the issuer revoked: the feed is only ever consulted to refuse, and there is no path on which its answer makes an otherwise-invalid credential valid.
 - **A tenant-templated issuer.** `issuer` is matched as an exact string, so a multi-tenant endpoint cannot be configured correctly here. Pointing it at one without pinning the tenant makes every tenant on that platform a valid issuer — stated because the fail-open is inviting.
 - **Authority across an agent-to-agent hop.** A grant covers the principal CTRLRun resolved for *this* call. Propagating attenuated authority across hops is v0.10.
 - **Approving an authority change.** `ctrlrun delegate --as` is an assertion typed at a shell, not an authentication; the record keeps `created_via` so a reader can tell an act from an assertion. Authenticating the *approver* remains out of scope, as in v0.1.
@@ -189,6 +243,40 @@ model. They shipped in 0.2.0 and every one of them describes behaviour you can r
   hash, so an approval survives a token rotation — and equally, a claim that changed between
   proposal and execution does not invalidate one. Matching a grant on a claim is out of scope
   (§13): it needs an answer to "what does a missing claim mean" that v0.3 does not have.
+
+## Known v0.7 limitations
+
+- **A precondition fingerprint narrows the window between a human's approval and the action's
+  execution, and does not close it.** The recheck is a network call to the operator's provider,
+  so it runs strictly before `consume_approval_and_reserve` and cannot run inside it. A change
+  to the resource that lands after the comparison and before the reservation is **not** refused.
+  What the mechanism buys is the difference between minutes of human deliberation and
+  milliseconds of kernel work, which is worth having and is attribution rather than prevention.
+  `ctrlrun verify`'s G16 grades a change made before the comparison, because that is the half a
+  correct kernel refuses; the residual half is pinned by a test (`SPEC-v0.7.md` §6.7) and is not
+  graded, because there is nothing there for a correct kernel to do.
+- **The `NotExecuted` classifier speaks only for the requests it sent.** `ctrlrun.transport`
+  claims `NotExecuted` only where a connection it opened was handed no request byte and no send
+  went out anywhere in the executor run. It can only see **this library's own sends**. An
+  executor that sends part of the effect through `requests`, through httpx directly, or on a raw
+  socket, and then uses the classifier, can be handed a claim that is true of these connections
+  and false of the effect. So can one that raises a claim while a sibling thread's request is
+  still in flight. The claim holds where every request of the effect goes through the classifier
+  on the executor's context, and the module says so where a reader would look. The error is in
+  the same direction as the integration bug above, and for the same reason it is the most
+  dangerous one available.
+- **A classifier that cannot observe does not claim, and that costs true refusals.** Outside an
+  executor run nothing is claimed at all, and a send on a thread that did not copy the
+  executor's context marks *every* open run, so an unrelated concurrent run can lose a claim it
+  was entitled to. Both are deliberate: the cost is `AMBIGUOUS` where `FAILED` was true, never
+  the other way round.
+- **A reused `action_id` leaves late writes attributable to the wrong attempt.** Attempt numbers
+  never repeat since v0.7, on every backend, but a transition still names its holder by
+  `action_id` alone. A caller that rebuilds the same `Action` after a retry reuses the id, so a
+  write from a lapsed attempt can land on a newer one. `SPEC-v0.7.md` §12.3a states the
+  consequences, including the one where a late `FAILED` permits a renewal beside a dispatch that
+  is still running, and records why the fix is a schema change deferred rather than an
+  unavailable one.
 
 ## Disclosure
 

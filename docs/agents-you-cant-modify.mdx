@@ -1,0 +1,111 @@
+---
+title: "Control AI agents you can't modify"
+sidebarTitle: "Agents you can't modify"
+description: "WhatsApp, Slack and Teams bots, Claude Code, Cursor, Codex, ChatGPT: if an agent acts through your tools or API, CTRLRun checks the action first."
+---
+
+CTRLRun works with agents you can't modify as well as the ones you can, because it checks the
+action, not the agent. A WhatsApp, Slack or Teams bot, Claude Code, Cursor or Codex, a ChatGPT
+connector, a no-code builder: if the agent's actions reach a tool server or an API you run,
+CTRLRun sits at that point and decides each one before it runs. The agent is not rebuilt,
+redeployed or told. That is [the principle](/docs/why): autonomy belongs to the action, not the
+agent. If you own the agent's code, [Three ways in](/docs/get-started/three-ways-in) covers it.
+
+## Which agents does this cover?
+
+It depends on where the action goes, not on who built the agent.
+
+| The agent | For example | Where CTRLRun goes |
+|---|---|---|
+| Connects to a tool server you choose | A hosted assistant with a custom MCP connector | `ctrlrun gateway`, between the agent and the server |
+| Calls an API you own | A custom action, an OpenAPI tool, a webhook step in a no-code builder | `@ctrlrun.protect` on the handler that acts |
+| Acts with its platform's own built-in tools | Meta AI sending a WhatsApp message | Nowhere directly; the last section below says what to do instead |
+
+The first two cover most business agents. The third is the one to check before you plan.
+
+## Which agents, by name?
+
+Any AI agent you have. An unlisted tool is covered like the row it resembles.
+
+| Kind | Examples | How CTRLRun covers it |
+|---|---|---|
+| Coding agents | Claude Code, Cursor, Codex, GitHub Copilot, Windsurf, Gemini CLI | Point their MCP config at the gateway. Their own shell and file edits do not pass through it; the MCP tools you give them do |
+| Hosted assistants | ChatGPT, Claude.ai, Microsoft Copilot, Gemini | A custom connector or action points at a public gateway or a protected API |
+| Chat platform bots | WhatsApp, Slack, Teams, Telegram, Discord, Intercom, Zendesk | The bot calls your backend, where `@protect` decides |
+| No-code builders | Zapier, n8n, Make, Lindy, Voiceflow, Botpress, Agentforce, Copilot Studio | An HTTP or webhook step calls a protected endpoint |
+| Frameworks you own | LangGraph, OpenAI Agents SDK, CrewAI, AutoGen, LlamaIndex | One decorator, or an adapter where the framework has its own approval primitive |
+
+## How do I put the gateway in front of a hosted agent?
+
+Point the agent's connector at the gateway instead of at the tool server. The gateway decides
+every `tools/call` against your policy and relays everything else untouched. The command is an
+illustration; the hostnames are invented.
+
+```bash
+ctrlrun gateway --upstream https://tools.internal.example/mcp --alias acme \
+  --listen 0.0.0.0:8900 --allow-remote --principal support-bot
+```
+
+Three things change when the agent runs on a vendor's servers rather than yours:
+
+- **The gateway must be reachable from outside.** It listens on loopback unless you pass
+  `--allow-remote`, and it speaks plain HTTP, so put HTTPS in front of it.
+- **Name who is acting.** `--principal` fixes one name for a single bot. `--identity-jwt` takes
+  the agent from a verified bearer token when several bots share one gateway.
+- **A refusal is an answer the agent can read.** A `deny` comes back as `ctrlrun.denied`, an
+  `approve` as `ctrlrun.approval_required`. Once a person grants it, the identical call goes
+  through, and a changed one does not.
+
+A coding agent on your own machine is simpler: the gateway stays on loopback and the agent's
+MCP config points at it. The walkthrough, policy included, is
+[Put the gateway in front of MCP](/docs/guides/gateway-in-front-of-mcp).
+
+## How do I protect an API the agent calls?
+
+Decorate the function that acts. You change your backend, not the agent: whichever bot called
+the endpoint, the refund is decided before it leaves. The provider call is elided.
+
+```python
+import ctrlrun
+
+@ctrlrun.protect("stripe.refund", effect="refund:{payment_id}")
+def refund(payment_id: str, amount: int) -> dict:
+    ...  # the call to the payment provider
+
+def handle_refund_request(body: dict) -> dict:  # the route the vendor's bot calls
+    with ctrlrun.context(agent="whatsapp-support-bot"):
+        # A refusal raises before refund() runs; answer the bot with it.
+        return refund(payment_id=body["payment_id"], amount=body["amount"])
+```
+
+The same holds for `crm.update_record` behind a webhook step, or `email.send` behind a custom
+action. [Protect a function](/docs/guides/protect-a-function) has the version that runs.
+
+## What about the platform's own built-in actions?
+
+When a platform's agent uses the platform's own tool, the call starts and ends inside the
+platform. Meta AI sending a WhatsApp message never touches anything you run, so nothing you run
+can check it, CTRLRun included. The way to a yes is to move the capability, not to intercept it:
+
+1. **Take the built-in away.** Turn off the native action, or run the agent under an account
+   with no write access to the system that matters.
+2. **Give it back as your tool.** Add the same capability as a custom action or connector that
+   points at the gateway or a protected endpoint.
+3. **Now there is one way through,** and it is checked.
+
+Whether a platform allows both halves is a fact about that platform. Consumer assistants usually
+allow neither.
+
+## What this page does not claim
+
+- **A platform's audit log is not control.** A record of what already happened cannot keep an
+  action to at most once and exactly as approved.
+- **One path has not been run end to end yet:** a hosted client, through a public gateway, to a
+  tool server that requires OAuth. Whether a strict client accepts a login discovery document
+  naming the server rather than the gateway is open; the [roadmap](/docs/ROADMAP) records it.
+
+## Next
+
+- [Put the gateway in front of MCP](/docs/guides/gateway-in-front-of-mcp): the policy and the two commands.
+- [Three ways in](/docs/get-started/three-ways-in) · [Why](/docs/why).
+- [Not only agents](/docs/not-only-agents): the same failure with no model in it.

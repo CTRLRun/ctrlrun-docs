@@ -172,9 +172,11 @@ Pragmas: `journal_mode=WAL`, `busy_timeout=5000`, `synchronous=NORMAL`.
 | `authority.py` | `Grant`, `Subject`, `Authority`, matching, containment, delegation planning | approvals, effect state, executors, sinks |
 | `approval.py` | request/grant/consume, providers | executors |
 | `adapter.py` | `FrameworkInterrupt`, `PendingApproval`, `ApprovalAnswer`, `InterruptApprovalProvider`, `needs_approval`, `banner` | the policy evaluator, authority, effect state, executors, sinks, any framework |
-| `effect.py` | key templating, state enum, transition rules | SQLite |
+| `effect.py` | key templating, state enum, transition rules, the idempotency token from `(effect_key, attempt)` | SQLite |
+| `transport.py` | the transport half of SPEC-v0.1 §5.5's asymmetry: what a transport observed, what that records, and the counting connections for `http.client` and `urllib` | policy, approvals, storage, sinks, `Control`, anything from an extra |
 | `migrations.py` | the schema, the ordered migration list, the runner, and whether a database may open at all | policy, decorator, sinks, `Control` |
 | `state.py` | `StateStore` protocol + SQLite/in-memory impls | policy, decorator, sinks |
+| `postgres.py` | the `StateStore` on Postgres, its migrations, its lost-commit resolution, and the clock it measures against this host's | policy, decorator, sinks |
 | `control.py` | `Control` orchestration, decorator, context, suspend/resume | CLI |
 | `receipt.py` | Receipt/Event models, `EventSink`, JSONL sink | everything else |
 | `verify/` | the guarantee registry, scenario derivation, the scratch store, reporting | the gateway, `otel`, `jwt_identity`; anything from an extra |
@@ -197,6 +199,15 @@ The gateway (v0.2) does not change this. It builds an Action and calls `Control`
 itself. A gateway that owned the reservation would be a second module composing the others,
 and a second implementation of SPEC-v0.1 §5.5's asymmetry, which is the one rule in this
 codebase that must not drift.
+
+v0.7 narrows that asymmetry on one path, in both places at once so they cannot drift apart:
+**a continuation leg never records `FAILED`**. A continuation exists only because the remote
+answered once already and is holding the exchange, so nothing on the second leg can truthfully
+say the remote did nothing. `Control.resume` opens its executor run already marked, so
+`transport.py` will not claim there, and the gateway refuses `FAILED` for every path that could
+reach it on a continuation, an operator's `not_executed_on_error` included. An executor's own
+`NotExecuted` is still believed; what changed is that nothing in the library hands it one
+(SPEC-v0.7 §12.2.12).
 
 The same holds for authority (v0.3). `authority.py` reads the store through the `StateStore`
 protocol and **writes nothing and appends nothing**: `Authority.evaluate` returns a result and
@@ -231,9 +242,20 @@ v0.3 makes the same exception once more, for the same reason: `authority.py` imp
 condition parser and evaluator (`Condition`, `parse_conditions`) from `policy.py`, because a
 grant's `constraints:` is in exactly a rule's `when:` syntax and the two axes MUST share one
 evaluator (SPEC-v0.3 §4.5). A second condition evaluator would be a second place for `True` to
-start comparing equal to `1`. `policy.py` does not import `authority.py`, so there is no cycle,
-and policy still cannot see a principal: `agent_eq` and every other reserved name are still
-refused at load (§4.7).
+start comparing equal to `1`. Policy still cannot see a principal: `agent_eq` and every other
+reserved name are still refused at load (§4.7).
+
+**The sentence that followed that one said *`policy.py` does not import `authority.py`, so there
+is no cycle*, and a v0.7 review found it is no longer true.** `policy.py` reaches
+`authority.py` from inside two functions, `state.py` imports `receipt.py`, `receipt.py` imports
+`policy.py` and `authority.py` imports `state.py`, so there is a cycle:
+`state` → `receipt` → `policy` → `authority` → `state`. It does not break `import ctrlrun`,
+because the two edges out of `policy.py` are function-level and run after every module is
+loaded, which is exactly why it went unnoticed. What it costs is this section's own rule: with
+the cycle in place *dependencies point downward only* is a statement about import order rather
+than about the module map, and the map is what a reader uses to work out what may know about
+what. Whether to break it, and which edge to break, is a **named item before v1.0** on the
+roadmap rather than a change made in a release pass. Recorded 2026-09-12.
 
 ## 7. What changes after v0.1 (and what doesn't)
 

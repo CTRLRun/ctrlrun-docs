@@ -16,7 +16,7 @@
 .cr-site .cr-eyebrow,.cr-site .cr-step { font-size:10px; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-weight:600; letter-spacing:.12em; line-height:1.6; color:var(--cr-muted); }
 .cr-site .cr-eyebrow { margin-bottom:20px; }
 .cr-dot { color:var(--cr-accent); }
-.cr-lede .cr-mark { color:var(--cr-accent); font-weight:600; }
+.cr-lede .cr-mark,.cr-site h1 .cr-mark { color:var(--cr-accent); font-weight:600; }
 .cr-hero { padding:80px 0 52px; max-width:830px; }
 .cr-hero h1 { margin-bottom:25px; }
 .cr-site .cr-lede { margin-top:24px; font-size:21px; color:var(--cr-ink); letter-spacing:-.015em; }
@@ -262,8 +262,8 @@ body:has(.cr-site) { --topbar-tabs-height:0px; }
 .cr-home .cr-button,.cr-try-page .cr-button,.cr-home .cr-text-link,.cr-try-page .cr-text-link { font-size:14px; }
 .cr-home .cr-home-hero { display:grid; grid-template-columns:1fr 1.1fr; gap:72px; align-items:start; padding:64px 0 84px; }
 .cr-home-pitch { padding-top:30px; }
-.cr-home h1 { font-size:clamp(40px,4.7vw,60px); line-height:1.08; }
-.cr-home .cr-lede { font-size:22px; line-height:1.55; max-width:430px; }
+.cr-home h1 { font-size:clamp(34px,3.3vw,46px); line-height:1.12; }
+.cr-home .cr-lede { font-size:18px; line-height:1.6; max-width:480px; }
 .cr-home .cr-actions { gap:18px 24px; margin:36px 0 0; }
 .cr-site .cr-hero-aside { margin-top:30px; font-size:14px; line-height:1.6; color:var(--cr-muted); }
 .cr-hero-aside a { color:var(--cr-accent); font-weight:550; text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px; }
@@ -304,11 +304,13 @@ body:has(.cr-site) { --topbar-tabs-height:0px; }
 .cr-try-page .cr-boundary-note { font-size:13px; }
 /* Keep documentation tools in documentation; product pages use the main links. The rule
    named two of the four product pages, so risk-check and protect-my-agent carried a docs
-   search box the other two did not. `.cr-subpage` is the other two. */
-body:has(.cr-home) #search-bar-entry,body:has(.cr-home) #assistant-entry,
+   search box the other two did not. `.cr-subpage` is the other two.
+   The homepage is the exception: Ask Assistant stays, because a first visitor asks a
+   question before they know which page answers it. Search still belongs to the docs. */
+body:has(.cr-home) #search-bar-entry,
 body:has(.cr-try-page) #search-bar-entry,body:has(.cr-try-page) #assistant-entry,
 body:has(.cr-subpage) #search-bar-entry,body:has(.cr-subpage) #assistant-entry,
-body:has(.cr-home) #search-bar-entry-mobile,body:has(.cr-home) #assistant-entry-mobile,
+body:has(.cr-home) #search-bar-entry-mobile,
 body:has(.cr-try-page) #search-bar-entry-mobile,body:has(.cr-try-page) #assistant-entry-mobile,
 body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-entry-mobile { display:none; }
 @media (max-width:1000px) {
@@ -318,7 +320,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 @media (max-width:800px) {
   .cr-home .cr-home-hero { grid-template-columns:1fr; padding:44px 0 60px; gap:40px; }
   .cr-home .cr-section { padding:72px 0; }
-  .cr-home h1 { font-size:clamp(38px,7vw,56px); }
+  .cr-home h1 { font-size:clamp(30px,6vw,40px); }
   .cr-home .cr-section-heading { align-items:flex-start; flex-direction:column; }
 }
 @media (max-width:600px) {
@@ -366,6 +368,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-site .cr-example-label { margin:0 0 12px; font:600 12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.07em; color:var(--cr-accent); }
 
 .cr-how-intro { max-width:780px; margin-bottom:48px; }
+.cr-site .cr-how-lede { margin:0; max-width:80ch; font-size:15.5px; line-height:1.7; color:var(--cr-muted); }
 .cr-site .cr-how-intro h2 { margin:0 0 24px; letter-spacing:-.03em; }
 /* How it works: the boundary, drawn. Two ends we do not own, one box we do. */
 /* How it works, drawn. Two variants: the wide one keeps seven stages on one spine, the
@@ -428,7 +431,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-site .cr-commercial-head h3 { font-size:23px; letter-spacing:-.02em; margin:0 0 10px; }
 .cr-site .cr-commercial-head p { margin:0; font-size:14.5px; line-height:1.7; color:var(--cr-muted); }
 .cr-site .cr-commercial-head h2 + p { margin-top:14px; }
-.cr-tiers { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+.cr-tiers { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
 .cr-tier { display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:24px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-paper); min-width:0; }
 .cr-tier .cr-step { color:var(--cr-accent); }
 .cr-site .cr-tier h3 { font-size:21px; letter-spacing:-.02em; margin:0; }
@@ -436,8 +439,9 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-site .cr-tier-body { margin:0; font-size:14px; line-height:1.7; color:var(--cr-muted); }
 .cr-site .cr-tier-who { display:flex; flex-wrap:wrap; gap:4px 10px; margin:2px 0 0; font-size:13.5px; color:var(--cr-ink); }
 .cr-tier-who span { font:600 10px/2 ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--cr-muted); }
-.cr-tier .cr-button { margin-top:6px; }
-.cr-tier-open { border-color:var(--cr-accent); }
+.cr-tier > .cr-button { margin-top:auto; }
+.cr-tier-action { display:flex; flex-direction:column; align-items:flex-start; gap:10px; width:100%; margin-top:auto; }
+.cr-tier:has(.cr-tier-form) { border-color:var(--cr-accent); }
 .cr-tier-form { width:100%; margin-top:6px; }
 .cr-tier-form fieldset { display:flex; flex-direction:column; gap:12px; border:0; margin:0; padding:0; }
 .cr-tier-form .cr-button { align-self:flex-start; }
@@ -445,7 +449,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-site .cr-tier-done { margin:6px 0 0; padding:14px 16px; border:1px solid var(--cr-accent); border-radius:5px; font-size:14px; line-height:1.65; color:var(--cr-ink); background:var(--cr-panel); }
 .cr-site .cr-commercial > .cr-caption { margin-top:18px; }
 .cr-commercial .cr-caption a { text-decoration:underline; text-underline-offset:3px; }
-@media (max-width:800px) {
+@media (max-width:1000px) {
   .cr-tiers { grid-template-columns:1fr; }
 }
 .cr-site .cr-surfaces { list-style:none; padding:0; margin:34px 0 0; display:flex; flex-direction:column; gap:20px; }
@@ -468,7 +472,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 }
 @media (max-width:600px) {
   .cr-home .cr-home-hero { padding:36px 0 52px; gap:34px; }
-  .cr-home .cr-lede { font-size:19px; }
+  .cr-home .cr-lede { font-size:17px; }
   .cr-how-intro { margin-bottom:32px; }
 }
 
@@ -491,8 +495,8 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
   align-items:center;
 }
 .cr-home .cr-home-pitch { padding-top:0; }
-.cr-home h1 { font-size:clamp(42px,4.6vw,64px); }
-.cr-home .cr-lede { max-width:480px; margin-top:30px; }
+.cr-home h1 { font-size:clamp(34px,3.3vw,46px); }
+.cr-home .cr-lede { max-width:520px; margin-top:24px; }
 .cr-home .cr-hero-context { margin-top:24px; max-width:460px; font-size:15px; line-height:1.75; }
 .cr-home .cr-actions { margin-top:36px; }
 .cr-site .cr-hero-oneline { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin-top:26px; font-size:12px; line-height:1.6; }
@@ -503,6 +507,42 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-home .cr-failure-chain { padding:32px; }
 .cr-home .cr-chain { gap:20px; }
 .cr-home .cr-chain-steps { grid-template-rows:repeat(3,minmax(60px,auto)); }
+/* Agents you can and can't modify: one compact band across both hero columns, so it is read
+   with the pitch and the first slide still fits a 720px-tall screen. */
+.cr-home > .cr-home-hero { row-gap:28px; }
+.cr-site .cr-any-agent { position:relative; grid-column:1 / -1; display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:10px 28px; padding:14px 22px; border:1px solid var(--cr-line); border-radius:6px; background:var(--cr-paper); text-decoration:none; transition:border-color .15s; }
+.cr-site .cr-any-agent:hover { border-color:var(--cr-accent); }
+.cr-site .cr-any-agent h2 { margin:0; font-size:clamp(17px,1.45vw,20px); line-height:1.25; letter-spacing:-.015em; white-space:nowrap; }
+.cr-site .cr-any-agent p { margin:0; font-size:14px; line-height:1.5; }
+.cr-any-agent p b { color:var(--cr-ink); font-weight:600; }
+.cr-any-agent-link { color:var(--cr-accent); font-size:14px; font-weight:600; white-space:nowrap; text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px; }
+.cr-any-agent:hover .cr-any-agent-link { text-decoration-thickness:2px; }
+/* The card was one <a> wrapping heading, paragraph and link: 205 characters of anchor text for
+   one destination. The link is now just its own words, stretched over the card so the whole of
+   it still clicks. */
+.cr-any-agent-link::after { content:""; position:absolute; inset:0; border-radius:6px; }
+.cr-site .cr-any-agent:focus-within { border-color:var(--cr-accent); }
+@media (max-width:1100px) {
+  .cr-site .cr-any-agent { grid-template-columns:minmax(0,1fr) auto; }
+  .cr-site .cr-any-agent p { grid-column:1 / -1; grid-row:2; }
+}
+@media (max-width:600px) {
+  .cr-site .cr-any-agent { grid-template-columns:1fr; padding:16px 16px 16px 20px; }
+  .cr-site .cr-any-agent h2 { white-space:normal; }
+  .cr-site .cr-any-agent p { grid-row:auto; }
+}
+/* The band costs the first slide about 90px. On a short screen the pitch gives it back. */
+@media (max-height:950px) and (min-width:1101px) {
+  .cr-slides-active .cr-home .cr-home-pitch > .cr-eyebrow { margin-bottom:12px; }
+  .cr-slides-active .cr-home .cr-lede { margin-top:18px; }
+  .cr-slides-active .cr-home .cr-hero-context { margin-top:16px; }
+  .cr-slides-active .cr-home .cr-actions { margin-top:24px; }
+  .cr-slides-active .cr-home .cr-hero-oneline { margin-top:16px; }
+  .cr-slides-active .cr-home .cr-hero-aside { margin-top:16px; }
+  .cr-slides-active .cr-home .cr-example-label { margin-bottom:10px; }
+  .cr-slides-active .cr-home .cr-failure-chain { padding:22px 26px; }
+  .cr-slides-active .cr-home .cr-chain-steps { grid-template-rows:repeat(3,minmax(50px,auto)); }
+}
 .cr-home > .cr-home-how { display:flex; flex-direction:column; justify-content:center; min-height:0; padding-block:64px; }
 .cr-home .cr-section-heading { margin-bottom:32px; align-items:center; }
 .cr-home .cr-how-intro { max-width:820px; margin-bottom:44px; }
@@ -510,6 +550,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 .cr-site .cr-how-after { margin-top:44px; text-align:right; }
 .cr-home .cr-how-after .cr-text-link { font-size:15px; }
 .cr-home .cr-how-intro h2 { font-size:clamp(28px,3.4vw,40px); line-height:1.15; }
+.cr-site .cr-home .cr-how-lede { font-size:16px; }
 .cr-home .cr-planned-work { display:grid; grid-template-columns:100px minmax(0,1fr); gap:24px; margin-top:28px; padding:22px 0; border-block:1px solid var(--cr-line); }
 .cr-home .cr-planned-work > .cr-step { padding-top:3px; }
 .cr-home .cr-planned-work > div { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; }
@@ -539,7 +580,7 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
   .cr-home > .cr-home-hero,.cr-home > .cr-section { min-height:0; padding-block:64px; }
   .cr-home > .cr-home-hero { grid-template-columns:1fr; gap:44px; }
   .cr-home .cr-home-pitch { max-width:580px; }
-  .cr-home h1 { font-size:clamp(40px,7vw,56px); }
+  .cr-home h1 { font-size:clamp(30px,6vw,40px); }
   .cr-home .cr-section-heading { align-items:flex-start; gap:16px; }
   .cr-home .cr-integration { grid-template-columns:1fr; gap:40px; }
   .cr-home .cr-planned-work { grid-template-columns:1fr; gap:16px; }
@@ -559,15 +600,20 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 }
 
 
-/* Native slide snapping keeps wheel and touch scrolling available, including
-   sections taller than a small viewport. The controller adds keyboard navigation. */
-html.cr-slides-active { scroll-snap-type:y mandatory; scroll-padding-top:var(--cr-slide-top,64px); }
-.cr-slides-active .cr-home > section {
-  min-height:var(--cr-slide-height,calc(100svh - 64px));
-  scroll-snap-align:start;
-  scroll-snap-stop:always;
-  scroll-margin-top:0;
-  padding-block:clamp(28px,4svh,48px);
+/* Native slide snapping on desktop: wheel and trackpad scrolling stay the browser's, the
+   controller adds keyboard navigation and the dots. Phones and tablets get the plain page.
+   The controller only adds the class under the same query, and the query here guards the
+   rules themselves: mandatory snapping over sections taller than the screen made every
+   flick re-snap mid-scroll. */
+@media (min-width:801px) and (hover:hover) {
+  html.cr-slides-active { scroll-snap-type:y mandatory; scroll-padding-top:var(--cr-slide-top,64px); }
+  .cr-slides-active .cr-home > section {
+    min-height:var(--cr-slide-height,calc(100svh - 64px));
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    scroll-margin-top:0;
+    padding-block:clamp(28px,4svh,48px);
+  }
 }
 .cr-slides-active .cr-home > .cr-home-how { justify-content:center; }
 .cr-slide-dots {
@@ -624,7 +670,8 @@ html.cr-slides-active { scroll-snap-type:y mandatory; scroll-padding-top:var(--c
   .cr-slides-active .cr-home > section { padding-block:24px; }
   .cr-slides-active .cr-home .cr-how-intro { margin-bottom:26px; }
   .cr-slides-active .cr-home .cr-how-intro h2 { font-size:clamp(24px,2.5vw,32px); margin-bottom:0; max-width:none; }
-  .cr-slides-active .cr-home .cr-diagram { max-height:calc(100svh - 290px); }
+  .cr-slides-active .cr-home .cr-how-lede { margin-top:12px; font-size:14.5px; line-height:1.6; }
+  .cr-slides-active .cr-home .cr-diagram { max-height:calc(100svh - 420px); }
   .cr-slides-active .cr-home .cr-commercial-head { margin-bottom:20px; }
   .cr-slides-active .cr-home .cr-commercial-head h2 { font-size:clamp(22px,2.3vw,28px); }
   .cr-slides-active .cr-home .cr-tier { padding:18px 20px; gap:8px; }
@@ -636,12 +683,6 @@ html.cr-slides-active { scroll-snap-type:y mandatory; scroll-padding-top:var(--c
 @media (max-width:1400px) {
   .cr-slides-active .cr-home { padding-inline:64px; }
   .cr-slide-dots { right:8px; }
-}
-@media (max-width:800px) {
-  .cr-slides-active .cr-home { padding-left:20px; padding-right:52px; }
-  .cr-slide-dots { right:0; gap:0; }
-  .cr-slide-dot { width:6px; height:6px; }
-  .cr-slide-dots [aria-current="step"] .cr-slide-dot { height:20px; }
 }
 @media (prefers-reduced-motion:reduce) {
   .cr-slide-dot,.cr-slide-dot-label { transition:none; }

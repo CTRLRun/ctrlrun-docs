@@ -20,10 +20,12 @@ Rules, stated once here and in `STYLE.md`:
 - A `yaml runnable` block is loaded with `Policy.from_yaml`, and with `Authority.from_yaml`
   when it carries an `authority:` section, and is then written to `ctrlrun.yaml` — or to the
   name given by a `file=<name>` token, which any block may carry.
-- **No network.** Every subprocess gets a `sitecustomize` that refuses sockets, name resolution
-  and connections, the same guard `tests/test_examples.py` puts under the examples. A snippet
-  that reaches for the network fails here rather than in a reader's terminal, where it would
-  fail differently.
+- **No network.** Every subprocess gets a `sitecustomize` that refuses every connection except
+  one to a loopback listener the process bound itself, which is the library's own
+  `tests/conftest.py` guard character for character. A snippet that reaches for the network
+  fails here rather than in a reader's terminal, where it would fail differently. The one
+  exception is what `ctrlrun verify`'s G12 needs: a peer on `127.0.0.1` at a port this process
+  bound, which is not a network and never leaves the host (SPEC-v0.7 §12.2.7).
 
 Exit status is the number of failures, capped at 1.
 """
@@ -47,29 +49,139 @@ TIMEOUT_SECONDS = 120
 
 #: Installed as `sitecustomize` on the subprocess's `PYTHONPATH`. Replacing the socket *type*
 #: with a function breaks anything that subclasses it — `ssl` does — so the refusal goes on
-#: the operations, exactly as `tests/test_examples.py` does it.
-NO_NETWORK = """\
+#: the operations. **This is `tests/conftest.py`'s `_NO_NETWORK_GUARD` in the library,
+#: verbatim.** It refused every connect until v0.7, and `ctrlrun verify` then needed a
+#: loopback peer for G12, so a snippet running verify exited 3 on a correct kernel. Two
+#: guards of different widths is the drift the library's own fixture exists to prevent, so
+#: this is a copy of that one rather than a second rule: IPv4 to the literal `127.0.0.1`, at
+#: a port this process bound through a stream socket that is still open, and nothing else.
+#:
+#: **A review finding declined here on purpose, recorded rather than left to be rediscovered.**
+#: `_bound` forgets a pair when the socket that holds it closes, detaches or is collected, so
+#: a snippet that closed the *descriptor* behind the socket's back — `os.close(sock.fileno())`
+#: — would leave the pair admitted while the port went back to the kernel. That is true, and it
+#: is true of the library's guard too, because this is the same text. **Fixing it here and not
+#: there would fork the two guards again**, which is the whole defect this copy exists to
+#: remove (SPEC-v0.7 §12.2.7, §12.2.11), and the edit belongs in `tests/conftest.py` applied to
+#: both at once. It is also not what this guard defends against: it runs the snippets in this
+#: repository's own pages, not code somebody else supplied, and reaching the gap needs a
+#: snippet that deliberately closes a file descriptor out from under a live socket.
+NO_NETWORK = '''\
+"""Imported by `site` at startup: no connection except to a loopback listener bound here."""
+
 import socket
+import weakref
 
 _real = socket.socket
+_real_create_connection = socket.create_connection
+_real_getaddrinfo = socket.getaddrinfo
+_LOOPBACK = "127.0.0.1"
+#: (host, port) -> the ids of the open *stream* sockets that bound it, taken from getsockname()
+#: after the bind, so a bind to port 0 is recorded at the port the kernel chose. A datagram bind
+#: is never recorded, because TCP and UDP ports are separate spaces: a UDP bind to a port another
+#: process's TCP listener holds must admit nothing there. And a pair is forgotten when the last
+#: socket holding it closes, detaches or is collected, because the kernel may hand a released
+#: port to another process at once.
+_bound = {}
 
 
-class _Refusing(_real):
-    def connect(self, *args, **kwargs):
-        raise RuntimeError("a documentation snippet tried to connect; snippets run offline")
-
-    def connect_ex(self, *args, **kwargs):
-        raise RuntimeError("a documentation snippet tried to connect; snippets run offline")
-
-
-def _refuse(*args, **kwargs):
-    raise RuntimeError("a documentation snippet tried to resolve a name; snippets run offline")
+def _forget(pair, holder):
+    holders = _bound.get(pair)
+    if holders is not None:
+        holders.discard(holder)
+        if not holders:
+            del _bound[pair]
 
 
-socket.socket = _Refusing
-socket.create_connection = _refuse
-socket.getaddrinfo = _refuse
-"""
+def _refuse(what):
+    raise RuntimeError(f"tried to {what}; this process runs with no network")
+
+
+def _literal(address):
+    """The one address admitted: a two-element tuple whose host is the string "127.0.0.1".
+
+    Every `AF_UNIX` address is a path and every IPv6 address a four-element tuple or another
+    string, so neither is ever this, and both are refused by this check alone. There is no
+    separate family check: it would refuse exactly what this refuses, with the same message.
+    """
+    return (
+        isinstance(address, tuple)
+        and len(address) == 2
+        and type(address[0]) is str
+        and address[0] == _LOOPBACK
+    )
+
+
+def _admitted(address):
+    return _literal(address) and bool(_bound.get((address[0], address[1])))
+
+
+class _Guarded(_real):
+    """A socket that binds only to 127.0.0.1 and connects only to what the process bound.
+
+    Replacing the *type* with a function breaks anything that subclasses it, and `ssl` does, so
+    the refusal goes on the operations instead.
+    """
+
+    def bind(self, address):
+        if not _literal(address):
+            _refuse(f"bind {address!r}")
+        super().bind(address)
+        if self.type == socket.SOCK_STREAM:
+            pair = tuple(self.getsockname()[:2])
+            _bound.setdefault(pair, set()).add(id(self))
+            self._guard_release = weakref.finalize(self, _forget, pair, id(self))
+
+    def _release(self):
+        release = getattr(self, "_guard_release", None)
+        if release is not None:
+            release()
+
+    def close(self):
+        self._release()
+        super().close()
+
+    def detach(self):
+        self._release()
+        return super().detach()
+
+    def connect(self, address):
+        if self.type != socket.SOCK_STREAM or not _admitted(address):
+            _refuse(f"connect to {address!r}")
+        return super().connect(address)
+
+    def connect_ex(self, address):
+        if self.type != socket.SOCK_STREAM or not _admitted(address):
+            _refuse(f"connect to {address!r}")
+        return super().connect_ex(address)
+
+    def sendto(self, *args):
+        if self.type != socket.SOCK_STREAM:
+            _refuse(f"send a datagram {args[-1]!r}")
+        return super().sendto(*args)
+
+    def sendmsg(self, *args):
+        if self.type != socket.SOCK_STREAM:
+            _refuse("send a datagram")
+        return super().sendmsg(*args)
+
+
+def _create_connection(address, *args, **kwargs):
+    if not _admitted(address):
+        _refuse(f"connect to {address!r}")
+    return _real_create_connection(address, *args, **kwargs)
+
+
+def _getaddrinfo(host, *args, **kwargs):
+    if type(host) is not str or host != _LOOPBACK:
+        _refuse(f"resolve {host!r}")
+    return _real_getaddrinfo(host, *args, **kwargs)
+
+
+socket.socket = _Guarded
+socket.create_connection = _create_connection
+socket.getaddrinfo = _getaddrinfo
+'''
 
 
 @dataclass(frozen=True)

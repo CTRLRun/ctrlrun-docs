@@ -199,14 +199,63 @@ among and contradicted by.
 
 Standards: none new.
 
-## v0.7 — Execution boundary
+## Agents you cannot modify: no version line (page ✅ shipped, one run owed)
+
+Added 2026-09-11, recorded here rather than left implicit, because the question keeps arriving
+in the form "does this work with a WhatsApp agent, a Slack agent, a hosted OpenAI or Claude
+agent I only configure". The answer is a property of what already ships, not a feature to build,
+and a roadmap that never states it leaves every reader to derive it from `v0.2 §6.3`.
+
+**The claim, worded so it can be tested.** CTRLRun controls any agent whose consequential
+actions pass through a tool or an API the operator runs. The agent's code, language, framework
+and vendor do not enter into it: the gateway checks a `tools/call` on the wire (v0.2), and
+`@protect` checks a call at the endpoint that acts (v0.1). An agent nobody can program, a
+no-code builder, a vendor's bot on WhatsApp or Slack, a hosted assistant with a custom
+connector, all reach their tools the same way, and that is where the check is. It is the same
+sentence the v0.2 adoption story already makes, *existing MCP server + one CTRLRun gateway =
+action safety*, with the agent named as the thing that does not matter.
+
+**Where it stops, stated so nobody sells past it.** An action that never leaves the platform,
+Meta AI sending a WhatsApp message, Slack's own assistant posting to a channel, passes nothing
+the operator runs and is not interceptable by anything, this project included. The way to a
+yes there is deployment, not code: remove the platform's built-in capability from the agent,
+give the same capability back as a custom tool pointing at the gateway or at a protected
+endpoint, and the built-in call has become a gated one. Whether a given platform allows both
+halves is a fact about that platform, and the per-platform answers are connector work on the
+commercial track below, not kernel work here. Audit logs and event feeds a platform emits after
+the fact are observation and are never described as control; the four rules are about what may
+happen, and none of them can be kept for an action that has already happened.
+
+**What this track owes, all of it documentation and proof, none of it a guarantee.** A page
+beside `not-only-agents` stating the three cases (the agent connects to a tool server you
+choose; the agent calls an API you own; the agent uses its platform's built-ins) and the
+remove-and-replace pattern: **shipped 2026-09-11** as
+[`docs/agents-you-cant-modify`](/docs/agents-you-cant-modify), linked from the home page and
+the enterprise deck covers under the line *Works with agents you can and can't modify*, and saying on
+the page that the run below has not happened. And one end-to-end run, **still owed**, of a hosted MCP client through a public
+gateway (`--allow-remote`, TLS in front, `--identity-jwt` for the principal) to a tool server
+that requires OAuth, because `v0.2 §6.3` relays `Authorization` and the `401` challenge
+untouched while the tool server's protected-resource metadata names the tool server's URL and
+the client connected to the gateway's, and nobody has yet watched a strict client resolve that.
+If the run passes it is a cookbook recipe; if it does not, a gateway that publishes its own
+resource metadata is a kernel change, and it arrives as its own specification amendment on its
+own version line after v1.0, reviewed on its own merits, as the *Beyond v1.0* rule requires.
+
+It gates no release and none gates it. It adds no public name, no flag and no guarantee ID.
+
+Standards: none new. RFC 9728 is consumed by the tool server, not by the gateway, and this
+track does not change that unless the run above says it must.
+
+## v0.7 — Execution boundary ✅ shipped
 
 Every guarantee shipped so far is a guarantee about what happens *inside* CTRLRun. But the kernel does not decide whether the remote side acted — an executor does, by raising `NotExecuted` or not. It does not own the clock its leases are measured against, once the store is on another host. It does not know whether the world still looks the way it did when a human said yes. v0.7 asks what the kernel owes at each of those edges.
 
 - **A transport classifier in core.** `FAILED` versus `AMBIGUOUS` is the one decision this project exists to get right, and the kernel does not make it — the user's executor does. The correct rule is already written and already implemented, in the gateway's `outcome.py`: the connection was never established, or the peer said in band and before dispatch that it rejected the request; everything after the first byte is `AMBIGUOUS`. It is reachable today only by installing `ctrlrun[gateway]`, while `@protect` — the surface the README leads with — gets a docstring. One rule, one implementation, reachable from core.
 - **Clock-skew detection.** v0.6 moved the store to another host so several hosts could share it; lease liveness stayed on the application clock. Skew is fail-closed and therefore quiet — a host running ahead marks a live reservation `AMBIGUOUS` while its real holder is mid-flight and about to succeed, and nothing names the cause. This makes divergence observable. It does not change how a lease is evaluated.
 - **A provider idempotency token**, derived from the effect key *and the attempt number*. Derived from the effect key alone it would be stable across v0.1 §5.4's renewal, and a provider would replay its cached failure for the one retry the kernel permits precisely because the executor proved nothing happened. Its main value is a deterministic handle for reconciliation to observe with — not a licence for anything to act twice.
-- **A ceiling on renewal after `FAILED`.** There is none today: one human approval plus an executor that always reports "nothing happened" is unlimited dispatches, each recorded as an ordinary retry. An operator-set policy key, and an amendment to §5.4 written as an amendment.
+- **A ceiling on renewal after `FAILED`.** There is none today: an executor that always reports "nothing happened" renews without bound, each dispatch recorded as an ordinary retry. An operator-set policy key, and an amendment to §5.4 written as an amendment. **The key is the operator's and there is no default**: an entry that declares no `max_attempts` renews without bound, exactly as at 0.6.1, and no value of the key means "unlimited". Where an entry does declare one, G15 grades the refusal of a renewal past it.
+
+  **The sentence that stood here said *one human approval plus an executor that always reports "nothing happened" is unlimited dispatches*, and building item 4 proved it wrong in enforce mode. Corrected here rather than quietly rephrased.** One granted approval buys one dispatch: every renewal of an approved action needs a new granted approval, so the human is asked again each time. "Granted" is not always a person (a scripted provider, an automated `wait=True` loop and approvals granted ahead of a gateway all count), and observe mode needs none. The case the ceiling actually exists for is **the action the policy allows outright**, which renews without anyone being asked at all. What the ceiling bounds is that, plus renewals on the `ALLOW` path and the reconcile route; `SPEC-v0.7.md` §5.5 records that an adapter can still put a human in front of an attempt the ceiling will then refuse, which costs a wasted answer and never an execution.
 - **Precondition fingerprints.** An approval binds to an action hash and an expiry, and to nothing about the world it was granted against. A human approves a deletion when the balance is zero; thirty minutes later it is not, and the action hash has not moved. The operator supplies a fingerprint, it is hashed through the canonicalizer so raw resource state never reaches a receipt, and it is rechecked before the reservation. **It narrows the window between decision and execution; it does not close it** — the recheck cannot run inside the atomic reservation write, so a residual gap remains, and that sentence appears wherever the feature does.
 
 Exit: `ctrlrun.guarantees/v3` — G12 a byte written and the peer killed is `AMBIGUOUS`, never `FAILED`, by a classifier that observes rather than infers · G13 skew between the store's clock and a host's is named, with a positive control that stays silent when the clocks agree · G14 the provider token changes across a renewal, provably · G15 a renewal past the operator's ceiling is refused · G16 a precondition whose fingerprint has moved is refused before the reservation — each with a positive control, each `N/A` with a reason where the configuration names no ceiling or no fingerprint. And the precondition recheck documented as narrowing everywhere it is described.
@@ -219,7 +268,7 @@ Standards: none new.
 
 **Renumbered on 2026-09-10, and the reason is recorded here rather than made silently.** The chain below used to run *boundary → multi-agent → hardening → 1.0*, and nowhere in it did the kernel learn who may say yes or how much. An approval is a string somebody typed; a grant limits one action and says nothing about a thousand of them. Both are what a reader means by governance, and the homepage now says *action governance* — so the two milestones that make it true go in, before multi-agent, because propagating authority across hops needs authority that can be bounded and a yes that can be attributed underneath it. Nothing already shipped moves. A2A moves once more, to v0.10, and v0.10 says why. The homepage H1 stays *Execution safety for AI agents* until v0.9 exits; `internal/POSITIONING.md` carries that gate.
 
-## v0.8 — Oversight
+## v0.8 — Oversight ✅ shipped
 
 One question: who may say yes, and can the kernel tell?
 
@@ -241,7 +290,7 @@ Exit: `ctrlrun.guarantees/v4` — G17 unentitled approver refused · G18 self-ap
 
 Standards: none new. RFC 8935 and RFC 8936 (SSF push and poll delivery) and CAEP are consumed as code; they appear in a mapping doc only after the test above exists, and "SSF-compatible" is unearned until a conformance suite says otherwise.
 
-## v0.9 — Envelope
+## v0.9 — Envelope ✅ shipped
 
 One question: how much, over which records, for which task?
 
@@ -257,7 +306,29 @@ Do not build: a consequence taxonomy — a budget names a metric, not a class ·
 
 Exit: `ctrlrun.guarantees/v5` — G22 a budget exhausted by ambiguity refuses the next reserve until reconciled, and releases on `FAILED`, under the v0.6 multi-process standard against Postgres · G23 a scope provider that raises leaves nothing reserved and nothing executed · G24 a task-bound grant is refused on a task it does not name, by name — each with a positive control, each `N/A` with a reason on a grant that carries no budget, no scope, or no task.
 
-**This is the gate for the homepage.** The H1 stays *Execution safety for AI agents* until v0.9 exits. After it, *action governance* is true in code, and only then does the category line move up.
+**Reconciled against what shipped.** Three things differed from this section, and each is
+recorded where it was decided rather than quietly adjusted here.
+
+- **A budget is a metric, a limit and a window.** This section said "a metric, a scope and a
+  window", which conflated two of v0.9's three dimensions: a budget bounds an aggregate and a
+  scope provider answers about a record, and nothing about the budget is scoped.
+- **Scope providers are a second hook, not the precondition mechanism.** This section said they
+  would go "through v0.7's fingerprint mechanism". They do not: `SPEC-v0.9.md` §5.2.1 records the
+  amendment to `SPEC-v0.7.md` §6.9 and the three mechanical differences that justify it, the
+  first being that a precondition answers *has this changed* and a scope answers *is this yours*.
+  A deployment may declare both over the same mapping, which is why the scope hash carries its
+  own domain tag.
+- **Two refusals, not one.** `scope_unavailable` and `out_of_scope` are distinct reasons, because
+  a deployment whose scope source is down and one whose agent reached for somebody else's record
+  are different incidents, and observe mode reported the wrong one until an independent review
+  found it.
+
+The exit criteria are met: `ctrlrun.guarantees/v5`, G22, G23 and G24, each with a positive
+control and each `N/A` with a true reason on a configuration that carries no budget, scope or
+task. All three PASS on `examples/authority/payments.yaml`, so the milestone's own guarantees are
+graded on what this repository ships rather than only on a fixture.
+
+**This is the gate for the category line, and it used to be the gate for the H1.** Recorded 2026-09-12: the H1 moved ahead of v0.9, to *CTRLRun stops AI agents from taking wrong, restricted, or malicious actions in your workflows*, because it states what the shipped kernel does today and claims nothing about authority. *Action governance* still waits: after v0.9 it is true in code, and only then does the category line move up.
 
 Standards: none new.
 
@@ -276,21 +347,25 @@ Standards: A2A, as code. No conformance claim.
 One question: can the record be trusted after the fact, and kept?
 
 - **An external anchor for the receipt chain.** The chain detects alteration and says on every page that it does not detect truncation or append — both measured at two statements, undetected, because the head is a row in the same database. v0.11 anchors the head outside the database at an interval (an RFC 3161 timestamp, or an equivalent the operator supplies) so a suffix erased or appended between two anchors is detected and named, in the same vocabulary as the six existing break kinds. No keys of its own: it consumes a timestamp and issues nothing, which is why it is here and signing is not.
-- **Retention and legal hold.** There is no retention policy today and `docs/postgres.md` says so, while `docs/CONTROL-MAPPING.md` maps receipt retention to a clause. v0.11 pays that debt: a chain-preserving prune that leaves a checkpoint receipt verifiable across the gap, and a hold that refuses to prune, both recorded as receipts themselves.
+- **Retention and legal hold.** There is no retention policy today and `docs/postgres.md` says so, while `docs/CONTROL-MAPPING.md` maps receipt retention to a clause. v0.11 pays that debt: a chain-preserving prune that leaves a checkpoint receipt verifiable across the gap, and a hold that refuses to prune, both recorded as receipts themselves. **v0.9 adds a second growing table and states the invariant rather than the command**: the budget ledger only grows, and `SPEC-v0.9.md` §7.3 says that rows older than the longest window on any budget of a grant cannot affect a future decision, so somebody else's archiving is safe. One caveat travels with it, because the invariant is about decisions and not about evidence: an `AMBIGUOUS` effect older than that window still **holds** a charge the operator surfaces display, so an archiver on a live ledger excludes un-released rows. `ctrlrun stats` reports the row count so the growth is visible before it matters.
 - **Enforcement coverage.** From events already written: policy entries never exercised, gateway tools never routed, `@protect` actions never seen. The runtime half of `ctrlrun scan`, under the same rule — a clean result is not a verdict, no score, no percentage, no badge.
-- **One chain, several receipt schemas.** `ctrlrun.receipt/v3` is the schema today, and the rule since `SPEC-v0.3.md` §12.2 is that every reader upgrades before any writer switches, so an older receipt on disk still parses. v0.8 (the verified approver; the grant id under break-glass) and v0.9 (budget consumption) each add fields and each bump the version, so a chain kept across the upgrades holds receipts of three shapes — and nothing yet proves that `verify` walks it end to end, hash by hash, each receipt hashed by the rule its own version wrote. v0.11 proves it, here, because this is the milestone about whether the record can be trusted after the fact. No new field: the version string already exists. What is new is the test, and the rule that a receipt whose version the binary does not know is *named* and not reported as a break — which is the same distinction v0.6 §3.2 draws for a `schema_version` row the binary does not know. Added 2026-09-10.
+- **One chain, several receipt schemas.** `ctrlrun.receipt/v4` is the schema today, and the rule since `SPEC-v0.3.md` §12.2 is that every reader upgrades before any writer switches, so an older receipt on disk still parses. v0.8 (the verified approver; the grant id under break-glass) and v0.9 (budget consumption) each add fields and each bump the version, so a chain kept from v0.6 across them holds **four receipt schema versions**: `v3`, which 0.6 wrote, `v4`, which v0.7 added, and the two that follow. This sentence said *three shapes* and named `v3` as the schema today. It was written before v0.7's precondition fields bumped the schema, and v0.7's release pass corrects it here rather than quietly. And nothing yet proves that `verify` walks it end to end, hash by hash, each receipt hashed by the rule its own version wrote. v0.11 proves it, here, because this is the milestone about whether the record can be trusted after the fact. No new field: the version string already exists. What is new is the test, and the rule that a receipt whose version the binary does not know is *named* and not reported as a break — which is the same distinction v0.6 §3.2 draws for a `schema_version` row the binary does not know. Added 2026-09-10.
+
+- **A malformed value in a receipt row blinds every reader of the chain, and one `UPDATE` is enough.** Found while building v0.7's item 5, deferred there with a written decision, and named here because it is the evidence surface and this is the evidence milestone. A receipt whose *schema label* is unknown, and a receipt carrying an *added key*, are each reported at their `seq` and leave every other row readable. A malformed **value** of a key the schema declares is not: a float among a receipt's `controls` raises out of `Receipt.from_dict`, so `ctrlrun receipts`, `receipts --verify-chain`, `ctrlrun inspect`, `ctrlrun stats` and `G11` all stop together, and a single tampered row hides the whole document rather than naming itself. 0.6.1 behaves the same way and v0.7 neither introduced nor widened it. Fixing it needs one of two things, and both are amendments rather than patches: a new name in `CHAIN_BREAKS`, which is a closed set on a `SPEC-v0.6.md` §6.5 surface, or a reader that walks raw rows and reports per row without constructing a `Receipt` at all. `SPEC-v0.7.md` §12.5 carries the argument. Added 2026-09-12.
 
 **Does not close.** Authorship. An anchor proves the log existed in this form at that time; it does not prove who wrote it, and a malicious administrator who rewrites everything before the next anchor is still out of scope. Signed receipts stay off the roadmap for the reason `SPEC-v0.6.md` §11 gives.
 
 Do not build: a SIEM · dashboards over receipts · a receipt query language · export formats beyond JSON and OTel.
 
-Exit: the truncation and append cases that `SPEC-v0.6.md` §6.4 lists as undetected now detect, with the anchor as the positive control; a prune across a checkpoint verifies; a held range refuses to prune; a chain written across three receipt schema versions verifies end to end, and the checkpoint receipt of a prune carries the version current when it was written.
+Exit: the truncation and append cases that `SPEC-v0.6.md` §6.4 lists as undetected now detect, with the anchor as the positive control; a prune across a checkpoint verifies; a held range refuses to prune; a chain written across four receipt schema versions verifies end to end, and the checkpoint receipt of a prune carries the version current when it was written.
 
 Standards: RFC 3161 consumed as code. None claimed.
 
 ## v0.12 — Hardening
 
 Fuzzing, property tests, concurrency stress, failure injection, benchmarks, upgrade testing, compatibility guarantees, CodeQL/SAST/SBOM/signed artifacts.
+
+- **The import cycle `state` → `receipt` → `policy` → `authority` → `state`, and the sentence in `docs/ARCHITECTURE.md` §6 it contradicts.** Found by a v0.7 review, deferred with a written decision, and named here because deciding which edge to break is design work and not a release pass. `state.py` imports `receipt.py`, `receipt.py` imports `policy.py` for `Decision`, `authority.py` imports `state.py`, and `policy.py` reaches `authority.py` from inside two functions. Nothing is broken at run time: the two edges out of `policy.py` are function-level, so `import ctrlrun` still loads in one order and every test passes, which is why it went unnoticed. What it costs is §6's own rule, **dependencies point downward only**, which is a claim about the module map and not about import order, and the map is what tells a contributor what a module may know about. The candidate fixes are a shared type for `Decision` below both, or moving the two deferred imports out of `policy.py`; each is a public-surface question of its own. `docs/ARCHITECTURE.md` §6 states the cycle where the false sentence was. Added 2026-09-12.
 
 **An external security review is optional and gates nothing, decided 2026-09-10.** It was a line in the list above and a sentence in v1.0's exit; both are gone. A review by a third party is bought, scheduled and scoped by whoever pays for it, and a milestone that waits on a purchase is a milestone with a date nobody on this project controls. If one happens, its scope names the approver path (v0.8) explicitly, because it is the surface a product selling action governance is attacked through, and its report is published beside `docs/how-this-is-built.md` with what it did and did not look at. Until then that page says what has and has not been reviewed, which is the same sentence it says today.
 
@@ -308,7 +383,7 @@ Standards: an EU controls pack, phrased as "technical controls supporting a comp
 
 ## Pro and Enterprise: the commercial layer, its own line
 
-**What the marketing surfaces promise, recorded here so the kernel and the sales pages stop disagreeing.** `ctrlrun.dev`, `/protect-my-agent` and `adopt.ctrlrun.dev` sell two things around the boundary, both closed source: **ctrlrun Pro**, a managed product for centralized governance, and **ctrlrun Enterprise**, Pro plus a scoped engineering engagement. None of it ships in the `ctrlrun` wheel, none of it gates a kernel release, and none of it sits on a kernel version line. The wording every surface uses is "built on ctrlrun's open-source foundation" — never that the managed layer is itself open source.
+**What the marketing surfaces promise, recorded here so the kernel and the sales pages stop disagreeing.** `ctrlrun.dev`, `/protect-my-agent` and `enterprise.ctrlrun.dev` sell two things around the boundary, both closed source: **ctrlrun Pro**, a managed product for centralized governance, and **ctrlrun Enterprise**, Pro plus a scoped engineering engagement. None of it ships in the `ctrlrun` wheel, none of it gates a kernel release, and none of it sits on a kernel version line. The wording every surface uses is "built on ctrlrun's open-source foundation" — never that the managed layer is itself open source.
 
 | Promised on a marketing surface | Where | Status against shipped code |
 |---|---|---|

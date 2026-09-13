@@ -21,6 +21,7 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.ApprovalRequest`](/docs/reference/api/ApprovalRequest) | class | A pending question for a human: may this exact action run? (SPEC-v0.1 §4.1) |
 | [`ctrlrun.ApprovalRequired`](/docs/reference/api/ApprovalRequired) | class | The action needs a human. `request_id` is what `ctrlrun approve` takes (SPEC §4.3). |
 | [`ctrlrun.ApprovalTimeout`](/docs/reference/api/ApprovalTimeout) | class | Nobody answered the approval request in time (SPEC-v0.1 §4.3). |
+| [`ctrlrun.ApproverIdentity`](/docs/reference/api/ApproverIdentity) | class | How a deployment verifies who answered an approval (SPEC-v0.8 §2.3). |
 | [`ctrlrun.Authority`](/docs/reference/api/Authority) | class | The `authority:` section, loaded and evaluable (SPEC-v0.3 §4). |
 | [`ctrlrun.AuthorityDenied`](/docs/reference/api/AuthorityDenied) | class | The principal holds no grant that covers this action (SPEC-v0.3 §4.3). |
 | [`ctrlrun.AuthorityEscalation`](/docs/reference/api/AuthorityEscalation) | class | A delegation that may not exist: it is not contained in its parent (SPEC-v0.3 §5.3). |
@@ -63,16 +64,23 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.StaticIdentityProvider`](/docs/reference/api/StaticIdentityProvider) | class | A fixed principal, for development, tests and single-tenant demonstrations (§3.3). |
 | [`ctrlrun.Subject`](/docs/reference/api/Subject) | class | Who a grant is addressed to: an agent pattern, a user pattern, or both (§4.2). |
 | [`ctrlrun.Suspended`](/docs/reference/api/Suspended) | class | Raised by an executor: the remote asked for something before it will finish. |
+| [`ctrlrun.VerifiedApprover`](/docs/reference/api/VerifiedApprover) | class | Who answered, as the surface that took the answer verified them (SPEC-v0.8 §2.5). |
 | [`ctrlrun.WebhookApprovalProvider`](/docs/reference/api/WebhookApprovalProvider) | class | Notify a human system on `APPROVAL_REQUESTED`, and let it answer (SPEC-v0.2 §7). |
 | [`ctrlrun.action_hash`](/docs/reference/api/action_hash) | function | Return the action hash used to bind approvals to an exact action (SPEC-v0.1 §2.3). |
 | [`ctrlrun.banner`](/docs/reference/api/banner) | function | Log SPEC-v0.3 §6.5's observe banner, once per `Control`. An adapter MUST call it (§3.6). |
 | [`ctrlrun.canonical_bytes`](/docs/reference/api/canonical_bytes) | function | The canonical form of an arbitrary mapping: UTF-8 JSON, sorted keys, no whitespace. |
 | [`ctrlrun.canonicalize`](/docs/reference/api/canonicalize) | function | Return the canonical form of an Action: UTF-8 JSON, sorted keys, no whitespace. |
 | [`ctrlrun.context`](/docs/reference/api/context) | function | Bind the principal for calls made inside the block. |
+| [`ctrlrun.idempotency_token`](/docs/reference/api/idempotency_token) | function | The provider idempotency token for the attempt this executor is running (SPEC-v0.7 §4). |
 | [`ctrlrun.needs_approval`](/docs/reference/api/needs_approval) | function | Does this call need a human? For a framework that asks before it invokes (SPEC-v0.5 §3.5). |
 | [`ctrlrun.parse_conditions`](/docs/reference/api/parse_conditions) | function | Parse a `when:`-shaped mapping into conditions, keyed by the raw condition key. |
 | [`ctrlrun.protect`](/docs/reference/api/protect) | function | Bind a function to an action name: every call becomes a decided, recorded Action. |
 | [`ctrlrun.with_approval`](/docs/reference/api/with_approval) | function | Present a granted approval to the calls made inside the block (SPEC-v0.1 §4.3). |
+| [`ctrlrun.transport.Transport`](/docs/reference/api/transport-Transport) | class | What a transport observed, where no answer came back (SPEC-v0.2 §6.8, SPEC-v0.7 §2.1). |
+| [`ctrlrun.transport.effect_state`](/docs/reference/api/transport-effect_state) | function | The rule (SPEC-v0.7 §2.1): `FAILED` for `NEVER_CONNECTED`, `AMBIGUOUS` for everything else. |
+| [`ctrlrun.transport.urlopen`](/docs/reference/api/transport-urlopen) | function | `urllib.request.urlopen` for `http` and `https`, classified (SPEC-v0.7 §2.3). |
+| [`ctrlrun.transport.HTTPConnection`](/docs/reference/api/transport-HTTPConnection) | class | `http.client.HTTPConnection`, plus `NotExecuted` from `connect()` where it is proven. |
+| [`ctrlrun.transport.HTTPSConnection`](/docs/reference/api/transport-HTTPSConnection) | class | `http.client.HTTPSConnection`, counting above TLS. |
 | [`ctrlrun.postgres.PostgresStateStore`](/docs/reference/api/postgres-PostgresStateStore) | class | Approvals, effects and evidence in a Postgres schema (SPEC-v0.6 §4). |
 | [`ctrlrun.otel.OTelEventSink`](/docs/reference/api/otel-OTelEventSink) | class | Export every `Event` and `Receipt` as OpenTelemetry spans (SPEC-v0.2 §8). |
 | [`ctrlrun.jwt_identity.JWTIdentityProvider`](/docs/reference/api/jwt_identity-JWTIdentityProvider) | class | Verify a bearer JWT and map its verified claims onto a `Principal` (SPEC-v0.3 §3.4). |
@@ -81,6 +89,10 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.verify.run`](/docs/reference/api/verify-run) | function | Run the applicable guarantees against this configuration and report (§9.1). |
 | [`ctrlrun.conformance.run`](/docs/reference/api/conformance-run) | function | Drive every suite through `adapter` and report what each came to (SPEC-v0.5 §5). |
 | [`ctrlrun.conformance.store.run`](/docs/reference/api/conformance-store-run) | function | Drive every case against `backend` and report what each came to (SPEC-v0.6 §2). |
+| [`ctrlrun.state.Charge`](/docs/reference/api/state-Charge) | class | What one reservation spends against one grant's budget (SPEC-v0.9 §3.3.1). |
+| [`ctrlrun.state.Consumption`](/docs/reference/api/state-Consumption) | class | One ledger row, as `consumptions()` hands it back (SPEC-v0.9 §3.3.3, §10). |
+| [`ctrlrun.state.check_charges`](/docs/reference/api/state-check_charges) | function | SPEC-v0.9 §3.3.1's predicate, in one place so three backends cannot drift on it. |
+| [`ctrlrun.authority.Budget`](/docs/reference/api/authority-Budget) | class | How much, over what, in how long (SPEC-v0.9 §2.2). |
 
 ## Next
 

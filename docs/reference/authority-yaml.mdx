@@ -1,6 +1,6 @@
 ---
 title: "Authority YAML reference"
-description: "Every key of the authority: section: max_delegation_depth and grants, and on a grant id, subject (agent, user), actions, resources, constraints."
+description: "Every key of the authority: section: max_delegation_depth, grants and break_glass, and on a grant subject, actions, resources and constraints."
 ---
 
 The `authority:` section says which principal may propose which action. It lives at the top of
@@ -15,6 +15,53 @@ asserts this page names every key the loader accepts.
 |---|---|---|---|
 | `max_delegation_depth` | non-negative integer | `3` | how long a chain of delegations may be; recomputed on every evaluation by walking to the root, never read from the stored row |
 | `grants` | list of grants | **error** if missing | the whole of who may ask |
+| `break_glass` | map of envelope id → envelope | none | since v6: the widest authority an incident may reach, declared in advance. **Never consulted when deciding an action** |
+
+## Break-glass envelopes
+
+An incident needs authority nobody was granted in advance. The wrong answer is a flag: a flag
+leaves no record, expires never, cannot be revoked and cannot be narrowed. What an envelope
+declares is the **ceiling** for a grant opened beneath it during an incident.
+
+```yaml
+authority:
+  grants: []
+  break_glass:
+    incident-payments:
+      subject: { agent: "oncall-*" }       # who a grant opened here may be FOR
+      actions: ["payments.*"]
+      resources: ["payment:*"]
+      constraints: { amount_lte: 50000 }
+      environments: ["prod"]
+      max_ttl: PT4H                        # the longest expiry a grant beneath it may carry
+      controls: [incident-response]        # whose approver_role gates who may OPEN it
+```
+
+| Key | Type | Notes |
+|---|---|---|
+| `max_ttl` | ISO-8601 duration, positive | **required**. `PT4H`, `PT30M`, `PT90S`, `P2D`; months and years are refused, because they are not durations a clock can add without a calendar. Re-checked on every evaluation, so narrowing it cuts grants already open |
+| `controls` | list of control ids | which controls' `approver_role` gates who may open one. A citation that resolves to nothing, or to a control naming no role, is refused: here the citation **is** the gate, so an omission that gates nobody fails closed, which is the opposite of what the same omission means on an action |
+| everything a grant has | | minus `id`, which is the mapping key, and minus `delegable` and `expires_at`, which are **refused by name** |
+
+**The envelope decides nothing, by construction.** It lives in a mapping separate from `grants:`,
+and the candidate set an evaluation walks is `grants:` unconditionally — so an envelope cannot
+authorize an action even by accident. A deployment with an envelope and nothing opened beneath it
+evaluates exactly as one without it.
+
+**It carries no `delegable` and no `expires_at`, and both are load errors.** An envelope exists
+only to be a parent, so "delegable" is what it means rather than a key it sets; and what bounds it
+in time is `max_ttl`, which every grant beneath it obeys. It is covered by the policy hash,
+`max_ttl` included, so widening the widest authority an incident can reach moves every receipt.
+
+**Opening one is an act with its own command**, `ctrlrun break-glass --envelope <id> --file
+grant.yaml --reason "<incident>"`. There is no `--as`: the opener is the principal the deployment's
+approver identity resolves, and a deployment that names none cannot open one at all. A grant opened
+beneath an envelope **must** carry an `expires_at` inside `max_ttl`, is contained on every
+dimension, is revocable, attenuates, and is named on the receipt of every action taken under it.
+
+An id declared in both `grants:` and `break_glass:` is a load error naming both, and a standalone
+`--authority` document may not declare `break_glass` at all: it carries no control registry to
+resolve the gate against, so the only envelope it could express is an ungated one.
 
 ## A grant
 
@@ -28,6 +75,42 @@ asserts this page names every key the loader accepts.
 | `environments` | list of environment names | any environment | `production`, `staging` |
 | `delegable` | `true` or `false` | `false` | whether the holder may narrow this grant at runtime with `ctrlrun delegate`; `true` **requires** `expires_at` |
 | `expires_at` | ISO-8601 timestamp with an offset | never expires | checked at every evaluation, and refused as a naive datetime |
+| `tasks` | list of task-id patterns | **any task** | since v7: the unit of work this authority is for. `refund-run:*`. A grant that omits it authorises any task, so every grant written before v7 keeps its meaning |
+| `budgets` | list of budgets | **bounds no aggregate** | since v7: how much, over how long. Each is `{metric, limit, window}` |
+
+### `budgets`
+
+`constraints` bounds **one action**; a budget bounds the **aggregate**. They are different
+questions, and a grant that answers only the first permits a thousand actions that each pass it.
+
+| Key | Type | Means |
+|---|---|---|
+| `metric` | the name of an action argument | which number is summed. The action must carry it, as an integer: a missing value is refused rather than counted as zero, because absence-as-zero turns a missing field into unlimited authority |
+| `limit` | non-negative integer | what the sum over the window may **reach**. The comparison is inclusive |
+| `window` | ISO-8601 duration, whole seconds | how far back the sum runs, rolling. `PT24H`, `P30D`. Sub-second windows are refused |
+
+```yaml
+budgets:
+  - { metric: amount, limit: 100000, window: PT24H }   # 1,000.00 a day
+  - { metric: amount, limit: 2000000, window: P30D }   # 20,000.00 a month
+```
+
+Two budgets on one metric over two windows is the ordinary shape, and it is one spend measured
+against two windows rather than two spends.
+
+**A budget is consumed when the effect is reserved, in the same transaction**, so two processes
+cannot both pass a check and then both spend. It is released only when the effect reaches
+`FAILED`, which is the one state where the executor proved nothing happened. An `AMBIGUOUS`
+effect **holds** its consumption until a human or a `reconcile` hook resolves it: ambiguity is
+not a refund, because otherwise an agent able to manufacture ambiguity is able to manufacture
+authority. `ctrlrun inspect --grant` shows what is held and what holds it.
+
+A delegation's budget must be **contained** by its parent's: no higher limit, and no *shorter*
+window, because a shorter window over the same limit is a higher rate and therefore more
+authority.
+
+**An action a budgeted grant covers must resolve an effect key.** Without one there is nothing
+to charge against, so the action is refused rather than spending nothing for ever.
 
 A grant carries no `decision:`. How much autonomy an action has is the policy's answer, the same
 for everyone; the grant answers whether this principal may ask at all.
