@@ -131,6 +131,13 @@ ANOTHER_SUBJECT: dict[str, tuple[str, ...]] = {
         "`APPROVAL_REQUESTED`; the gateway serves the signed inbound grant/deny at",
         # v0.7 item 3: "the executor signature" is a function's parameters, not a receipt.
         "re-derives it and a `reconcile` hook reads the attempt off the record. The executor signature is",  # noqa: E501
+        # v0.9: the DCO check. "Signs off" is the Developer Certificate of Origin trailer on a
+        # git commit, and "GitHub's own signature" is GitHub's signature on that commit, read
+        # back through its API. Neither is a signature on a receipt, which is the thing
+        # `SPEC-v0.6.md` §6.4 says this project does not do.
+        "- **The DCO check refused every Dependabot pull request.** Dependabot signs its commits off as",  # noqa: E501
+        "included. A sign-off under another address is now accepted on exactly one fact that is not a",  # noqa: E501
+        "string anyone can set: GitHub's own signature on the commit, read back through the API. There",  # noqa: E501
     ),
     "docs/THREAT_MODEL.md": (
         "| A forged or tampered token | `JWTIdentityProvider` verifies the signature against a JWKS or a pinned key, with the algorithm taken from its own allow-list and never from the token (RFC 8725 §3.1) |",  # noqa: E501
