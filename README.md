@@ -64,7 +64,12 @@ Each also takes `--check`, which is what CI runs.
 
 ## How the two repositories stay in step
 
-- CI here checks out `CTRLRun/ctrlrun` and runs every page check against it.
+- CI here checks out `CTRLRun/ctrlrun` and runs every page check against it: the branch of
+  the same name as the one under test when there is one, `main` otherwise. A change there
+  that alters a docstring or a `--help` comes with a branch here of the same name, regenerated
+  against it, and the two merge together, the code first. `main` is checked against `main`.
+- That repository's `docs` job is the mirror image: it checks out the branch here named
+  after the kernel branch under test, or `main`, and runs the same checks.
 - A push to that repository's `main` sends a `library-changed` dispatch, so a change to the
   code re-checks the pages that describe it.
 - A weekly run is the floor, so a dispatch that stops arriving is a red run and not silence.
