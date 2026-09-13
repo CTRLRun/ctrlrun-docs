@@ -25,6 +25,16 @@ HEADER = (
     "# Extracted by CTRLRun/ctrlrun-docs tools/docs_audit/render_cookbook.py from\n"
     "# docs/cookbook/{name}.mdx — edit the page, never this file.\n"
 )
+# The kernel's `test_every_source_file_carries_its_copyright_and_license` requires these two
+# lines, in this order, at the top of every `.py` and `.sh` under `examples/`. A generator that
+# did not emit them stripped them off nineteen files the moment it next ran, and the kernel's own
+# suite went red on output this repository produced. Not the `.yaml` files: that test checks the
+# two suffixes it names, and the extracted policies have never carried the tags.
+SPDX = (
+    "# SPDX-FileCopyrightText: 2026 The CTRLRun contributors\n"
+    "# SPDX-License-Identifier: Apache-2.0\n"
+)
+SPDX_SUFFIXES = (".py", ".sh")
 
 
 def recipes() -> dict[str, dict[str, str]]:
@@ -43,6 +53,8 @@ def recipes() -> dict[str, dict[str, str]]:
                     continue
                 name = "ctrlrun.yaml"
             header = HEADER.format(name=page.stem)
+            if name.endswith(SPDX_SUFFIXES):
+                header = SPDX + header
             files[name] = header + fence.body
         # A recipe is a directory only where the page carries something to run. The two adapter
         # recipes show a framework's own code, which the adapters CI job runs against a real
