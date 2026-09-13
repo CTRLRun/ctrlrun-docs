@@ -660,7 +660,16 @@ def test_ci_runs_the_three_checks_and_the_drift_check():
     """`STYLE.md` says the `docs` job runs them. A guard that CI does not run is prose."""
     workflow = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
 
-    for script in ("snippets.py", "lint.py", "links.py", "render_capabilities.py --check"):
+    for script in (
+        "snippets.py",
+        "lint.py",
+        "links.py",
+        "render_capabilities.py --check",
+        # The count is a measurement, and until 2026-09-14 nothing in CI re-took it: the pytest
+        # check compares the embedded block against the stored `readiness.json`, so the two
+        # agreed with each other while both drifted from the library.
+        "render_readiness.py --check",
+    ):
         assert f"python tools/docs_audit/{script}" in workflow, script
 
 

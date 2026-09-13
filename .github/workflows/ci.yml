@@ -91,9 +91,18 @@ jobs:
           CTRLRUN_SOURCE: ${{ github.workspace }}/ctrlrun
         run: ./scripts/check.sh
 
-      # The four drift checks, named individually because `STYLE.md` says the CI job runs them
-      # and `test_ci_runs_the_three_checks_and_the_drift_check` reads this file to prove it.
+      # The drift checks, named individually because `STYLE.md` says the CI job runs them and
+      # `test_ci_runs_the_three_checks_and_the_drift_check` reads this file to prove it.
       # A guard CI does not run is prose.
+      #
+      # `render_readiness.py --check` joined them on 2026-09-14. Its own docstring called it
+      # "what CI runs" and CI did not run it, which is the same sentence one level up: the test
+      # count is the one figure on the site that is a measurement rather than a claim, and the
+      # pytest check on it compares the embedded block against the *stored* `readiness.json`
+      # rather than against the suite, so the two agreed with each other while both drifted away
+      # from the library. It cannot flap between a paired kernel and docs merge, because the
+      # count is a **floor**: it fails when the suite has fewer tests than the page claims, and
+      # passes when it has more.
       - name: The documentation audit
         working-directory: ctrlrun-docs
         env:
@@ -103,3 +112,4 @@ jobs:
           python tools/docs_audit/lint.py
           python tools/docs_audit/links.py
           python tools/docs_audit/render_capabilities.py --check
+          python tools/docs_audit/render_readiness.py --check
