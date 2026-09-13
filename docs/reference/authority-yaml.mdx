@@ -75,6 +75,42 @@ resolve the gate against, so the only envelope it could express is an ungated on
 | `environments` | list of environment names | any environment | `production`, `staging` |
 | `delegable` | `true` or `false` | `false` | whether the holder may narrow this grant at runtime with `ctrlrun delegate`; `true` **requires** `expires_at` |
 | `expires_at` | ISO-8601 timestamp with an offset | never expires | checked at every evaluation, and refused as a naive datetime |
+| `tasks` | list of task-id patterns | **any task** | since v7: the unit of work this authority is for. `refund-run:*`. A grant that omits it authorises any task, so every grant written before v7 keeps its meaning |
+| `budgets` | list of budgets | **bounds no aggregate** | since v7: how much, over how long. Each is `{metric, limit, window}` |
+
+### `budgets`
+
+`constraints` bounds **one action**; a budget bounds the **aggregate**. They are different
+questions, and a grant that answers only the first permits a thousand actions that each pass it.
+
+| Key | Type | Means |
+|---|---|---|
+| `metric` | the name of an action argument | which number is summed. The action must carry it, as an integer: a missing value is refused rather than counted as zero, because absence-as-zero turns a missing field into unlimited authority |
+| `limit` | non-negative integer | what the sum over the window may **reach**. The comparison is inclusive |
+| `window` | ISO-8601 duration, whole seconds | how far back the sum runs, rolling. `PT24H`, `P30D`. Sub-second windows are refused |
+
+```yaml
+budgets:
+  - { metric: amount, limit: 100000, window: PT24H }   # 1,000.00 a day
+  - { metric: amount, limit: 2000000, window: P30D }   # 20,000.00 a month
+```
+
+Two budgets on one metric over two windows is the ordinary shape, and it is one spend measured
+against two windows rather than two spends.
+
+**A budget is consumed when the effect is reserved, in the same transaction**, so two processes
+cannot both pass a check and then both spend. It is released only when the effect reaches
+`FAILED`, which is the one state where the executor proved nothing happened. An `AMBIGUOUS`
+effect **holds** its consumption until a human or a `reconcile` hook resolves it: ambiguity is
+not a refund, because otherwise an agent able to manufacture ambiguity is able to manufacture
+authority. `ctrlrun inspect --grant` shows what is held and what holds it.
+
+A delegation's budget must be **contained** by its parent's: no higher limit, and no *shorter*
+window, because a shorter window over the same limit is a higher rate and therefore more
+authority.
+
+**An action a budgeted grant covers must resolve an effect key.** Without one there is nothing
+to charge against, so the action is refused rather than spending nothing for ever.
 
 A grant carries no `decision:`. How much autonomy an action has is the policy's answer, the same
 for everyone; the grant answers whether this principal may ask at all.

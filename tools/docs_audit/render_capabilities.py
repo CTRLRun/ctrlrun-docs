@@ -282,7 +282,12 @@ def check(
         elif target.read_text(encoding="utf-8") != expected:
             drift.append(Drift(relative(target), None, "differs from the generator; run --write"))
     if pages is None:
-        pages = documents(patterns=("README.md", "docs/**/*.md", "docs/**/*.mdx"))
+        # **Root-level pages too.** `docs.mdx` is the docs home and carries two marker blocks,
+        # and a glob of `docs/**` does not reach a file called `docs.mdx` beside that directory:
+        # its capability grid and its readiness block went unchecked, and the readiness one sat
+        # at version 0.8.0 with a stale guarantee count through a whole milestone. `*.md` and
+        # `*.mdx` are already in `SITE_PATTERNS` for exactly this reason.
+        pages = documents(patterns=("README.md", "*.md", "*.mdx", "docs/**/*.md", "docs/**/*.mdx"))
     for page in pages:
         if page.parent == directory and page.name in FILENAMES.values():
             continue
