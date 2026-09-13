@@ -16,7 +16,7 @@ The threat model names three assets, and each one is a requirement on the kernel
 |---|---|
 | **R1. Correctness of consequential effects** | An effect happens at most once per intent, and only as authorized. After an unknown outcome a retry is refused until a human or a `reconcile` hook resolves it. |
 | **R2. Integrity of human approval** | What a human approved is what executes. An approval binds to the hash of the canonical action, is consumed once, and expires. |
-| **R3. Integrity of evidence** | Receipts reflect what happened, in order, and an edit, a deletion or a reordering is detected. |
+| **R3. Integrity of evidence** | Receipts reflect what happened, in order, and an edit, a reordering or a deletion within the retained chain is detected. Erasing the end of the log and rewinding the head is outside this guarantee, and the [receipt chain page](/docs/security/receipt-chain) says so. |
 
 Everything below argues these three. What CTRLRun does not defend against is listed in the
 threat model under *Out of scope* and is not argued here.
@@ -72,7 +72,7 @@ where a regression would be caught.
 | Token confusion | The verification algorithm comes from the provider's own allow-list, never from the token's header. `typ` is checked, so an ID token cannot pass as an access token. `aud`, `iss` and `exp` are required and matched exactly. A duplicate `kid` is refused rather than resolved. | The v0.3 acceptance tests; the RFC 8725 rows of the threat model. |
 | Unsafe deserialization | Policy and grant documents are read with a `yaml.SafeLoader` subclass that also refuses a repeated key, because PyYAML resolves one silently to the last value, which is a fail-open in an authority document. Nothing on the request path calls `eval`, `exec` or `pickle`. | `fuzz/fuzz_policy.py`; the policy tests. |
 | SQL injection | Every statement is a constant with bound parameters. The one name that reaches SQL, the Postgres schema, is validated as a plain identifier at construction, before it is quoted. | The Postgres tests; CodeQL's security-and-quality suite on every pull request. |
-| Tampered evidence | Each receipt carries the hash of the one before it, with its sequence number inside the hashed content. `ctrlrun receipts --verify-chain` names the break. | G11; [the receipt chain](/docs/security/receipt-chain). |
+| Tampered evidence | Each receipt carries the hash of the one before it, with its sequence number inside the hashed content. `ctrlrun receipts --verify-chain` names a break within the retained chain; it cannot detect an erased tail. | G11; [the receipt chain](/docs/security/receipt-chain). |
 | Vulnerable dependency | Every install in CI is by hash, from locks written by `uv pip compile`. Dependabot refreshes them weekly. The Scorecard gate on every pull request refuses a known vulnerability, and CodeQL runs on every pull request. | `scorecard-gate.yml`, `codeql.yml`. |
 | Type confusion | `mypy --strict` over `src/`, with unreachable code reported. | `scripts/check.sh`, on every CI run. |
 
@@ -88,8 +88,9 @@ where a regression would be caught.
   and weekly, asserting the invariants in `fuzz/properties.py`.
 - **Static analysis.** CodeQL, `ruff` with the bugbear rules, and `mypy --strict`.
 - **Coverage.** Measured in CI and held at the floors CONTRIBUTING.md states.
-- **`ctrlrun verify`.** The eleven guarantees, replayed against the operator's own policy,
-  grants and store.
+- **`ctrlrun verify`.** The eleven guarantees, replayed against the operator's own policy and
+  grants in a scratch instance of the configured store backend, with fake executors and no
+  network.
 - **Review.** Every change is reviewed by a person who did not write it. A change to
   authorization, identity, delegation, the gateway, an adapter or the store gets the deeper
   review CONTRIBUTING.md describes before its pull request opens.
@@ -105,4 +106,5 @@ where a regression would be caught.
   did not write the code under review. [How this is built](/docs/how-this-is-built) says so,
   and will carry the report if an external review happens.
 - The argument is for the kernel. An adapter or a gateway deployment adds a boundary of its
-  own; the adapter conformance kit and `ctrlrun verify` are how those are checked.
+  own. The adapter conformance kit checks an adapter's behaviour; `ctrlrun verify` checks only
+  the kernel guarantees the configured policy, grants and store backend can exercise.
