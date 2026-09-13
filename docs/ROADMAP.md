@@ -268,7 +268,7 @@ Standards: none new.
 
 **Renumbered on 2026-09-10, and the reason is recorded here rather than made silently.** The chain below used to run *boundary → multi-agent → hardening → 1.0*, and nowhere in it did the kernel learn who may say yes or how much. An approval is a string somebody typed; a grant limits one action and says nothing about a thousand of them. Both are what a reader means by governance, and the homepage now says *action governance* — so the two milestones that make it true go in, before multi-agent, because propagating authority across hops needs authority that can be bounded and a yes that can be attributed underneath it. Nothing already shipped moves. A2A moves once more, to v0.10, and v0.10 says why. The homepage H1 stays *Execution safety for AI agents* until v0.9 exits; `internal/POSITIONING.md` carries that gate.
 
-## v0.8 — Oversight
+## v0.8 — Oversight ✅ shipped
 
 One question: who may say yes, and can the kernel tell?
 
@@ -290,7 +290,7 @@ Exit: `ctrlrun.guarantees/v4` — G17 unentitled approver refused · G18 self-ap
 
 Standards: none new. RFC 8935 and RFC 8936 (SSF push and poll delivery) and CAEP are consumed as code; they appear in a mapping doc only after the test above exists, and "SSF-compatible" is unearned until a conformance suite says otherwise.
 
-## v0.9 — Envelope
+## v0.9 — Envelope ✅ shipped
 
 One question: how much, over which records, for which task?
 
@@ -305,6 +305,28 @@ A grant today limits one action — `amount_lte: 5000` — and says nothing abou
 Do not build: a consequence taxonomy — a budget names a metric, not a class · compensation or saga · a fleet-wide budget across stores · anything that reads a prompt to decide which task an agent is on.
 
 Exit: `ctrlrun.guarantees/v5` — G22 a budget exhausted by ambiguity refuses the next reserve until reconciled, and releases on `FAILED`, under the v0.6 multi-process standard against Postgres · G23 a scope provider that raises leaves nothing reserved and nothing executed · G24 a task-bound grant is refused on a task it does not name, by name — each with a positive control, each `N/A` with a reason on a grant that carries no budget, no scope, or no task.
+
+**Reconciled against what shipped.** Three things differed from this section, and each is
+recorded where it was decided rather than quietly adjusted here.
+
+- **A budget is a metric, a limit and a window.** This section said "a metric, a scope and a
+  window", which conflated two of v0.9's three dimensions: a budget bounds an aggregate and a
+  scope provider answers about a record, and nothing about the budget is scoped.
+- **Scope providers are a second hook, not the precondition mechanism.** This section said they
+  would go "through v0.7's fingerprint mechanism". They do not: `SPEC-v0.9.md` §5.2.1 records the
+  amendment to `SPEC-v0.7.md` §6.9 and the three mechanical differences that justify it, the
+  first being that a precondition answers *has this changed* and a scope answers *is this yours*.
+  A deployment may declare both over the same mapping, which is why the scope hash carries its
+  own domain tag.
+- **Two refusals, not one.** `scope_unavailable` and `out_of_scope` are distinct reasons, because
+  a deployment whose scope source is down and one whose agent reached for somebody else's record
+  are different incidents, and observe mode reported the wrong one until an independent review
+  found it.
+
+The exit criteria are met: `ctrlrun.guarantees/v5`, G22, G23 and G24, each with a positive
+control and each `N/A` with a true reason on a configuration that carries no budget, scope or
+task. All three PASS on `examples/authority/payments.yaml`, so the milestone's own guarantees are
+graded on what this repository ships rather than only on a fixture.
 
 **This is the gate for the category line, and it used to be the gate for the H1.** Recorded 2026-09-12: the H1 moved ahead of v0.9, to *CTRLRun stops AI agents from taking wrong, restricted, or malicious actions in your workflows*, because it states what the shipped kernel does today and claims nothing about authority. *Action governance* still waits: after v0.9 it is true in code, and only then does the category line move up.
 
@@ -325,7 +347,7 @@ Standards: A2A, as code. No conformance claim.
 One question: can the record be trusted after the fact, and kept?
 
 - **An external anchor for the receipt chain.** The chain detects alteration and says on every page that it does not detect truncation or append — both measured at two statements, undetected, because the head is a row in the same database. v0.11 anchors the head outside the database at an interval (an RFC 3161 timestamp, or an equivalent the operator supplies) so a suffix erased or appended between two anchors is detected and named, in the same vocabulary as the six existing break kinds. No keys of its own: it consumes a timestamp and issues nothing, which is why it is here and signing is not.
-- **Retention and legal hold.** There is no retention policy today and `docs/postgres.md` says so, while `docs/CONTROL-MAPPING.md` maps receipt retention to a clause. v0.11 pays that debt: a chain-preserving prune that leaves a checkpoint receipt verifiable across the gap, and a hold that refuses to prune, both recorded as receipts themselves.
+- **Retention and legal hold.** There is no retention policy today and `docs/postgres.md` says so, while `docs/CONTROL-MAPPING.md` maps receipt retention to a clause. v0.11 pays that debt: a chain-preserving prune that leaves a checkpoint receipt verifiable across the gap, and a hold that refuses to prune, both recorded as receipts themselves. **v0.9 adds a second growing table and states the invariant rather than the command**: the budget ledger only grows, and `SPEC-v0.9.md` §7.3 says that rows older than the longest window on any budget of a grant cannot affect a future decision, so somebody else's archiving is safe. One caveat travels with it, because the invariant is about decisions and not about evidence: an `AMBIGUOUS` effect older than that window still **holds** a charge the operator surfaces display, so an archiver on a live ledger excludes un-released rows. `ctrlrun stats` reports the row count so the growth is visible before it matters.
 - **Enforcement coverage.** From events already written: policy entries never exercised, gateway tools never routed, `@protect` actions never seen. The runtime half of `ctrlrun scan`, under the same rule — a clean result is not a verdict, no score, no percentage, no badge.
 - **One chain, several receipt schemas.** `ctrlrun.receipt/v4` is the schema today, and the rule since `SPEC-v0.3.md` §12.2 is that every reader upgrades before any writer switches, so an older receipt on disk still parses. v0.8 (the verified approver; the grant id under break-glass) and v0.9 (budget consumption) each add fields and each bump the version, so a chain kept from v0.6 across them holds **four receipt schema versions**: `v3`, which 0.6 wrote, `v4`, which v0.7 added, and the two that follow. This sentence said *three shapes* and named `v3` as the schema today. It was written before v0.7's precondition fields bumped the schema, and v0.7's release pass corrects it here rather than quietly. And nothing yet proves that `verify` walks it end to end, hash by hash, each receipt hashed by the rule its own version wrote. v0.11 proves it, here, because this is the milestone about whether the record can be trusted after the fact. No new field: the version string already exists. What is new is the test, and the rule that a receipt whose version the binary does not know is *named* and not reported as a break — which is the same distinction v0.6 §3.2 draws for a `schema_version` row the binary does not know. Added 2026-09-10.
 

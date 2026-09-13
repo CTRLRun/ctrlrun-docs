@@ -14,8 +14,8 @@ what could not be tested at all.
 
 ```console
 $ ctrlrun verify
-CTRLRun verify — ctrlrun 0.8.0, catalogue ctrlrun.guarantees/v4
-policy     examples/authority/payments.yaml (ctrlrun.policy/v6, mode: enforce)
+CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v5
+policy     examples/authority/payments.yaml (ctrlrun.policy/v7, mode: enforce)
 authority  same document, 3 grants
 store      sqlite, scratch (created and destroyed for this run)
 
@@ -27,7 +27,7 @@ G5   ambiguous blocks a blind retry   PASS  stripe.refund
 G6   unknown action refused           PASS
 G7   no principal refused             PASS  stripe.refund
 G8   expired authority refused        PASS  head-of-support
-G9   delegation cannot escalate       PASS  head-of-support (6 of 6 dimensions)
+G9   delegation cannot escalate       PASS  head-of-support (8 of 8 dimensions)
 G10  unknown exception is ambiguous   PASS  stripe.refund
 G11  an altered receipt is detected   PASS  stripe.refund
 G12  a byte written is ambiguous      PASS  stripe.refund
@@ -51,12 +51,19 @@ G21  unapproved policy decides no     PASS  stripe.refund
                                             (G21 is graded with require_approved_policy set by verify:
                                             whether this deployment sets it is a fact about its own
                                             code, which verify cannot read)
+G22  held budget refuses next reserve PASS  head-of-support
+G23  a failing scope provider refuses PASS  stripe.refund
+                                            (G23 is graded against a scope provider verify supplies:
+                                            whether this deployment configures one is a fact about its
+                                            own code, which verify cannot read. The gateway and the
+                                            ACS hook cannot name a provider at all (SPEC-v0.9 §5.2.2))
+G24  grant refused off its task       PASS  head-of-support
                                             (a token is unique only as far as your effect keys are:
                                             two stores sharing a provider account must not produce the
                                             same effect-key string for different effects, and nothing
                                             here can check that)
 
-19/19 declared guarantees pass. 2 not applicable: G13, G15.
+22/22 declared guarantees pass. 2 not applicable: G13, G15.
 ```
 
 It reads the policy document — `$CTRLRUN_CONFIG`, else `./ctrlrun.yaml` — and the authority

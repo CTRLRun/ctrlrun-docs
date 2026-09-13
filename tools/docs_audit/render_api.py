@@ -49,6 +49,18 @@ EXTRA_NAMES: tuple[tuple[str, str], ...] = (
     ("ctrlrun.verify", "run"),
     ("ctrlrun.conformance", "run"),
     ("ctrlrun.conformance.store", "run"),
+    # SPEC-v0.9 §10 freezes these four and puts them in `ctrlrun.state` deliberately, "beside
+    # `StateStore` itself, ... they are the vocabulary of the store protocol, and a third-party
+    # backend already imports `StateStore` from that module". So they are public and frozen and
+    # not in `ctrlrun.__all__`, which is exactly what this list is for. Without them the v0.9
+    # reference named `StateStore.reserve_effect(charges=...)` and documented neither what a
+    # `Charge` is nor what `consumptions()` hands back.
+    ("ctrlrun.state", "Charge"),
+    ("ctrlrun.state", "Consumption"),
+    ("ctrlrun.state", "check_charges"),
+    # `Budget` is the one of the four that lives in `ctrlrun.authority`, because it is a field of
+    # a `Grant` before it is anything the store sees.
+    ("ctrlrun.authority", "Budget"),
 )
 
 

@@ -71,7 +71,7 @@ capabilities:
 
   - id: authority-containment
     name: Authority and delegation
-    description: With authority on, every principal needs a grant, and delegation cannot widen one.
+    description: Every principal needs a grant, delegation cannot widen one, and a grant bounds the total.
     guarantee: true
     ways_in:
       decorator: true
@@ -79,7 +79,7 @@ capabilities:
       adapter: true
     since: v0.3
     page: docs/concepts/authority-and-delegation
-    claim: provably a subset of its parent on every dimension, at creation and again at every evaluation
+    claim: provably a subset of its parent on every dimension, at creation and again at every evaluation; a consequence budget is consumed inside the reservation's own transaction, and a rolling window bounds what may start rather than recalling what already did
 
   - id: receipts
     name: Receipts

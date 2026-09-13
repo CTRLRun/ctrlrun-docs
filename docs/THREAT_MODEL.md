@@ -61,6 +61,60 @@ they entitled to?* Everything above still holds; these are the threats the secon
 | An unauthenticated principal reaching an authorization decision | `--principal-from-client-info` removed; `AcsControlHook` refuses an `Authority` without an `identity` provider |
 | An environment chosen by the caller | The environment is set once on the `Control` and is never read off the wire |
 
+## In scope — CTRLRun v0.9 adds
+
+The authority model bounded **one action** and never an aggregate: a grant saying
+`amount_lte: 5000` is silent about the thousand actions that each pass it. v0.9 answers *how
+much, over which records, for which task?* Everything above still holds.
+
+| Threat | Control |
+|---|---|
+| An agent draining an account one permitted action at a time | A consequence budget on the grant: a metric, a limit, a rolling window. The sum is consumed when the effect is **reserved**, in the same transaction, so two processes cannot both pass a check and then both spend |
+| A budget check racing its own consumption across hosts | The charge is written inside the reservation's transaction, under a per-grant lock taken in a fixed order on Postgres. Verified multi-process against Postgres, not argued |
+| An agent buying authority by manufacturing ambiguity | An `AMBIGUOUS` effect **holds** its charge until a human or a `reconcile` hook resolves it. Ambiguity is not a refund |
+| A delegation spending its parent's budget over again | Every grant in the chain is charged on every reserve, so a child's spend is its parent's spend |
+| A child grant taking a higher rate than its parent | Containment on both axes: no higher limit, and no **shorter** window, because a shorter window over the same limit is a higher rate |
+| A negative amount refilling a budget | A metric value that is negative, missing, or not an integer is refused, with an event and a receipt. Absence is never counted as zero |
+| An agent reaching for a record that is not its principal's | Where a deployment configures a scope provider, the kernel asks it before reserving anything, and refuses `out_of_scope`. This is the bite on an identifier an attacker chose |
+| A scope source that is down failing open | `scope_unavailable`, a distinct refusal from `out_of_scope`, fail-closed. Observe mode reports which |
+| A grant or delegation issued for one unit of work being spent on another | `tasks:` on a grant, attenuated by the same `child ⊆ parent` rule as every other dimension |
+
+### What a budget does not do
+
+Stated here because a limit reads like more of a defence than it is.
+
+- **A budget cannot recall an action already in flight.** The window rolls forward, and a
+  reservation taken a second before it rolls commits regardless. A budget bounds what may
+  *start*, never what has started.
+- **A budget is fail-closed against its own principal.** An agent that can manufacture
+  ambiguity can pin a budget it is not entitled to spend, because R2 holds the charge until a
+  human resolves it. That is a denial of service against the operator's own agents, and it is
+  the deliberate side of the trade: the alternative is an agent that manufactures authority.
+- **A budget counts a metric an operator named**, an argument on the action. It is not a
+  consequence model: nothing ranks, scores or classifies what an action means, and a budget on
+  `amount` says nothing about an action whose damage is not in that field.
+- **A budget is per store.** Two deployments sharing a provider account and not a store each
+  enforce their own, and the provider sees the sum.
+- **A budget is not a rate limit on the remote.** It bounds authority, not traffic.
+
+### What a scope provider does not do
+
+- **It is worth what its source is worth.** It is the operator's own code answering from the
+  operator's own system of record. A poisoned source answers wrongly and the kernel cannot tell.
+- **The residual gap `SPEC-v0.7.md` states for preconditions applies unchanged**: the check
+  cannot run inside the atomic reservation write, so a record that changes hands in the window
+  between the answer and the reservation is not caught.
+- **Only the hash of the answer reaches the receipt.** An auditor can prove the scope was the
+  one the kernel matched against, and cannot read what it contained.
+
+### What task binding does not do
+
+- **It limits blast radius; it does not detect a hijack.** The task id is supplied by the
+  caller, and an agent talked into a different goal is usually still inside the task it was
+  legitimately given. `ASI01` stays partial for this reason.
+- **It does not propagate across agent hops.** A grant is evaluated where the action is
+  proposed; `docs/ROADMAP.md` puts propagation in v0.10.
+
 ## Out of scope — CTRLRun does not defend against
 
 - A compromised CTRLRun process, host, or Python environment.

@@ -117,6 +117,10 @@ Usage: ctrlrun effects [OPTIONS]
 
   Show the logical effects this store knows about.
 
+  An effect that still **holds** part of a budget says so (SPEC-v0.9 §7.2):
+  `--state ambiguous` is how an operator finds what is pinning a grant, and the
+  hold is the reason it matters.
+
 Options:
   --state [new|reserved|executing|committed|failed|ambiguous]
                                   Show only effects in this state.
@@ -146,12 +150,22 @@ Options:
 ## ctrlrun inspect
 
 ```text
-Usage: ctrlrun inspect [OPTIONS] ACTION_ID
+Usage: ctrlrun inspect [OPTIONS] [ACTION_ID]
 
   Show one action's whole history: proposal, decision, approval, effect,
   receipt.
 
+  With `--grant`, show that grant's budgets instead: how much of each is
+  consumed over its rolling window, how much of that is **held** by effects that
+  have not committed, and which effect holds each part (SPEC-v0.9 §7.2).
+
+  The third number is the one that matters at 3am. A budget that refuses while
+  it looks nowhere near its limit is almost always one unresolved effect:
+  `ctrlrun resolve` clears it.
+
 Options:
+  --grant TEXT      Show this grant's budgets instead: consumed, held, and what
+                    holds it.
   --json            Emit one JSON object instead.
   --store-url TEXT  The store to open. Default: $CTRLRUN_STORE_URL, else the
                     SQLite database beside the policy (.ctrlrun/state.db, or

@@ -289,7 +289,12 @@ def check(data: dict, pages: list[Path] | None = None) -> list[str]:
     if pages is None:
         from _files import documents
 
-        pages = documents(patterns=("README.md", "docs/**/*.md", "docs/**/*.mdx"))
+        # **Root-level pages too.** `docs.mdx` is the docs home and carries two marker blocks,
+        # and a glob of `docs/**` does not reach a file called `docs.mdx` beside that directory:
+        # its capability grid and its readiness block went unchecked, and the readiness one sat
+        # at version 0.8.0 with a stale guarantee count through a whole milestone. `*.md` and
+        # `*.mdx` are already in `SITE_PATTERNS` for exactly this reason.
+        pages = documents(patterns=("README.md", "*.md", "*.mdx", "docs/**/*.md", "docs/**/*.mdx"))
     for page in pages:
         if page.parent == GENERATED:
             continue
