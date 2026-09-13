@@ -32,11 +32,10 @@ guarantees pass.
     ```
 
     ```text
-    CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v5
+    CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v6
     policy     /private/var/folders/gp/jrq5dccs6xldv1jw839n7dsw0000gn/T/tmpdi6bvpqd/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
     authority  none
     store      sqlite, scratch (created and destroyed for this run)
-
     G1   mutated approval refused         PASS  k8s.delete_namespace
     G2   replayed approval refused        PASS  k8s.delete_namespace
     G3   duplicate effect refused         PASS  k8s.delete_namespace
@@ -72,12 +71,13 @@ guarantees pass.
     G22  held budget refuses next reserve N/A   no authority section
     G23  a failing scope provider refuses N/A   no action this configuration admits carries a resource
     G24  grant refused off its task       N/A   no authority section
+    G25  a hop narrows or it is refused   N/A   no authority section
+    G26  a hop is named on both sides     N/A   no authority section
                                                 (a token is unique only as far as your effect keys are:
                                                 two stores sharing a provider account must not produce the
                                                 same effect-key string for different effects, and nothing
                                                 here can check that)
-
-    15/15 declared guarantees pass. 9 not applicable: G8, G9, G13, G15, G17, G19, G22, G23, G24.
+    15/15 declared guarantees pass. 11 not applicable: G8, G9, G13, G15, G17, G19, G22, G23, G24, G25, G26.
 ```
 
     The first line is on **stderr**, from G7's own scenario: an action with no principal is
