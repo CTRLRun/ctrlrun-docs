@@ -1,5 +1,14 @@
 {
   "guarantees": 27,
+  "python": {
+    "floor": "3.11",
+    "tested": [
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14"
+    ]
+  },
   "released": "0.10.0",
   "soak": {
     "actions": 889735,
@@ -9,6 +18,6 @@
     "positive_control": true,
     "unexplained": 0
   },
-  "tests": 6056,
+  "tests": 6142,
   "version": "0.10.0"
 }

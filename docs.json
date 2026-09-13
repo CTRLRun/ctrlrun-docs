@@ -341,6 +341,7 @@
             "group": "Security",
             "pages": [
               "docs/THREAT_MODEL",
+              "docs/security/assurance-case",
               "docs/security/receipt-chain",
               "docs/security/disclosure"
             ]
