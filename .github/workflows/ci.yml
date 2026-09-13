@@ -26,6 +26,41 @@ jobs:
         with:
           path: ctrlrun-docs
 
+      # Which commit of the library to check these pages against. A dispatch names one. A
+      # branch here is checked against the `CTRLRun/ctrlrun` branch of the same name when
+      # there is one, because that is the pair: a change there that alters a docstring or a
+      # `--help` comes with a branch here, regenerated against it, and each is checked against
+      # the other (that repository's `docs` job does the mirror image). Everything else is
+      # checked against `main`, so the pages on `main` match the library's `main` at all times.
+      #
+      # Before this every branch here was checked against the library's `main`, and a page
+      # regenerated for a commit that had not merged yet was red until it did -- by
+      # construction, for the whole of a release cycle. The fallback is `main` and not a skip,
+      # for the reason `_core.py` raises: red for a reason beats green for none.
+      #
+      # The branch name reaches the shell through `env:`, never inline in the script, so a
+      # branch called `$(...)` is a string here and not a command. The match is exact and
+      # fixed-string: `ls-remote` matches a pattern against the tail of a ref, and `.` in a
+      # version would be a regex wildcard.
+      - name: Pick the ctrlrun ref
+        id: ctrlrun
+        env:
+          DISPATCHED: ${{ github.event.client_payload.sha }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          set -eu
+          if [ -n "$DISPATCHED" ]; then
+            echo "ref=$DISPATCHED" >> "$GITHUB_OUTPUT"
+            echo "ctrlrun at $DISPATCHED, the commit the dispatch named"
+          elif git ls-remote --heads https://github.com/CTRLRun/ctrlrun.git "refs/heads/$BRANCH" \
+              | cut -f2 | grep -qxF "refs/heads/$BRANCH"; then
+            echo "ref=$BRANCH" >> "$GITHUB_OUTPUT"
+            echo "ctrlrun at $BRANCH, the branch of the same name"
+          else
+            echo "ref=main" >> "$GITHUB_OUTPUT"
+            echo "ctrlrun at main: it has no branch named $BRANCH"
+          fi
+
       # The library these pages document. The checks read it -- a page that says the CLI
       # prints X is only true if the CLI prints X -- and `tools/docs_audit/_core.py` raises
       # when it is absent rather than skipping, so a checkout that failed to happen is a red
@@ -33,7 +68,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: CTRLRun/ctrlrun
-          ref: ${{ github.event.client_payload.sha || 'main' }}
+          ref: ${{ steps.ctrlrun.outputs.ref }}
           path: ctrlrun
 
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
