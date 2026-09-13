@@ -62,10 +62,11 @@ by tag where you want a ref nobody can move.
 The agent sees nothing; this is the operator's check. The build sees:
 
 ```text
-CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v6
-policy     /private/var/folders/gp/jrq5dccs6xldv1jw839n7dsw0000gn/T/tmpmax85d9e/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
+CTRLRun verify — ctrlrun 0.10.0, catalogue ctrlrun.guarantees/v6
+policy     ./ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
 authority  none
 store      sqlite, scratch (created and destroyed for this run)
+
 G1   mutated approval refused         PASS  k8s.delete_namespace
 G2   replayed approval refused        PASS  k8s.delete_namespace
 G3   duplicate effect refused         PASS  k8s.delete_namespace
@@ -108,6 +109,7 @@ G27  a swapped upstream is denied     N/A   no action entry pins an upstream
                                             two stores sharing a provider account must not produce the
                                             same effect-key string for different effects, and nothing
                                             here can check that)
+
 15/15 declared guarantees pass. 12 not applicable: G8, G9, G13, G15, G17, G19, G22, G23, G24, G25, G26, G27.
 ```
 

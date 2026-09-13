@@ -14,7 +14,7 @@ what could not be tested at all.
 
 ```console
 $ ctrlrun verify
-CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v5
+CTRLRun verify — ctrlrun 0.10.0, catalogue ctrlrun.guarantees/v6
 policy     examples/authority/payments.yaml (ctrlrun.policy/v7, mode: enforce)
 authority  same document, 3 grants
 store      sqlite, scratch (created and destroyed for this run)
@@ -60,13 +60,13 @@ G23  a failing scope provider refuses PASS  stripe.refund
 G24  grant refused off its task       PASS  head-of-support
 G25  a hop narrows or it is refused   PASS  head-of-support
 G26  a hop is named on both sides     PASS  head-of-support
-G27  a swapped upstream is denied     PASS  payouts
+G27  a swapped upstream is denied     N/A   no action entry pins an upstream
                                             (a token is unique only as far as your effect keys are:
                                             two stores sharing a provider account must not produce the
                                             same effect-key string for different effects, and nothing
                                             here can check that)
 
-22/22 declared guarantees pass. 2 not applicable: G13, G15.
+24/24 declared guarantees pass. 3 not applicable: G13, G15, G27.
 ```
 
 It reads the policy document — `$CTRLRUN_CONFIG`, else `./ctrlrun.yaml` — and the authority
