@@ -116,9 +116,10 @@ def test_T121_every_entry_in_the_cited_edition_appears_in_one_half_or_the_other(
         assert code in mapping or code in not_covered, code
 
 
-def test_T121_the_three_uncovered_entries_are_listed_by_name():
-    """§6.1's disclaimer says three of the ten are not addressed at all, and this is the test
-    that keeps that sentence true rather than merely written.
+def test_T121_the_two_uncovered_entries_are_listed_by_name():
+    """§6.1's disclaimer said three of the ten are not addressed at all; v0.10 put authority
+    across a hop (G25, G26) and moved `ASI07` into the partial half, so it is two. This is the
+    test that keeps that sentence true rather than merely written.
 
     `code in not_covered` on its own does not say it: a *partly* addressed entry appears in
     that half too, by the design the next test asserts, so the membership check cannot tell
@@ -129,19 +130,19 @@ def test_T121_the_three_uncovered_entries_are_listed_by_name():
     """
     _, not_covered = _sections()
 
-    fully_uncovered = {"ASI04:2026", "ASI05:2026", "ASI07:2026"}
+    fully_uncovered = {"ASI04:2026", "ASI05:2026"}
     for code in fully_uncovered:
         assert code in not_covered, code
         assert ENTRIES[code] in not_covered, code
         assert code not in _guarantee_table(), code
-    assert "Three of the ten entries are not addressed by CTRLRun at all" in _flat()
+    assert "Two of the ten entries are not addressed by CTRLRun at all" in _flat()
 
 
 def test_T121_a_partly_addressed_entry_appears_in_both_halves():
     """§6.2 item 4 — the honest place for a hedge is next to the thing it qualifies."""
     mapping, not_covered = _sections()
 
-    for code in ("ASI01:2026", "ASI06:2026", "ASI09:2026"):
+    for code in ("ASI01:2026", "ASI06:2026", "ASI07:2026", "ASI09:2026"):
         assert code in mapping, code
         assert code in not_covered, code
     assert "Not covered" in not_covered
