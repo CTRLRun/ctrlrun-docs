@@ -89,6 +89,10 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.verify.run`](/docs/reference/api/verify-run) | function | Run the applicable guarantees against this configuration and report (§9.1). |
 | [`ctrlrun.conformance.run`](/docs/reference/api/conformance-run) | function | Drive every suite through `adapter` and report what each came to (SPEC-v0.5 §5). |
 | [`ctrlrun.conformance.store.run`](/docs/reference/api/conformance-store-run) | function | Drive every case against `backend` and report what each came to (SPEC-v0.6 §2). |
+| [`ctrlrun.state.Charge`](/docs/reference/api/state-Charge) | class | What one reservation spends against one grant's budget (SPEC-v0.9 §3.3.1). |
+| [`ctrlrun.state.Consumption`](/docs/reference/api/state-Consumption) | class | One ledger row, as `consumptions()` hands it back (SPEC-v0.9 §3.3.3, §10). |
+| [`ctrlrun.state.check_charges`](/docs/reference/api/state-check_charges) | function | SPEC-v0.9 §3.3.1's predicate, in one place so three backends cannot drift on it. |
+| [`ctrlrun.authority.Budget`](/docs/reference/api/authority-Budget) | class | How much, over what, in how long (SPEC-v0.9 §2.2). |
 
 ## Next
 
