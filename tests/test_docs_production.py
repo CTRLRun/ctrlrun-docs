@@ -132,6 +132,10 @@ def test_the_section_exists_and_has_a_page_for_each_thing_that_breaks():
         "migrations",
         "recovery",
         "receipt-integrity",
+        # SPEC-v0.11 §3. Its own page rather than a section of receipt-integrity: that page is a
+        # "what to run" page on a 900-word budget, and the anchor's limits need as much room as
+        # its claim, which is what the budget exists to force a decision about.
+        "anchoring",
         "soak",
         "operations",
     }
@@ -198,6 +202,11 @@ ALLOWED: frozenset[str] = frozenset(
         # unwatched. `T180` allow-lists the same sentence, one line at a time, in
         # `tests/test_release_v0_6.py`.
         "## what this does not do - **it does not tell you who wrote a receipt.** alteration is not authorship, it does not survive an administrator who can rewrite every row including the head, and it vouches for nothing that was never recorded.",  # noqa: E501
+        # `anchoring.mdx`, SPEC-v0.11 §2.4. The anchor is the first thing in this project a
+        # reader could mistake for tamper-proofing, so its page says what it is not in the same
+        # breath, and this is that sentence. Added deliberately, which is what the allow-list is
+        # for.
+        "- **it does not tell you who wrote a receipt.** an anchor mints nothing and is not a signature, and an administrator who rewrites everything before the next anchor is out of scope.",  # noqa: E501
     }
 )
 

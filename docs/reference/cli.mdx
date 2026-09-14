@@ -22,6 +22,7 @@ Options:
   --help     Show this message and exit.
 
 Commands:
+  anchor        Anchor this store's chain head outside the store, or check...
   approve       Grant a pending approval request.
   delegate      Create a delegated grant beneath an existing one.
   demo          Run the five scenarios, in process, with no network.
@@ -108,6 +109,41 @@ Options:
                         SQLite database beside the policy (.ctrlrun/state.db, or
                         wherever $CTRLRUN_STATE points).
   --help                Show this message and exit.
+```
+
+## ctrlrun anchor
+
+```text
+Usage: ctrlrun anchor [OPTIONS]
+
+  Anchor this store's chain head outside the store, or check the anchors already
+  made.
+
+  The chain detects alteration. It does not detect truncation or append, because
+  the head that would catch them is a row in the same database (SPEC-v0.6 §6.4).
+  An anchor records the pair the head holds somewhere your database's writer
+  does not control.
+
+  **What it proves:** anything at or below an anchored seq can no longer be
+  removed or altered without the anchored pair failing to reproduce. **What it
+  does not:** an append is not detected, because it lands above every anchored
+  seq; nor are receipts created and destroyed between two anchors; nor who wrote
+  any of it. The window you are exposed to is (last anchored seq, current head],
+  and its size is your choice of interval.
+
+Options:
+  --provider MODULE:ATTR        Your anchor provider (SPEC-v0.11 §3.2). CTRLRun
+                                ships none.  [required]
+  --verify                      Check every anchor the provider holds against
+                                this chain, and make none.
+  --kind [interval|checkpoint]  interval (the scheduled anchor) or checkpoint (a
+                                prune's).
+  --json                        Print the report as JSON.
+  --store-url TEXT              The store to open. Default: $CTRLRUN_STORE_URL,
+                                else the SQLite database beside the policy
+                                (.ctrlrun/state.db, or wherever $CTRLRUN_STATE
+                                points).
+  --help                        Show this message and exit.
 ```
 
 ## ctrlrun effects

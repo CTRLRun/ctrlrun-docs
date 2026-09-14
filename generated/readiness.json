@@ -1,5 +1,5 @@
 {
-  "guarantees": 28,
+  "guarantees": 29,
   "python": {
     "floor": "3.11",
     "tested": [
@@ -18,6 +18,6 @@
     "positive_control": true,
     "unexplained": 0
   },
-  "tests": 6122,
+  "tests": 6158,
   "version": "0.10.0"
 }

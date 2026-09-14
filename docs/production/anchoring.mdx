@@ -1,0 +1,88 @@
+---
+title: "Anchoring the receipt chain"
+description: "Erasing the end of the receipt log costs two SQL statements. Anchor the head outside your database, and see what that proves and what it does not."
+---
+
+The receipt chain detects **alteration**: edit a receipt and its hash no longer matches. It does
+not detect **truncation**, and that has been written down since 0.6 rather than discovered. The
+reason is structural, and worth seeing:
+
+```sql
+DELETE FROM receipts WHERE seq > 3;
+UPDATE receipt_chain SET seq = 3, hash = '<the hash at 3>';
+```
+
+Two statements. `ctrlrun receipts --verify-chain` then reports the store intact, because the head
+that would have caught it is a row in the same database as the receipts.
+
+An **anchor** records the pair the head holds, a `seq` and the hash at it, somewhere your
+database's writer does not control.
+
+## Running it
+
+```bash
+ctrlrun anchor --provider yourpkg.anchors:provider              # on a schedule
+ctrlrun anchor --provider yourpkg.anchors:provider --verify     # in the job after a restore
+```
+
+CTRLRun **ships no provider**. An RFC 3161 client is a network client, and this library's core is
+the standard library plus `pyyaml` and `click`. You supply one with four calls: `make`, `check`,
+`latest` and `since`.
+
+A real one is a timestamp authority, a transparency log, or an append-only bucket in another
+account with different credentials. **An anchor is worth exactly what the record behind it is
+worth**, and one pointed at a file beside your database is worth nothing.
+`examples/anchored-chain/` has a minimal provider and runs both halves.
+
+## What it proves
+
+Anything **at or below** an anchored `seq` can no longer be removed or altered without the
+anchored pair failing to reproduce. That includes the administrator who rewrites every row
+*including* the head, which the chain alone cannot catch, because the operator's own record is
+what decides rather than a row in the database under suspicion.
+
+The verification asks your provider what it holds **before** reading CTRLRun's local table, so
+deleting rows from that table does not remove the question: a store whose anchor cache was emptied
+reports `anchor_missing`, which is a break.
+
+## What this does not do
+
+- **It does not detect an append.** A forged receipt lands above every anchored `seq`, so nothing
+  stops reproducing, and the next anchor freezes it as readily as an honest one.
+- **It does not detect receipts written and erased between two anchors.** They were never at or
+  below an anchored `seq`.
+- **It does not tell you who wrote a receipt.** An anchor mints nothing and is not a signature,
+  and an administrator who rewrites everything before the next anchor is out of scope.
+
+**The window you are exposed to is `(last anchored seq, current head]`.** Its size is your choice
+of interval. That is the number to tune, and the number to quote.
+
+## The three names
+
+| Name | What it means |
+|---|---|
+| `anchor_broken` | an anchored pair does not reproduce: the `seq` is absent, or it hashes differently. This is the one that means tamper |
+| `anchor_missing` | you anchor and the store holds no anchor at all, or your provider names one the local table lacks |
+| `anchor_repudiated` | your provider answered **no**: it does not recognise a pair the local table claims it anchored |
+
+They are reported in the **anchor's own** report and never in the chain's. `G11` grades the hash
+chain every deployment has; `G28` grades the anchor, is opt-in, and is `N/A` with a reason where
+you do not configure one.
+
+**An unreachable provider is neither.** It reports `unavailable`, and `G28` is `N/A` with that
+reason. Refusing to act when you cannot ask is fail-closed; reporting tampering when you cannot ask
+is a false positive, and a briefly unreachable timestamp authority must not look like a truncation.
+
+**Verified by** `T530` for the truncation this exists to catch, with the chain reporting the same
+store intact as its negative control; `T530b` for an administrator who rewrites every row
+including the head; `T531`, which runs a forged **append** and requires both reports to stay clean,
+so the limit above is a tested property rather than a sentence; `T532` for the attacker who
+deletes the local anchor row as well; `T533` for `G11` being untouched; and `T534` for a provider
+that is unreachable, which is `unavailable` and never a break.
+
+## Next
+
+- [Receipt integrity](/docs/production/receipt-integrity): the chain, and the six names it reports.
+- [The threat model](/docs/THREAT_MODEL): what stays open.
+- [Operations](/docs/production/operations): where these checks belong in a schedule.
+- [Get started](/docs/get-started/quickstart) · [Why](/docs/why).

@@ -81,6 +81,7 @@
               "docs/production/migrations",
               "docs/production/recovery",
               "docs/production/receipt-integrity",
+              "docs/production/anchoring",
               "docs/production/soak",
               "docs/production/operations"
             ]
@@ -483,6 +484,11 @@
     {
       "source": "/production/receipt-integrity",
       "destination": "/docs/production/receipt-integrity",
+      "permanent": true
+    },
+    {
+      "source": "/production/anchoring",
+      "destination": "/docs/production/anchoring",
       "permanent": true
     },
     {
