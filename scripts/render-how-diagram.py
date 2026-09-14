@@ -42,13 +42,13 @@ NARROW_RULES: list[tuple[str, list[str]]] = [
 # The two ends name what the reader already has, in the vocabulary /protect-my-agent uses.
 # No worked example: the process is the point, and a refund makes it look like a payments tool.
 TOP = (
-    "YOUR AGENTS, TOOLS AND WORKFLOWS",
+    "Your agents, tools and workflows",
     "An action is about to run.",
     "Any model, any framework. Existing code stays as it is.",
 )
-BOT = ("YOUR SYSTEMS", "The action arrives already checked.")
+BOT = ("Your systems", "The action arrives already checked.")
 BOT_NOTE = "Allowed by your rules, approved where you require it, and never run twice."
-BOX_LABEL = "CTRLRun · THE EXECUTION BOUNDARY"
+BOX_LABEL = "CTRLRun, the execution boundary"
 
 # The commercial band that used to sit on the boundary is gone. The tiers have their own
 # section directly below the diagram, and the drawing repeated it a screen early.

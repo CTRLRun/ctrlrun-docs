@@ -20,6 +20,7 @@ from _core import CORE_ROOT
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 HOME = REPO_ROOT / "index.mdx"
+WWW = REPO_ROOT / "www" / "index.html"
 DIAGRAM = REPO_ROOT / "snippets" / "how-diagram.jsx"
 README = CORE_ROOT / "README.md"
 
@@ -79,3 +80,17 @@ def test_the_readme_walks_the_homepage_seven_steps_in_order():
     positions = [section.find(f"**{step}:") for step in steps]
     assert all(p >= 0 for p in positions), dict(zip(steps, positions, strict=True))
     assert positions == sorted(positions), "the README walks the steps in the diagram's order"
+
+
+def test_the_static_site_opens_with_the_same_h1_and_lede():
+    """ctrlrun.dev is served from `www/` (Vercel) and docs.ctrlrun.dev from Mintlify; both
+    carry the homepage. The static page must open with the same H1 and lede the README does,
+    or the README sync above is only half true."""
+    h1 = _homepage(r'<h1 id="cr-title">(.*?)</h1>')
+    lede = _homepage(r'<p className="cr-lede">(.*?)</p>')
+    page = WWW.read_text(encoding="utf-8")
+    assert h1 in _prose(page), "www/index.html does not carry the homepage H1"
+    assert lede in _prose(page), "www/index.html does not carry the homepage lede"
+    assert "ctrlaiagents" not in page and "ctrlpayments" not in page.lower(), (
+        "the project site names a commercial site; it is not supposed to"
+    )

@@ -10,13 +10,13 @@ export const HowDiagram = () => (
       <title id="cr-dia-t">How CTRLRun works</title>
       <desc id="cr-dia-d">An action leaves the agents, tools and workflows you already run. Inside CTRLRun it is normalized into one action, decided against your rules, held for approval, reserved so it cannot run twice, executed, resolved and recorded. Only then does it reach your systems. An action with no rule is blocked, changed arguments void the approval, and an unknown outcome is never retried.</desc>
       <rect className="cr-dia-strip" x="1" y="1" width="1198" height="54" rx="6" />
-      <text className="cr-dia-label" x="24" y="33">YOUR AGENTS, TOOLS AND WORKFLOWS</text>
+      <text className="cr-dia-label" x="24" y="33">Your agents, tools and workflows</text>
       <text className="cr-dia-claim" x="390" y="34">An action is about to run.</text>
       <text className="cr-dia-note" x="628" y="34">Any model, any framework. Existing code stays as it is.</text>
       <path className="cr-dia-arrow" d="M600 56V83" />
       <path className="cr-dia-head" d="M595 82h10L600 90Z" />
       <rect className="cr-dia-box" x="1" y="92" width="1198" height="230" rx="6" />
-      <text className="cr-dia-label" x="24" y="122">CTRLRun · THE EXECUTION BOUNDARY</text>
+      <text className="cr-dia-label" x="24" y="122">CTRLRun, the execution boundary</text>
       <rect className="cr-dia-node" x="24" y="138" width="144" height="86" rx="5" />
       <text className="cr-dia-num" x="37" y="162">1</text>
       <text className="cr-dia-name" x="37" y="186">Normalize</text>
@@ -67,7 +67,7 @@ export const HowDiagram = () => (
       <path className="cr-dia-arrow" d="M600 324V353" />
       <path className="cr-dia-head" d="M595 352h10L600 360Z" />
       <rect className="cr-dia-strip" x="1" y="362" width="1198" height="54" rx="6" />
-      <text className="cr-dia-label" x="24" y="394">YOUR SYSTEMS</text>
+      <text className="cr-dia-label" x="24" y="394">Your systems</text>
       <text className="cr-dia-claim" x="252" y="395">The action arrives already checked.</text>
       <text className="cr-dia-note" x="560" y="395">Allowed by your rules, approved where you require it, and never run twice.</text>
     </svg>
@@ -76,13 +76,13 @@ export const HowDiagram = () => (
       <title id="cr-dia-tn">How CTRLRun works</title>
       <desc id="cr-dia-dn">An action leaves the agents, tools and workflows you already run. Inside CTRLRun it is normalized into one action, decided against your rules, held for approval, reserved so it cannot run twice, executed, resolved and recorded. Only then does it reach your systems. An action with no rule is blocked, changed arguments void the approval, and an unknown outcome is never retried.</desc>
       <rect className="cr-dia-strip" x="1" y="1" width="358" height="76" rx="6" />
-      <text className="cr-dia-label" x="16" y="25">YOUR AGENTS, TOOLS AND WORKFLOWS</text>
+      <text className="cr-dia-label" x="16" y="25">Your agents, tools and workflows</text>
       <text className="cr-dia-claim" x="16" y="47">An action is about to run.</text>
       <text className="cr-dia-note" x="16" y="66">Any model, any framework. Existing code stays as it is.</text>
       <path className="cr-dia-arrow" d="M180 78V95" />
       <path className="cr-dia-head" d="M175 94h10L180 102Z" />
       <rect className="cr-dia-box" x="1" y="104" width="358" height="536" rx="6" />
-      <text className="cr-dia-label" x="16" y="130">CTRLRun · THE EXECUTION BOUNDARY</text>
+      <text className="cr-dia-label" x="16" y="130">CTRLRun, the execution boundary</text>
       <path className="cr-dia-spine" d="M28 150V420" />
       <rect className="cr-dia-node" x="28" y="142" width="316" height="34" rx="4" />
       <text className="cr-dia-num" x="40" y="164">1</text>
@@ -125,7 +125,7 @@ export const HowDiagram = () => (
       <path className="cr-dia-arrow" d="M180 642V661" />
       <path className="cr-dia-head" d="M175 660h10L180 668Z" />
       <rect className="cr-dia-strip" x="1" y="670" width="358" height="76" rx="6" />
-      <text className="cr-dia-label" x="16" y="694">YOUR SYSTEMS</text>
+      <text className="cr-dia-label" x="16" y="694">Your systems</text>
       <text className="cr-dia-claim" x="16" y="716">The action arrives already checked.</text>
       <text className="cr-dia-note" x="16" y="735">Allowed by your rules, approved where you require it.</text>
     </svg>

@@ -9,98 +9,216 @@ canonical: "https://ctrlrun.dev/"
 "og:url": "https://ctrlrun.dev/"
 ---
 
-import { HomeSlides } from "/snippets/home-slides.jsx";
 import { HowDiagram } from "/snippets/how-diagram.jsx";
-import { CommercialTiers } from "/snippets/commercial-tiers.jsx";
+import { LaunchUpdates } from "/snippets/launch-updates.jsx";
 
-<div className="cr-site cr-home">
-  <HomeSlides />
-  <section id="overview" className="cr-home-hero" aria-labelledby="cr-title">
-    <div className="cr-home-pitch">
-      <p className="cr-eyebrow">THE AGENT IS PROBABILISTIC. THE ACTION IS NOT.</p>
-      <h1 id="cr-title"><span className="cr-mark">CTRLRun</span> stops AI agents from taking wrong, restricted, or malicious actions in your workflows<span className="cr-dot">.</span></h1>
-      <p className="cr-lede">Every action is checked against your rules before it runs. Allowed actions go through. Sensitive ones wait for a person. Forbidden ones are blocked.</p>
-      <div className="cr-actions">
-        <a className="cr-button" href="/protect-my-agent" data-cr-event="protect_my_agent_clicked">Protect my agent <span aria-hidden="true">→</span></a>
-        <a className="cr-button cr-github-badge" href="https://github.com/CTRLRun/ctrlrun" data-cr-event="github_clicked"><svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .75a11.25 11.25 0 0 0-3.558 21.923c.563.104.77-.244.77-.542 0-.267-.01-.975-.015-1.913-3.13.68-3.79-1.508-3.79-1.508-.513-1.303-1.252-1.65-1.252-1.65-1.023-.7.077-.686.077-.686 1.132.08 1.727 1.162 1.727 1.162 1.006 1.724 2.64 1.226 3.283.938.102-.73.394-1.226.715-1.508-2.498-.284-5.124-1.25-5.124-5.563 0-1.228.44-2.233 1.162-3.02-.116-.285-.504-1.43.11-2.98 0 0 .945-.303 3.094 1.154a10.786 10.786 0 0 1 5.625 0c2.148-1.457 3.09-1.154 3.09-1.154.617 1.55.23 2.695.113 2.98.724.787 1.16 1.792 1.16 3.02 0 4.323-2.63 5.276-5.136 5.555.404.35.765 1.043.765 2.1 0 1.515-.014 2.737-.014 3.11 0 .3.203.65.774.54A11.252 11.252 0 0 0 12 .75Z" /></svg><span>GitHub</span><span aria-hidden="true">↗</span></a>
-      </div>
-      <p className="cr-hero-oneline"><span>Open source &middot; one line, any action</span><code>{'@ctrlrun.protect("your.action")'}</code></p>
-    </div>
-    <div className="cr-example-wrap">
-      <p className="cr-example-label">ONE EXAMPLE / THE MODEL HALLUCINATES AN AMOUNT</p>
-      <div className="cr-failure-chain" aria-labelledby="cr-failure-title">
-        <h2 id="cr-failure-title">The model guesses.<br />CTRLRun does not.</h2>
-        <div className="cr-chain-setup">
-          <p><span>The ticket says</span>refund &#36;500</p>
-          <p><span>The agent asks for</span>&#36;5,000</p>
-        </div>
-        <div className="cr-chain">
-          <div className="cr-chain-row">
-            <span className="cr-chain-label">Without CTRLRun</span>
-            <ol className="cr-chain-steps">
-              <li>Nothing checks the amount</li><li>The call goes through</li><li className="cr-end cr-bad">&#36;4,500 too much</li>
-            </ol>
-          </div>
-          <div className="cr-chain-row">
-            <span className="cr-chain-label cr-good">With CTRLRun</span>
-            <ol className="cr-chain-steps">
-              <li>Your rule checks the amount</li><li>The call never leaves</li><li className="cr-end cr-good">&#36;0 wrongly paid</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div className="cr-any-agent">
-      <h2 id="cr-any-agent-title">Works with agents you can and can't modify.</h2>
-      <p>WhatsApp, Slack, Teams, Claude Code, Cursor, Codex, ChatGPT, OpenAI Agents. <b>Any AI agent you have.</b> If it acts through your systems, it is checked.</p>
-      <a className="cr-any-agent-link" href="/docs/agents-you-cant-modify" data-cr-event="any_agent_clicked">How it works <span aria-hidden="true">→</span></a>
-    </div>
-  </section>
+<div className="ct-home">
 
-  <section className="cr-section cr-home-how" id="how-it-works" aria-labelledby="cr-how-title">
-    <div className="cr-how-intro">
-      <p className="cr-eyebrow">HOW CTRLRUN WORKS</p>
-      <h2 id="cr-how-title">Let it run. Ask a human. Or stop it cold.</h2>
-      <p className="cr-how-lede">CTRLRun stops an agent from taking an action your rules do not allow. Every action that leaves your agents, tools and workflows is normalized into one action, decided against your policy, held for a person where you require it, reserved so it cannot run twice, executed, resolved and recorded. An action with no rule is blocked, arguments changed after sign-off void the approval, and an outcome nobody knows is never retried on a guess.</p>
+<section className="ct-hero" aria-labelledby="cr-title">
+  <div className="ct-wrap ct-hero-inner">
+    <h1 id="cr-title"><span className="cr-mark">CTRLRun</span> stops AI agents from taking wrong, restricted, or malicious actions in your workflows<span className="cr-dot">.</span></h1>
+    <p className="cr-lede">Every action is checked against your rules before it runs. Allowed actions go through. Sensitive ones wait for a person. Forbidden ones are blocked.</p>
+    <p className="ct-sub">Execution safety for AI agents. A Python library that sits between the decision to act and the call that acts. A consequential action happens at most once, exactly as approved, and leaves a receipt. When the outcome is unknown, CTRLRun says so instead of guessing.</p>
+    <p className="ct-meta">Runs in production on a single file, or on Postgres across hosts. Apache-2.0.</p>
+    <div className="ct-actions">
+      <a className="ct-button" href="/docs/get-started/quickstart">Protect your first action</a>
+      <a className="ct-link" href="https://github.com/CTRLRun/ctrlrun">Read the code on GitHub</a>
     </div>
+    <div className="ct-install"><code>pip install ctrlrun &amp;&amp; ctrlrun demo</code></div>
+  </div>
+  <div className="ct-wrap">
+    <figure className="ct-recording">
+      <img src="/images/demo.gif" width="800" height="450" loading="eager" alt="A terminal recording of the three steps below. A policy file gives refunds up to €500 to the agent, sends refunds up to €10,000 to a human, and denies the rest. The agent refunds €500 on its own; a €5,000 refund stops and names the request a human answers. ctrlrun approve grants it against the hash of that exact action. The agent runs the €5,000 refund, then tries €9,000 on the same approval, and that is refused: calls that reached the provider, 1, the €9,000 never left." />
+    </figure>
+  </div>
+</section>
+
+<section className="ct-notify" aria-labelledby="ct-notify-title">
+  <div className="ct-wrap ct-notify-inner">
+    <div className="ct-notify-copy">
+      <h2 id="ct-notify-title">Something bigger is coming.</h2>
+      <p>CTRLRun is the kernel. What we are building on it is almost ready. Leave your email and you will hear first, once, when it lands.</p>
+    </div>
+    <LaunchUpdates />
+  </div>
+</section>
+
+<section className="ct-section" aria-labelledby="ct-what">
+  <div className="ct-wrap ct-prose">
+    <h2 id="ct-what">What it does</h2>
+    <p className="ct-lead"><strong>The model guesses. CTRLRun does not.</strong> The ticket says refund €500. The agent asks for €5,000, one extra zero. The tool is in its list, the arguments are well formed, and the model is completely confident. Nothing above the call disagrees, because nothing above the call is a check: a tool being callable is not permission to call it with those arguments.</p>
+    <div className="ct-compare">
+      <div><span className="ct-compare-label">Without CTRLRun</span><p>Nothing checks the amount. The call goes through. <strong>€4,500 too much.</strong></p></div>
+      <div><span className="ct-compare-label">With CTRLRun</span><p>Your rule checks the amount. The call never leaves. <strong>€0 wrongly paid.</strong></p></div>
+    </div>
+    <p>CTRLRun is that check. It reads the arguments about to leave your process and answers what may happen to them: let it run, ask a human, or stop it cold. Four rules do the work, and each one is a test in this repository before it is a sentence here.</p>
+    <dl className="ct-rules">
+      <div><dt>Exact means exact</dt><dd>Changed arguments need a new approval.</dd></div>
+      <div><dt>Once stays once</dt><dd>Same effect key, shared store, no repeat.</dd></div>
+      <div><dt>Unknown means wait</dt><dd>Confirm the outcome before retrying.</dd></div>
+      <div><dt>Every answer is kept</dt><dd>Requests, decisions and results, refusals included.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section className="ct-section" id="use-it" aria-labelledby="ct-steps">
+  <div className="ct-wrap ct-prose">
+    <h2 id="ct-steps">Use it in three steps</h2>
+    <p>The animation above is this section, recorded against the real library: one policy file, two short programs, four commands, nothing staged.</p>
+
+    <h3>1. Install it.</h3>
+
+```bash
+pip install ctrlrun
+```
+
+    <h3>2. Write down what the agent may do.</h3>
+    <p>One file, <code>ctrlrun.yaml</code>. Amounts are integer minor units, so <code>50000</code> is €500. Both ends of every band are bound, because an upper bound alone lets a negative amount through, and a refund of a negative amount is a charge. Anything not listed is denied; there is no default-allow.</p>
+
+```yaml
+schema: ctrlrun.policy/v2
+
+actions:
+  stripe.refund:
+    effect: "refund:{payment_id}"
+    rules:
+      - when: { amount_gte: 0, amount_lte: 50000 }
+        decision: allow      # up to €500: the agent acts alone
+      - when: { amount_gte: 0, amount_lte: 1000000 }
+        decision: approve    # up to €10,000: a human decides
+      - decision: deny       # above that: never
+```
+
+    <h3>3. Wrap the call that has the consequence.</h3>
+    <p>The decorator names the action, the effect key names the consequence it has in the world, and the context names who is acting. <code>stripe</code> here is a stand-in that records calls instead of making them.</p>
+
+```python
+import ctrlrun
+
+
+@ctrlrun.protect("stripe.refund", effect="refund:{payment_id}")
+def refund(payment_id: str, amount: int) -> dict:
+    return stripe.refund(payment_id, amount)
+
+
+with ctrlrun.context(agent="support-agent"):
+    refund(payment_id="txn_1", amount=50_000)      # €500   -> succeeded
+    refund(payment_id="txn_2", amount=500_000)     # €5,000 -> ApprovalRequired, a human decides
+```
+
+    <p>The €500 refund runs on its own. The €5,000 one stops and names the request a human answers.</p>
+    <p><strong>A human answers from the shell.</strong> The grant names the hash of the exact action the human read, and when it lapses.</p>
+
+```console
+$ ctrlrun approve "$(cat request_id.txt)"
+granted apr_63e80076f2cccfee52b17491a4b2e125 for sha256:22ec1c39…6af752
+expires 2026-09-13T20:10:11.367Z
+```
+
+    <p><strong>The agent presents it, then tries to spend it on something else.</strong> The first call is exactly what the human approved, and it runs. The second is the same approval with one digit changed, and it matches nothing.</p>
+
+```console
+€5,000 with the approval -> succeeded
+€9,000 on that same approval -> refused
+calls that reached the provider: 1 (the €9,000 never left)
+```
+
+    <p>Every attempt, refusals included, left a receipt, and <code>ctrlrun receipts</code> lists them. That is the whole integration: a policy file, a decorator, a context, and <code>with_approval</code> to present a grant. Money is the example, not the scope: the same policy language reads <code>role_in</code> or <code>replicas_lte</code> as easily as <code>amount_lte</code>.</p>
+    <p className="ct-links"><a className="ct-link" href="/docs/get-started/quickstart">Protect your first action</a><a className="ct-link" href="/docs/reference/policy-yaml">Policy YAML reference</a><a className="ct-link" href="/docs/cookbook/index">Cookbook</a></p>
+  </div>
+</section>
+
+<section className="ct-section" aria-labelledby="ct-ways">
+  <div className="ct-wrap ct-prose">
+    <h2 id="ct-ways">Three ways to use it</h2>
+    <p><strong>You probably do not need an adapter.</strong> <code>@protect</code> covers anything running in this process: a raw model call, a LangChain tool, a hand-rolled loop, a cron job. The gateway covers anything that reaches its tools over MCP, in any language.</p>
+    <table className="ct-table">
+      <thead><tr><th>You have</th><th>Use</th><th>Needs</th></tr></thead>
+      <tbody>
+        <tr><td>Python in this process</td><td>the <code>@protect</code> decorator, shown above</td><td>nothing beyond <code>pip install ctrlrun</code></td></tr>
+        <tr><td>Tools behind an MCP server, in any language</td><td>the gateway: <code>pip install "ctrlrun[gateway]"</code></td><td>one command, no change to agent or server code</td></tr>
+        <tr><td>A framework with its own approval interrupt</td><td>an adapter</td><td>the framework to have a human-in-the-loop primitive</td></tr>
+      </tbody>
+    </table>
+    <p><strong>It works with agents you can and can't modify.</strong> WhatsApp, Slack and Teams bots, ChatGPT, Cursor, Codex, OpenAI Agents: any AI agent you have. CTRLRun checks the action, not the agent, so if the agent acts through a tool server or an API you run, the action is checked, and the agent is not rebuilt, redeployed or told. <a href="/docs/agents-you-cant-modify">Agents you can't modify</a> says where the boundary goes for each kind.</p>
+  </div>
+</section>
+
+<section className="ct-section" id="how-it-works" aria-labelledby="ct-how">
+  <div className="ct-wrap ct-prose">
+    <h2 id="ct-how">How it works</h2>
+    <p>Every protected call, whichever way it arrives, goes through the same seven steps. Only then does it reach your systems.</p>
+  </div>
+  <div className="ct-wrap ct-diagram">
     <HowDiagram />
-    <p className="cr-how-after"><a className="cr-text-link" href="/execution-boundary" data-cr-event="try_clicked">Interactive walkthrough: follow one agent action through every check →</a></p>
-  </section>
+  </div>
+  <div className="ct-wrap ct-prose">
+    <p className="ct-links"><a className="ct-link" href="/execution-boundary">The seven steps, in full</a><a className="ct-link" href="/docs/concepts/outcomes-and-ambiguous">Why unknown is not failed</a></p>
+  </div>
+</section>
 
-  <section className="cr-section cr-home-commercial" id="pro-and-enterprise" aria-labelledby="cr-commercial-title">
-    <div className="cr-commercial">
-      <div className="cr-commercial-head">
-        <p className="cr-eyebrow">FREE, PRO, ENTERPRISE</p>
-        <h2 id="cr-commercial-title">Free and open source: the boundary. Pro: the boundary, run for you. Enterprise: the boundary, shaped to you.</h2>
-      </div>
-      <div className="cr-tiers">
-        <div className="cr-tier">
-          <span className="cr-step">FREE &middot; OPEN SOURCE</span>
-          <h3>ctrlrun Open Source</h3>
-          <p className="cr-tier-promise">Free. Run it yourself.</p>
-          <p className="cr-tier-body">The boundary itself, at no cost. No account, no card, no call with us. Every rule that decides is code you can read, and every action leaves a receipt you keep. Free to use and free to change, under the Apache-2.0 licence.</p>
-          <p className="cr-tier-who"><span>Who does the work</span> Your team, on your machines.</p>
-          <a className="cr-button" href="/docs/get-started/quickstart" data-cr-event="open_source_install_clicked">Install it <span aria-hidden="true">→</span></a>
-        </div>
-        <div className="cr-tier">
-          <span className="cr-step">IN DEVELOPMENT</span>
-          <h3>ctrlrun Pro</h3>
-          <p className="cr-tier-promise">Integrate, analyze, protect. One dashboard.</p>
-          <p className="cr-tier-body">Connect your agents and workflows and see what each connection covers. Search every action, decision and outcome across your agents. Manage policies and approvals from one place, test a rule in observe mode, then turn enforcement on. Built on the open-source foundation, run by us.</p>
-          <p className="cr-tier-who"><span>Who does the work</span> Your team, on our dashboard.</p>
-          <CommercialTiers intent="pro-waitlist" />
-        </div>
-        <div className="cr-tier">
-          <span className="cr-step">ENGAGEMENTS OPEN</span>
-          <h3>ctrlrun Enterprise</h3>
-          <p className="cr-tier-promise">The same product, shaped to your company.</p>
-          <p className="cr-tier-body">Everything in Pro, with CTRLRun engineers who design, integrate and maintain the controls your business needs: custom policies and approval chains, connectors to your internal systems, your deployment options, the reports you ask for. Scoped to your requirements, delivered with your team.</p>
-          <p className="cr-tier-who"><span>Who does the work</span> Our engineers, with your team.</p>
-          <CommercialTiers intent="enterprise-contact" />
-        </div>
-      </div>
-    </div>
-    <div className="cr-footer" role="contentinfo"><span>Let agents act.<br /><strong>Keep the consequences yours to decide.</strong></span><div><a href="/docs" data-cr-event="documentation_clicked">Docs →</a><a href="https://github.com/CTRLRun/ctrlrun" data-cr-event="github_clicked">GitHub ↗</a><a href="mailto:contact@arpanghoshal.com?subject=CTRLRun" data-cr-event="contact_email_clicked">Contact ↗</a></div></div>
-  </section>
+<section className="ct-section" id="verify" aria-labelledby="ct-verify">
+  <div className="ct-wrap ct-prose">
+    <h2 id="ct-verify">Prove it in your own setup</h2>
+    <p>State lives in SQLite by default, a file with no server and no ops, and the reservation holds across processes rather than merely across threads. Point it at Postgres when more than one host writes: one URL, the same guarantees graded by the same suite. Prove it in your own setup with <code>ctrlrun verify</code>, which runs the kernel's own failure scenarios against <em>your</em> policy in a scratch store. It reaches no network.</p>
+
+```console
+$ ctrlrun verify
+CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v6
+policy     ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
+store      sqlite, scratch (created and destroyed for this run)
+
+G1   mutated approval refused         PASS  stripe.refund
+G2   replayed approval refused        PASS  stripe.refund
+G3   duplicate effect refused         PASS  stripe.refund
+G4   one winner under concurrency     PASS  stripe.refund (8 processes)
+G5   ambiguous blocks a blind retry   PASS  stripe.refund
+G6   unknown action refused           PASS
+G7   no principal refused             PASS  stripe.refund
+G10  unknown exception is ambiguous   PASS  stripe.refund
+G11  an altered receipt is detected   PASS  stripe.refund
+…    24 guarantees graded in the full run
+```
+
+    <p className="ct-links"><a className="ct-link" href="/docs/security/verify-guarantees">What verify proves</a><a className="ct-link" href="/docs/THREAT_MODEL">Threat model</a><a className="ct-link" href="/docs/CLAIMS">Every sentence mapped to its test</a></p>
+  </div>
+</section>
+
+<section className="ct-section" aria-labelledby="ct-docs">
+  <div className="ct-wrap ct-prose">
+    <h2 id="ct-docs">Documentation</h2>
+    <p><a href="/docs">docs.ctrlrun.dev</a> is the documentation: concepts, guides, a cookbook, the full reference, and a browser demo that runs with no install.</p>
+    <dl className="ct-doclist">
+      <div><dt>Start here</dt><dd><a href="/docs/why">Why</a> <a href="/docs/get-started/quickstart">Protect your first action</a> <a href="/docs/try-it">Try it in your browser</a></dd></div>
+      <div><dt>The ideas, and doing something with them</dt><dd><a href="/docs/concepts/outcomes-and-ambiguous">Concepts</a> <a href="/docs/guides/protect-a-function">Guides</a> <a href="/docs/cookbook/index">Cookbook</a></dd></div>
+      <div><dt>Agents and MCP</dt><dd><a href="/docs/agents-you-cant-modify">Agents you can't modify</a> <a href="/docs/mcp/overview">MCP overview</a> <a href="/docs/mcp/gateway-in-5-minutes">The gateway in five minutes</a></dd></div>
+      <div><dt>Running it for real</dt><dd><a href="/docs/production/index">Production</a> <a href="/docs/production/postgres">Postgres</a> <a href="/docs/production/recovery">Recovery</a> <a href="/docs/production/operations">Operations</a></dd></div>
+      <div><dt>Every key, flag and error</dt><dd><a href="/docs/reference/policy-yaml">Reference</a> <a href="/docs/faq">FAQ</a></dd></div>
+      <div><dt>Compared with</dt><dd><a href="/docs/compare/idempotency-keys">Idempotency keys</a> <a href="/docs/compare/framework-hitl">Framework human-in-the-loop</a> <a href="/docs/compare/guardrail-libraries">Guardrail libraries</a></dd></div>
+      <div><dt>What holds, and what does not</dt><dd><a href="/docs/THREAT_MODEL">Threat model</a> <a href="/docs/verify">What verify proves</a> <a href="/docs/CLAIMS">CLAIMS.md</a> <a href="/docs/how-this-is-built">How this is built</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<section className="ct-section ct-open" aria-labelledby="ct-open-title">
+  <div className="ct-wrap ct-prose">
+    <h2 id="ct-open-title">Built in the open</h2>
+    <p>Issues and pull requests are welcome: <a href="https://github.com/CTRLRun/ctrlrun/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> and <a href="https://github.com/CTRLRun/ctrlrun/blob/main/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a> have the working agreement, and <a href="https://github.com/CTRLRun/ctrlrun/blob/main/SECURITY.md">SECURITY.md</a> is how to report a vulnerability. Every claim on this page has a test behind it, so a change to the prose usually means a change to the suite. <a href="https://github.com/CTRLRun/ctrlrun/blob/main/CHANGELOG.md">CHANGELOG.md</a> and the <a href="/docs/ROADMAP">roadmap</a> say where it is going. Releases carry PyPI provenance attestations from GitHub Actions.</p>
+    <p className="ct-badges">
+      <a href="https://pypi.org/project/ctrlrun/"><img src="https://img.shields.io/pypi/v/ctrlrun?color=14161A&amp;label=pypi" alt="PyPI version" height="20" /></a>
+      <a href="https://github.com/CTRLRun/ctrlrun/actions/workflows/ci.yml"><img src="https://github.com/CTRLRun/ctrlrun/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status" height="20" /></a>
+      <a href="https://scorecard.dev/viewer/?uri=github.com/CTRLRun/ctrlrun"><img src="https://api.scorecard.dev/projects/github.com/CTRLRun/ctrlrun/badge" alt="OpenSSF Scorecard" height="20" /></a>
+      <a href="https://www.bestpractices.dev/projects/14615"><img src="https://www.bestpractices.dev/projects/14615/badge" alt="OpenSSF Best Practices" height="20" /></a>
+      <a href="https://github.com/CTRLRun/ctrlrun/blob/main/LICENSE"><img src="https://img.shields.io/pypi/l/ctrlrun?color=14161A" alt="Apache-2.0 license" height="20" /></a>
+    </p>
+  </div>
+</section>
+
+<footer className="ct-footer">
+  <div className="ct-wrap ct-footer-inner">
+    <p>Apache-2.0. Built in the open.</p>
+    <nav aria-label="Footer"><a href="/docs">Docs</a><a href="https://github.com/CTRLRun/ctrlrun">GitHub</a><a href="https://github.com/CTRLRun/ctrlrun/blob/main/SECURITY.md">Security</a><a href="mailto:contact@arpanghoshal.com?subject=CTRLRun">Contact</a></nav>
+  </div>
+</footer>
 
 </div>

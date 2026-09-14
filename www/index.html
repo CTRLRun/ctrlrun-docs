@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CTRLRun: stop wrong, restricted, or malicious agent actions</title>
+<meta name="description" content="Every action is checked against your rules before it runs. Allowed actions go through. Sensitive ones wait for a person. Forbidden ones are blocked.">
+<link rel="canonical" href="https://ctrlrun.dev/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CTRLRun">
+<meta property="og:title" content="CTRLRun: stop wrong, restricted, or malicious agent actions">
+<meta property="og:description" content="Every action is checked against your rules before it runs. Allowed actions go through. Sensitive ones wait for a person. Forbidden ones are blocked.">
+<meta property="og:url" content="https://ctrlrun.dev/">
+<meta property="og:image" content="https://ctrlrun.dev/images/og-home.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CTRLRun: stop wrong, restricted, or malicious agent actions">
+<meta name="twitter:image" content="https://ctrlrun.dev/images/og-home.png">
+<link rel="icon" href="/images/favicon-c.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/Satoshi-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Satoshi-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="ct-skip" href="#main">Skip to content</a>
+<div class="ct-home">
+<header class="ct-topbar"><div class="ct-wrap ct-topbar-inner"><a class="ct-wordmark" href="/" aria-label="ctrlrun home">ctrlrun</a><nav class="ct-topnav" aria-label="Site"><a href="#how-it-works">How it works</a><a href="https://docs.ctrlrun.dev/">Docs</a><a href="#verify">Verify</a></nav><a class="ct-button-secondary" href="https://github.com/CTRLRun/ctrlrun">GitHub</a></div></header>
+<main id="main">
+
+
+
+
+
+
+
+<section class="ct-hero" aria-labelledby="cr-title">
+  <div class="ct-wrap ct-hero-inner">
+    <h1 id="cr-title"><span class="cr-mark">CTRLRun</span> stops AI agents from taking wrong, restricted, or malicious actions in your workflows<span class="cr-dot">.</span></h1>
+    <p class="cr-lede">Every action is checked against your rules before it runs. Allowed actions go through. Sensitive ones wait for a person. Forbidden ones are blocked.</p>
+    <p class="ct-sub">Execution safety for AI agents. A Python library that sits between the decision to act and the call that acts. A consequential action happens at most once, exactly as approved, and leaves a receipt. When the outcome is unknown, CTRLRun says so instead of guessing.</p>
+    <p class="ct-meta">Runs in production on a single file, or on Postgres across hosts. Apache-2.0.</p>
+    <div class="ct-actions">
+      <a class="ct-button" href="https://docs.ctrlrun.dev/get-started/quickstart">Protect your first action</a>
+      <a class="ct-link" href="https://github.com/CTRLRun/ctrlrun">Read the code on GitHub</a>
+    </div>
+    <div class="ct-install"><code>pip install ctrlrun &amp;&amp; ctrlrun demo</code></div>
+  </div>
+  <div class="ct-wrap">
+    <figure class="ct-recording">
+      <img src="/images/demo.gif" width="800" height="450" loading="eager" alt="A terminal recording of the three steps below. A policy file gives refunds up to €500 to the agent, sends refunds up to €10,000 to a human, and denies the rest. The agent refunds €500 on its own; a €5,000 refund stops and names the request a human answers. ctrlrun approve grants it against the hash of that exact action. The agent runs the €5,000 refund, then tries €9,000 on the same approval, and that is refused: calls that reached the provider, 1, the €9,000 never left." />
+    </figure>
+  </div>
+</section>
+
+<section class="ct-notify" aria-labelledby="ct-notify-title">
+  <div class="ct-wrap ct-notify-inner">
+    <div class="ct-notify-copy">
+      <h2 id="ct-notify-title">Something bigger is coming.</h2>
+      <p>CTRLRun is the kernel. What we are building on it is almost ready. Leave your email and you will hear first, once, when it lands.</p>
+    </div>
+    <form class="ct-notify-form" id="ct-notify" novalidate>
+      <fieldset class="ct-notify-fields">
+        <label class="ct-notify-label" for="ct-notify-email">Email</label>
+        <div class="ct-notify-row">
+          <input id="ct-notify-email" class="ct-input" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="254" placeholder="you@example.com">
+          <button type="submit" class="ct-button" id="ct-notify-button">Tell me first</button>
+        </div>
+        <div class="ct-honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      </fieldset>
+      <p role="alert" class="ct-notify-error" id="ct-notify-error" hidden></p>
+      <p role="status" class="ct-notify-done" id="ct-notify-done" hidden>Thanks. One email when it lands, nothing else.</p>
+    </form>
+  </div>
+</section>
+
+<section class="ct-section" aria-labelledby="ct-what">
+  <div class="ct-wrap ct-prose">
+    <h2 id="ct-what">What it does</h2>
+    <p class="ct-lead"><strong>The model guesses. CTRLRun does not.</strong> The ticket says refund €500. The agent asks for €5,000, one extra zero. The tool is in its list, the arguments are well formed, and the model is completely confident. Nothing above the call disagrees, because nothing above the call is a check: a tool being callable is not permission to call it with those arguments.</p>
+    <div class="ct-compare">
+      <div><span class="ct-compare-label">Without CTRLRun</span><p>Nothing checks the amount. The call goes through. <strong>€4,500 too much.</strong></p></div>
+      <div><span class="ct-compare-label">With CTRLRun</span><p>Your rule checks the amount. The call never leaves. <strong>€0 wrongly paid.</strong></p></div>
+    </div>
+    <p>CTRLRun is that check. It reads the arguments about to leave your process and answers what may happen to them: let it run, ask a human, or stop it cold. Four rules do the work, and each one is a test in this repository before it is a sentence here.</p>
+    <dl class="ct-rules">
+      <div><dt>Exact means exact</dt><dd>Changed arguments need a new approval.</dd></div>
+      <div><dt>Once stays once</dt><dd>Same effect key, shared store, no repeat.</dd></div>
+      <div><dt>Unknown means wait</dt><dd>Confirm the outcome before retrying.</dd></div>
+      <div><dt>Every answer is kept</dt><dd>Requests, decisions and results, refusals included.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="ct-section" id="use-it" aria-labelledby="ct-steps">
+  <div class="ct-wrap ct-prose">
+    <h2 id="ct-steps">Use it in three steps</h2>
+    <p>The animation above is this section, recorded against the real library: one policy file, two short programs, four commands, nothing staged.</p>
+
+    <h3>1. Install it.</h3>
+
+<pre><code class="language-bash">pip install ctrlrun</code></pre>
+
+    <h3>2. Write down what the agent may do.</h3>
+    <p>One file, <code>ctrlrun.yaml</code>. Amounts are integer minor units, so <code>50000</code> is €500. Both ends of every band are bound, because an upper bound alone lets a negative amount through, and a refund of a negative amount is a charge. Anything not listed is denied; there is no default-allow.</p>
+
+<pre><code class="language-yaml">schema: ctrlrun.policy/v2
+
+actions:
+  stripe.refund:
+    effect: &quot;refund:{payment_id}&quot;
+    rules:
+      - when: { amount_gte: 0, amount_lte: 50000 }
+        decision: allow      # up to €500: the agent acts alone
+      - when: { amount_gte: 0, amount_lte: 1000000 }
+        decision: approve    # up to €10,000: a human decides
+      - decision: deny       # above that: never</code></pre>
+
+    <h3>3. Wrap the call that has the consequence.</h3>
+    <p>The decorator names the action, the effect key names the consequence it has in the world, and the context names who is acting. <code>stripe</code> here is a stand-in that records calls instead of making them.</p>
+
+<pre><code class="language-python">
+
+
+@ctrlrun.protect(&quot;stripe.refund&quot;, effect=&quot;refund:{payment_id}&quot;)
+def refund(payment_id: str, amount: int) -&gt; dict:
+    return stripe.refund(payment_id, amount)
+
+
+with ctrlrun.context(agent=&quot;support-agent&quot;):
+    refund(payment_id=&quot;txn_1&quot;, amount=50_000)      # €500   -&gt; succeeded
+    refund(payment_id=&quot;txn_2&quot;, amount=500_000)     # €5,000 -&gt; ApprovalRequired, a human decides</code></pre>
+
+    <p>The €500 refund runs on its own. The €5,000 one stops and names the request a human answers.</p>
+    <p><strong>A human answers from the shell.</strong> The grant names the hash of the exact action the human read, and when it lapses.</p>
+
+<pre><code class="language-console">$ ctrlrun approve &quot;$(cat request_id.txt)&quot;
+granted apr_63e80076f2cccfee52b17491a4b2e125 for sha256:22ec1c39…6af752
+expires 2026-09-13T20:10:11.367Z</code></pre>
+
+    <p><strong>The agent presents it, then tries to spend it on something else.</strong> The first call is exactly what the human approved, and it runs. The second is the same approval with one digit changed, and it matches nothing.</p>
+
+<pre><code class="language-console">€5,000 with the approval -&gt; succeeded
+€9,000 on that same approval -&gt; refused
+calls that reached the provider: 1 (the €9,000 never left)</code></pre>
+
+    <p>Every attempt, refusals included, left a receipt, and <code>ctrlrun receipts</code> lists them. That is the whole integration: a policy file, a decorator, a context, and <code>with_approval</code> to present a grant. Money is the example, not the scope: the same policy language reads <code>role_in</code> or <code>replicas_lte</code> as easily as <code>amount_lte</code>.</p>
+    <p class="ct-links"><a class="ct-link" href="https://docs.ctrlrun.dev/get-started/quickstart">Protect your first action</a><a class="ct-link" href="https://docs.ctrlrun.dev/reference/policy-yaml">Policy YAML reference</a><a class="ct-link" href="https://docs.ctrlrun.dev/cookbook/index">Cookbook</a></p>
+  </div>
+</section>
+
+<section class="ct-section" aria-labelledby="ct-ways">
+  <div class="ct-wrap ct-prose">
+    <h2 id="ct-ways">Three ways to use it</h2>
+    <p><strong>You probably do not need an adapter.</strong> <code>@protect</code> covers anything running in this process: a raw model call, a LangChain tool, a hand-rolled loop, a cron job. The gateway covers anything that reaches its tools over MCP, in any language.</p>
+    <table class="ct-table">
+      <thead><tr><th>You have</th><th>Use</th><th>Needs</th></tr></thead>
+      <tbody>
+        <tr><td>Python in this process</td><td>the <code>@protect</code> decorator, shown above</td><td>nothing beyond <code>pip install ctrlrun</code></td></tr>
+        <tr><td>Tools behind an MCP server, in any language</td><td>the gateway: <code>pip install "ctrlrun[gateway]"</code></td><td>one command, no change to agent or server code</td></tr>
+        <tr><td>A framework with its own approval interrupt</td><td>an adapter</td><td>the framework to have a human-in-the-loop primitive</td></tr>
+      </tbody>
+    </table>
+    <p><strong>It works with agents you can and can't modify.</strong> WhatsApp, Slack and Teams bots, ChatGPT, Cursor, Codex, OpenAI Agents: any AI agent you have. CTRLRun checks the action, not the agent, so if the agent acts through a tool server or an API you run, the action is checked, and the agent is not rebuilt, redeployed or told. <a href="https://docs.ctrlrun.dev/agents-you-cant-modify">Agents you can't modify</a> says where the boundary goes for each kind.</p>
+  </div>
+</section>
+
+<section class="ct-section" id="how-it-works" aria-labelledby="ct-how">
+  <div class="ct-wrap ct-prose">
+    <h2 id="ct-how">How it works</h2>
+    <p>Every protected call, whichever way it arrives, goes through the same seven steps. Only then does it reach your systems.</p>
+  </div>
+  <div class="ct-wrap ct-diagram">
+    
+    <svg class="cr-diagram cr-dia-wide" viewBox="0 0 1200 418" role="img"
+      aria-labelledby="cr-dia-t cr-dia-d" preserveAspectRatio="xMidYMid meet">
+      <title id="cr-dia-t">How CTRLRun works</title>
+      <desc id="cr-dia-d">An action leaves the agents, tools and workflows you already run. Inside CTRLRun it is normalized into one action, decided against your rules, held for approval, reserved so it cannot run twice, executed, resolved and recorded. Only then does it reach your systems. An action with no rule is blocked, changed arguments void the approval, and an unknown outcome is never retried.</desc>
+      <rect class="cr-dia-strip" x="1" y="1" width="1198" height="54" rx="6" />
+      <text class="cr-dia-label" x="24" y="33">Your agents, tools and workflows</text>
+      <text class="cr-dia-claim" x="390" y="34">An action is about to run.</text>
+      <text class="cr-dia-note" x="628" y="34">Any model, any framework. Existing code stays as it is.</text>
+      <path class="cr-dia-arrow" d="M600 56V83" />
+      <path class="cr-dia-head" d="M595 82h10L600 90Z" />
+      <rect class="cr-dia-box" x="1" y="92" width="1198" height="230" rx="6" />
+      <text class="cr-dia-label" x="24" y="122">CTRLRun, the execution boundary</text>
+      <rect class="cr-dia-node" x="24" y="138" width="144" height="86" rx="5" />
+      <text class="cr-dia-num" x="37" y="162">1</text>
+      <text class="cr-dia-name" x="37" y="186">Normalize</text>
+      <text class="cr-dia-gloss" x="37" y="206">one action, one id</text>
+      <path class="cr-dia-arrow" d="M173 181h11" />
+      <path class="cr-dia-head" d="M183 176.5l7 4.5-7 4.5Z" />
+      <rect class="cr-dia-node" x="192" y="138" width="144" height="86" rx="5" />
+      <text class="cr-dia-num" x="205" y="162">2</text>
+      <text class="cr-dia-name" x="205" y="186">Decide</text>
+      <text class="cr-dia-gloss" x="205" y="206">allow / ask / block</text>
+      <path class="cr-dia-arrow" d="M341 181h11" />
+      <path class="cr-dia-head" d="M351 176.5l7 4.5-7 4.5Z" />
+      <rect class="cr-dia-node" x="360" y="138" width="144" height="86" rx="5" />
+      <text class="cr-dia-num" x="373" y="162">3</text>
+      <text class="cr-dia-name" x="373" y="186">Approve</text>
+      <text class="cr-dia-gloss" x="373" y="206">bound to this action</text>
+      <path class="cr-dia-arrow" d="M509 181h11" />
+      <path class="cr-dia-head" d="M519 176.5l7 4.5-7 4.5Z" />
+      <rect class="cr-dia-node" x="528" y="138" width="144" height="86" rx="5" />
+      <text class="cr-dia-num" x="541" y="162">4</text>
+      <text class="cr-dia-name" x="541" y="186">Reserve</text>
+      <text class="cr-dia-gloss" x="541" y="206">claimed once</text>
+      <path class="cr-dia-arrow" d="M677 181h11" />
+      <path class="cr-dia-head" d="M687 176.5l7 4.5-7 4.5Z" />
+      <rect class="cr-dia-node" x="696" y="138" width="144" height="86" rx="5" />
+      <text class="cr-dia-num" x="709" y="162">5</text>
+      <text class="cr-dia-name" x="709" y="186">Execute</text>
+      <text class="cr-dia-gloss" x="709" y="206">your code runs</text>
+      <path class="cr-dia-arrow" d="M845 181h11" />
+      <path class="cr-dia-head" d="M855 176.5l7 4.5-7 4.5Z" />
+      <rect class="cr-dia-node" x="864" y="138" width="144" height="86" rx="5" />
+      <text class="cr-dia-num" x="877" y="162">6</text>
+      <text class="cr-dia-name" x="877" y="186">Resolve</text>
+      <text class="cr-dia-gloss" x="877" y="206">unknown is not failed</text>
+      <path class="cr-dia-arrow" d="M1013 181h11" />
+      <path class="cr-dia-head" d="M1023 176.5l7 4.5-7 4.5Z" />
+      <rect class="cr-dia-node" x="1032" y="138" width="144" height="86" rx="5" />
+      <text class="cr-dia-num" x="1045" y="162">7</text>
+      <text class="cr-dia-name" x="1045" y="186">Record</text>
+      <text class="cr-dia-gloss" x="1045" y="206">a receipt either way</text>
+      <path class="cr-dia-div" d="M24 252H1176" />
+      <text class="cr-dia-rule" x="24" y="278">No rule for it</text>
+      <text class="cr-dia-rule-note" x="24" y="298">The action is blocked. Silence is never permission.</text>
+      <text class="cr-dia-rule" x="418" y="278">Arguments changed after sign-off</text>
+      <text class="cr-dia-rule-note" x="418" y="298">The old approval is void. A person signs again.</text>
+      <text class="cr-dia-rule" x="812" y="278">Outcome unknown</text>
+      <text class="cr-dia-rule-note" x="812" y="298">No retry until a person resolves it. Nothing runs twice on a guess.</text>
+      <path class="cr-dia-arrow" d="M600 324V353" />
+      <path class="cr-dia-head" d="M595 352h10L600 360Z" />
+      <rect class="cr-dia-strip" x="1" y="362" width="1198" height="54" rx="6" />
+      <text class="cr-dia-label" x="24" y="394">Your systems</text>
+      <text class="cr-dia-claim" x="252" y="395">The action arrives already checked.</text>
+      <text class="cr-dia-note" x="560" y="395">Allowed by your rules, approved where you require it, and never run twice.</text>
+    </svg>
+    <svg class="cr-diagram cr-dia-narrow" viewBox="0 0 360 748" role="img"
+      aria-labelledby="cr-dia-tn cr-dia-dn" preserveAspectRatio="xMidYMid meet">
+      <title id="cr-dia-tn">How CTRLRun works</title>
+      <desc id="cr-dia-dn">An action leaves the agents, tools and workflows you already run. Inside CTRLRun it is normalized into one action, decided against your rules, held for approval, reserved so it cannot run twice, executed, resolved and recorded. Only then does it reach your systems. An action with no rule is blocked, changed arguments void the approval, and an unknown outcome is never retried.</desc>
+      <rect class="cr-dia-strip" x="1" y="1" width="358" height="76" rx="6" />
+      <text class="cr-dia-label" x="16" y="25">Your agents, tools and workflows</text>
+      <text class="cr-dia-claim" x="16" y="47">An action is about to run.</text>
+      <text class="cr-dia-note" x="16" y="66">Any model, any framework. Existing code stays as it is.</text>
+      <path class="cr-dia-arrow" d="M180 78V95" />
+      <path class="cr-dia-head" d="M175 94h10L180 102Z" />
+      <rect class="cr-dia-box" x="1" y="104" width="358" height="536" rx="6" />
+      <text class="cr-dia-label" x="16" y="130">CTRLRun, the execution boundary</text>
+      <path class="cr-dia-spine" d="M28 150V420" />
+      <rect class="cr-dia-node" x="28" y="142" width="316" height="34" rx="4" />
+      <text class="cr-dia-num" x="40" y="164">1</text>
+      <text class="cr-dia-name" x="58" y="164">Normalize</text>
+      <text class="cr-dia-gloss" x="156" y="164">one action, one id</text>
+      <rect class="cr-dia-node" x="28" y="184" width="316" height="34" rx="4" />
+      <text class="cr-dia-num" x="40" y="206">2</text>
+      <text class="cr-dia-name" x="58" y="206">Decide</text>
+      <text class="cr-dia-gloss" x="156" y="206">allow / ask / block</text>
+      <rect class="cr-dia-node" x="28" y="226" width="316" height="34" rx="4" />
+      <text class="cr-dia-num" x="40" y="248">3</text>
+      <text class="cr-dia-name" x="58" y="248">Approve</text>
+      <text class="cr-dia-gloss" x="156" y="248">bound to this action</text>
+      <rect class="cr-dia-node" x="28" y="268" width="316" height="34" rx="4" />
+      <text class="cr-dia-num" x="40" y="290">4</text>
+      <text class="cr-dia-name" x="58" y="290">Reserve</text>
+      <text class="cr-dia-gloss" x="156" y="290">claimed once</text>
+      <rect class="cr-dia-node" x="28" y="310" width="316" height="34" rx="4" />
+      <text class="cr-dia-num" x="40" y="332">5</text>
+      <text class="cr-dia-name" x="58" y="332">Execute</text>
+      <text class="cr-dia-gloss" x="156" y="332">your code runs</text>
+      <rect class="cr-dia-node" x="28" y="352" width="316" height="34" rx="4" />
+      <text class="cr-dia-num" x="40" y="374">6</text>
+      <text class="cr-dia-name" x="58" y="374">Resolve</text>
+      <text class="cr-dia-gloss" x="156" y="374">unknown is not failed</text>
+      <rect class="cr-dia-node" x="28" y="394" width="316" height="34" rx="4" />
+      <text class="cr-dia-num" x="40" y="416">7</text>
+      <text class="cr-dia-name" x="58" y="416">Record</text>
+      <text class="cr-dia-gloss" x="156" y="416">a receipt either way</text>
+      <path class="cr-dia-div" d="M28 446H344" />
+      <text class="cr-dia-rule" x="28" y="470">No rule for it</text>
+      <text class="cr-dia-rule-note" x="28" y="488">The action is blocked.</text>
+      <text class="cr-dia-rule-note" x="28" y="504">Silence is never permission.</text>
+      <text class="cr-dia-rule" x="28" y="534">Arguments changed after sign-off</text>
+      <text class="cr-dia-rule-note" x="28" y="552">The old approval is void.</text>
+      <text class="cr-dia-rule-note" x="28" y="568">A person signs again.</text>
+      <text class="cr-dia-rule" x="28" y="598">Outcome unknown</text>
+      <text class="cr-dia-rule-note" x="28" y="616">No retry until a person resolves it.</text>
+      <text class="cr-dia-rule-note" x="28" y="632">Nothing runs twice on a guess.</text>
+      <path class="cr-dia-arrow" d="M180 642V661" />
+      <path class="cr-dia-head" d="M175 660h10L180 668Z" />
+      <rect class="cr-dia-strip" x="1" y="670" width="358" height="76" rx="6" />
+      <text class="cr-dia-label" x="16" y="694">Your systems</text>
+      <text class="cr-dia-claim" x="16" y="716">The action arrives already checked.</text>
+      <text class="cr-dia-note" x="16" y="735">Allowed by your rules, approved where you require it.</text>
+    </svg>
+  
+  </div>
+  <div class="ct-wrap ct-prose">
+    <p class="ct-links"><a class="ct-link" href="https://docs.ctrlrun.dev/execution-boundary">The seven steps, in full</a><a class="ct-link" href="https://docs.ctrlrun.dev/concepts/outcomes-and-ambiguous">Why unknown is not failed</a></p>
+  </div>
+</section>
+
+<section class="ct-section" id="verify" aria-labelledby="ct-verify">
+  <div class="ct-wrap ct-prose">
+    <h2 id="ct-verify">Prove it in your own setup</h2>
+    <p>State lives in SQLite by default, a file with no server and no ops, and the reservation holds across processes rather than merely across threads. Point it at Postgres when more than one host writes: one URL, the same guarantees graded by the same suite. Prove it in your own setup with <code>ctrlrun verify</code>, which runs the kernel's own failure scenarios against <em>your</em> policy in a scratch store. It reaches no network.</p>
+
+<pre><code class="language-console">$ ctrlrun verify
+CTRLRun verify — ctrlrun 0.9.0, catalogue ctrlrun.guarantees/v6
+policy     ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
+store      sqlite, scratch (created and destroyed for this run)
+
+G1   mutated approval refused         PASS  stripe.refund
+G2   replayed approval refused        PASS  stripe.refund
+G3   duplicate effect refused         PASS  stripe.refund
+G4   one winner under concurrency     PASS  stripe.refund (8 processes)
+G5   ambiguous blocks a blind retry   PASS  stripe.refund
+G6   unknown action refused           PASS
+G7   no principal refused             PASS  stripe.refund
+G10  unknown exception is ambiguous   PASS  stripe.refund
+G11  an altered receipt is detected   PASS  stripe.refund
+…    24 guarantees graded in the full run</code></pre>
+
+    <p class="ct-links"><a class="ct-link" href="https://docs.ctrlrun.dev/security/verify-guarantees">What verify proves</a><a class="ct-link" href="https://docs.ctrlrun.dev/THREAT_MODEL">Threat model</a><a class="ct-link" href="https://docs.ctrlrun.dev/CLAIMS">Every sentence mapped to its test</a></p>
+  </div>
+</section>
+
+<section class="ct-section" aria-labelledby="ct-docs">
+  <div class="ct-wrap ct-prose">
+    <h2 id="ct-docs">Documentation</h2>
+    <p><a href="https://docs.ctrlrun.dev/">docs.ctrlrun.dev</a> is the documentation: concepts, guides, a cookbook, the full reference, and a browser demo that runs with no install.</p>
+    <dl class="ct-doclist">
+      <div><dt>Start here</dt><dd><a href="https://docs.ctrlrun.dev/why">Why</a> <a href="https://docs.ctrlrun.dev/get-started/quickstart">Protect your first action</a> <a href="https://docs.ctrlrun.dev/try-it">Try it in your browser</a></dd></div>
+      <div><dt>The ideas, and doing something with them</dt><dd><a href="https://docs.ctrlrun.dev/concepts/outcomes-and-ambiguous">Concepts</a> <a href="https://docs.ctrlrun.dev/guides/protect-a-function">Guides</a> <a href="https://docs.ctrlrun.dev/cookbook/index">Cookbook</a></dd></div>
+      <div><dt>Agents and MCP</dt><dd><a href="https://docs.ctrlrun.dev/agents-you-cant-modify">Agents you can't modify</a> <a href="https://docs.ctrlrun.dev/mcp/overview">MCP overview</a> <a href="https://docs.ctrlrun.dev/mcp/gateway-in-5-minutes">The gateway in five minutes</a></dd></div>
+      <div><dt>Running it for real</dt><dd><a href="https://docs.ctrlrun.dev/production/index">Production</a> <a href="https://docs.ctrlrun.dev/production/postgres">Postgres</a> <a href="https://docs.ctrlrun.dev/production/recovery">Recovery</a> <a href="https://docs.ctrlrun.dev/production/operations">Operations</a></dd></div>
+      <div><dt>Every key, flag and error</dt><dd><a href="https://docs.ctrlrun.dev/reference/policy-yaml">Reference</a> <a href="https://docs.ctrlrun.dev/faq">FAQ</a></dd></div>
+      <div><dt>Compared with</dt><dd><a href="https://docs.ctrlrun.dev/compare/idempotency-keys">Idempotency keys</a> <a href="https://docs.ctrlrun.dev/compare/framework-hitl">Framework human-in-the-loop</a> <a href="https://docs.ctrlrun.dev/compare/guardrail-libraries">Guardrail libraries</a></dd></div>
+      <div><dt>What holds, and what does not</dt><dd><a href="https://docs.ctrlrun.dev/THREAT_MODEL">Threat model</a> <a href="https://docs.ctrlrun.dev/verify">What verify proves</a> <a href="https://docs.ctrlrun.dev/CLAIMS">CLAIMS.md</a> <a href="https://docs.ctrlrun.dev/how-this-is-built">How this is built</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="ct-section ct-open" aria-labelledby="ct-open-title">
+  <div class="ct-wrap ct-prose">
+    <h2 id="ct-open-title">Built in the open</h2>
+    <p>Issues and pull requests are welcome: <a href="https://github.com/CTRLRun/ctrlrun/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> and <a href="https://github.com/CTRLRun/ctrlrun/blob/main/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a> have the working agreement, and <a href="https://github.com/CTRLRun/ctrlrun/blob/main/SECURITY.md">SECURITY.md</a> is how to report a vulnerability. Every claim on this page has a test behind it, so a change to the prose usually means a change to the suite. <a href="https://github.com/CTRLRun/ctrlrun/blob/main/CHANGELOG.md">CHANGELOG.md</a> and the <a href="https://docs.ctrlrun.dev/ROADMAP">roadmap</a> say where it is going. Releases carry PyPI provenance attestations from GitHub Actions.</p>
+    <p class="ct-badges">
+      <a href="https://pypi.org/project/ctrlrun/"><img src="https://img.shields.io/pypi/v/ctrlrun?color=14161A&amp;label=pypi" alt="PyPI version" height="20" /></a>
+      <a href="https://github.com/CTRLRun/ctrlrun/actions/workflows/ci.yml"><img src="https://github.com/CTRLRun/ctrlrun/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status" height="20" /></a>
+      <a href="https://scorecard.dev/viewer/?uri=github.com/CTRLRun/ctrlrun"><img src="https://api.scorecard.dev/projects/github.com/CTRLRun/ctrlrun/badge" alt="OpenSSF Scorecard" height="20" /></a>
+      <a href="https://www.bestpractices.dev/projects/14615"><img src="https://www.bestpractices.dev/projects/14615/badge" alt="OpenSSF Best Practices" height="20" /></a>
+      <a href="https://github.com/CTRLRun/ctrlrun/blob/main/LICENSE"><img src="https://img.shields.io/pypi/l/ctrlrun?color=14161A" alt="Apache-2.0 license" height="20" /></a>
+    </p>
+  </div>
+</section>
+
+<footer class="ct-footer">
+  <div class="ct-wrap ct-footer-inner">
+    <p>Apache-2.0. Built in the open.</p>
+    <nav aria-label="Footer"><a href="https://docs.ctrlrun.dev/">Docs</a><a href="https://github.com/CTRLRun/ctrlrun">GitHub</a><a href="https://github.com/CTRLRun/ctrlrun/blob/main/SECURITY.md">Security</a><a href="mailto:contact@arpanghoshal.com?subject=CTRLRun">Contact</a></nav>
+  </div>
+</footer>
+
+
+</main>
+</div>
+<script src="/site.js" defer></script>
+</body>
+</html>

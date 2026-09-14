@@ -4,12 +4,13 @@ import { createHandler } from './api/interest.mjs';
 
 const pro = { intent: 'pro-waitlist', email: 'engineer@example.com', company: 'Example', agents: 'Support agent', requestId: '11111111-1111-4111-8111-111111111111' };
 const enterprise = { intent: 'enterprise-contact', email: 'cto@example.com', company: 'Example', message: 'Approvals in Slack, on-prem deployment.', requestId: '22222222-2222-4222-8222-222222222222' };
+const updates = { intent: 'launch-updates', email: 'reader@example.com', requestId: '33333333-3333-4333-8333-333333333333' };
 const request = (body, headers = {}) => ({ method: 'POST', headers: { origin: 'https://ctrlrun.dev', 'content-type': 'application/json', 'x-vercel-forwarded-for': '192.0.2.1', ...headers }, body });
 const response = () => ({ code: 200, headers: {}, body: null, setHeader(key, value) { this.headers[key] = value; }, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; }, end() { return this; } });
 const handler = (overrides = {}) => createHandler({ env: { RESEND_API_KEY: 'test-only' }, rateStore: new Map(), fetcher: async () => ({ ok: true, json: async () => ({ id: 'test-email' }) }), ...overrides });
 
 test('each intent sends to the fixed recipient with its own subject and idempotency key', async () => {
-  for (const [input, subject] of [[pro, 'CTRLRun Pro waiting list — Example'], [enterprise, 'CTRLRun Enterprise enquiry — Example']]) {
+  for (const [input, subject] of [[pro, 'CTRLRun Pro waiting list — Example'], [enterprise, 'CTRLRun Enterprise enquiry — Example'], [updates, 'CTRLRun launch updates — reader@example.com']]) {
     let sent;
     const fn = handler({ fetcher: async (url, options) => { sent = { url, ...options }; return { ok: true, json: async () => ({ id: 'test-email' }) }; } });
     const res = response(); await fn(request({ ...input, to: 'attacker@example.com', from: 'spoof@example.com' }), res);
@@ -87,4 +88,14 @@ test('preflight is allowed for site origins and refused for everything else', as
     const res = response(); await fn({ ...request(pro, { origin }), method: 'OPTIONS' }, res);
     assert.equal(res.code, origin.includes('unrelated') ? 403 : 204);
   }
+});
+
+test('launch updates needs an email and nothing else, and the other intents still need a company', async () => {
+  let sent;
+  const fn = handler({ fetcher: async (url, options) => { sent = { url, ...options }; return { ok: true, json: async () => ({ id: 'test-email' }) }; } });
+  const ok = response(); await fn(request(updates), ok);
+  assert.equal(ok.code, 200);
+  assert.doesNotMatch(JSON.parse(sent.body).text, /Company:/);
+  const missing = response(); await fn(request({ ...pro, company: undefined }), missing);
+  assert.equal(missing.code, 400);
 });
