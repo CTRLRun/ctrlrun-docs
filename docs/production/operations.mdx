@@ -49,11 +49,24 @@ and there will not be one.
 - **A reporting role still needs `CREATE` on the schema.** Opening the store migrates it, so a
   read-only role cannot run `--verify-chain` — it is refused before a receipt is read, naming
   the missing privilege. Read-only is for your own queries against the tables, not for the CLI.
+- **Anchor on an interval you choose, and say what it is.** `ctrlrun anchor --provider ...`
+  records the chain's head outside the database, which is what makes a truncation detectable at
+  all: the head that would catch one is otherwise a row in the same database. The window you are
+  exposed to is `(last anchored seq, current head]`, so the interval **is** the claim, and it is
+  the number to quote rather than any sentence about tamper-evidence. See
+  [anchoring](/docs/production/anchoring).
+- **Prune with a window, not with a `DELETE`.** `ctrlrun prune` removes a prefix and leaves a
+  checkpoint the reader seeds from; deleting receipts yourself is detected as a break, by design.
+  It refuses rather than warns, and there is no `--force`. See
+  [retention](/docs/production/retention).
 
 ## What this does not do
 
 - **There is nothing to run.** No agent, no sidecar, no scheduler. Every command above is a
-  one-shot read of the store.
+  one-shot read of the store, and the two that write — `anchor` and `prune` — run when **your**
+  scheduler runs them. Nothing sweeps, nothing reaps, and **no hold expires**: a hold that lapsed
+  on a timer would release evidence on a schedule nobody reviewed, so a person places it and a
+  person ends it.
 - **It does not retry for you.** A proven non-execution leaves the key retryable — the next
   attempt is admitted rather than refused — and nothing performs that attempt but your code.
   Every other outcome refuses one.
@@ -64,11 +77,13 @@ and there will not be one.
 
 **Verified by** `T160` and `T177d` — an expired lease frees nothing, and displaying it changes
 nothing — `T161` for the two authorities that can move an unknown outcome and what each is
-recorded as, and `T177c` for the CLI surface these commands come from, asserted against the
-command list so a new one cannot appear unnoticed.
+recorded as, `T545c` for the hold that no timer lifts, and `T177c` for the CLI surface these
+commands come from, asserted against the command list so a new one cannot appear unnoticed.
 
 ## Next
 
 - [Recovery after a crash](/docs/production/recovery): why nothing sweeps.
+- [Anchoring](/docs/production/anchoring) and [retention](/docs/production/retention): the two
+  things this milestone gives an operator to schedule.
 - [Reconcile automatically](/docs/guides/reconcile-automatically): the hook that answers without a person.
 - [Get started](/docs/get-started/quickstart) · [Why](/docs/why).

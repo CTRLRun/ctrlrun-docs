@@ -67,19 +67,32 @@ reviewed, so a person places it and a person ends it.
 - **It does not run on a schedule.** Nothing sweeps, nothing reaps, and no hold expires. You run
   the command, or your scheduler does.
 - **It does not make a checkpoint unforgeable.** Anyone who can insert receipts can write a
-  checkpoint row. What narrows that is the anchor: a prune must anchor its checkpoint before
-  deleting, and an erasure with no anchored checkpoint behind it reports `anchor_broken`.
+  checkpoint row, and anyone who can write that row can write a row in the local `anchors` table
+  beside it. What narrows both is the provider: a checkpoint supersedes the receipts below it
+  only when **the provider still returns an anchor**, and only when that anchor's `(seq, hash)`
+  is the pair the checkpoint claims. A local row the provider does not confirm buys nothing, and
+  an erasure with no anchored checkpoint behind it reports `anchor_broken`.
 - **It does not decide what you may delete.** Retention is not in your policy document,
   deliberately: a policy key would make pruning subject to `require_approved_policy`, and a
   deployment that had not approved its current policy could then never prune. What authorises a
   prune is shell access to the store, which policy does not mediate. Put a human in front of the
   command, where you already are for every other destructive operation on your database.
 
+## What the prune itself leaves behind
+
+Two receipts, not one, and they are distinguishable: the first records the request (`--through`,
+`--older-than`, `--reason`) as `proposed`, and the second records what became of it as
+`completed` or `refused`. A prune that was refused and a prune that succeeded therefore do not
+leave the same bytes, which is the only reason the record of a refusal is worth keeping.
+
 **Verified by** `T540` for the chain verifying across the gap, with a naive prefix delete as its
 negative control; `T543` for a store that already had a break; `T545` for a hold; `T546b` for the
-budget window, where pruning a `COMMITTED` row inside it manufactures authority; `T547b` for a
-forged checkpoint with no anchor behind it; and `T549`, which races two prunes in separate OS
-processes against a real Postgres server.
+budget window, where pruning a `COMMITTED` row inside it manufactures authority; `T550` and
+`T559` for a checkpoint the provider does not confirm, including a forged local `anchors` row
+that names the checkpoint's own pair; `T552` for a `--through` above the head; `T554` for a
+checkpoint asserting a pair that never existed; `T555` for the two receipts; `T551` and `T558`
+for the prune holding its lock across every write on SQLite and on Postgres; and `T549`, which
+races two prunes in separate OS processes against a real Postgres server.
 
 ## Next
 
