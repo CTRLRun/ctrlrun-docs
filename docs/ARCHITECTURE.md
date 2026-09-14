@@ -247,15 +247,42 @@ reserved name are still refused at load (§4.7).
 
 **The sentence that followed that one said *`policy.py` does not import `authority.py`, so there
 is no cycle*, and a v0.7 review found it is no longer true.** `policy.py` reaches
-`authority.py` from inside two functions, `state.py` imports `receipt.py`, `receipt.py` imports
-`policy.py` and `authority.py` imports `state.py`, so there is a cycle:
-`state` → `receipt` → `policy` → `authority` → `state`. It does not break `import ctrlrun`,
+`authority.py` from inside two functions, `state.py` imports `receipt.py`, `receipt.py` imported
+`policy.py` and `authority.py` imports `state.py`, so there was a cycle:
+`state` → `receipt` → `policy` → `authority` → `state`. It did not break `import ctrlrun`,
 because the two edges out of `policy.py` are function-level and run after every module is
-loaded, which is exactly why it went unnoticed. What it costs is this section's own rule: with
-the cycle in place *dependencies point downward only* is a statement about import order rather
-than about the module map, and the map is what a reader uses to work out what may know about
-what. Whether to break it, and which edge to break, is a **named item before v1.0** on the
-roadmap rather than a change made in a release pass. Recorded 2026-09-12.
+loaded, which is exactly why it went unnoticed for five milestones. What it cost is this
+section's own rule: with a cycle in place *dependencies point downward only* is a statement
+about import order rather than about the module map, and the map is what a reader uses to work
+out what may know about what. Recorded 2026-09-12.
+
+**v0.12 breaks it at `receipt` → `policy`, and the rule is now a test.** `Decision` and
+`POLICY_UNAPPROVED` moved into `decision.py`, which imports nothing from the package and sits
+below everything that produces or records a decision. That was the whole of what a receipt
+needed from the decider, and it was vocabulary rather than behaviour: an evidence type reaching
+**up** into the decider is the edge that most contradicts this table, which lists `receipt.py`
+as used by *everything else*. **No public name moved.** `policy.py` re-exports both, so
+`from ctrlrun.policy import Decision` resolves to the same object and `SPEC-v0.1.md` §8's frozen
+`__init__` block is unchanged.
+
+`tests/test_module_graph.py` walks every module's AST and asserts the graph is acyclic. It
+distinguishes the two questions this section kept conflating: the **import-order** graph, which
+is module-level imports and is what runs at `import ctrlrun`, and the **layering** graph, which
+counts deferred imports too and is what this table describes. The cycle above was invisible to
+the first and is exactly what the second is for. Writing that guard immediately found a second
+cycle nobody had recorded, `jwt_identity` ⇄ `revocation`, where `revocation.py` imported
+`_NoRedirects` from inside a method to avoid a second copy of a security-critical redirect
+handler. One copy was always right and the direction was wrong: the class now lives in
+`revocation.py`, which `jwt_identity.py` already imports, and `jwt_identity` re-exports it.
+
+**One layering cycle remains, named in the test rather than left to a reader.** `authority.py`
+imports `Condition` and `parse_conditions` from `policy.py` deliberately, per the exception
+above, and `policy.py` reaches back from `_canonical_authority` and `hash_with_authority`. That
+edge cannot be removed by relocation: `_from_section` *constructs* an `Authority` and
+`canonical_grants` *consumes* one, so neither moves below `policy.py`, and moving the two callers
+up to `control.py` would change what `policy_hash` is taken over, which is evidence in every
+receipt rather than an implementation detail. `RECORDED_LAYERING_CYCLES` holds that one pair and
+nothing else, so a second one fails the suite.
 
 ## 7. What changes after v0.1 (and what doesn't)
 
