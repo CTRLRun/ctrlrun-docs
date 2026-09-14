@@ -108,7 +108,7 @@ by its quoted claim, and `tests/test_docs_audit.py` fails if a named row is not 
 
 | Claim | Code | Proof |
 |---|---|---|
-| "runs the kernel's own failure scenarios against the configuration in front of it" | `ctrlrun.verify.run` — `verify/__init__.py:156`; the eleven guarantees — `GUARANTEES` — `verify/guarantees.py:51`; the scenarios — `verify/scenarios.py` | `test_T100_the_authority_example_passes_every_non_authority_guarantee` (11/11), `test_T100_a_v1_document_with_no_templates_and_no_grants` |
+| "runs the kernel's own failure scenarios against the configuration in front of it" | `ctrlrun.verify.run` — `verify/__init__.py:156`; the eleven guarantees — `GUARANTEES` — `verify/guarantees.py:55`; the scenarios — `verify/scenarios.py` | `test_T100_the_authority_example_passes_every_non_authority_guarantee` (11/11), `test_T100_a_v1_document_with_no_templates_and_no_grants` |
 | "in a scratch store, with fake executors, and no network" | One scratch store per guarantee under a temporary directory — `verify/scenarios.py`, `Engine.control`; `state_path()` is never called and `Control.from_file()` is never used | `test_T103_the_operators_store_is_byte_identical_before_and_after`, `test_T103_a_store_that_does_not_exist_is_not_created`, `test_T107_a_full_run_completes_with_no_network` |
 | "Your `.ctrlrun/state.db` is byte-identical before and after" | The scratch path is a `tempfile.mkdtemp` removed in a `finally` — `verify/__init__.py` | `test_T103_the_operators_store_is_byte_identical_before_and_after` (SHA-256 and `st_mtime_ns`), `test_T103_CTRLRUN_STATE_is_not_read_and_not_created` |
 | "Not applicable is not a pass" | `Report.applicable` is passes plus failures — `verify/report.py`; every N/A reason is a statement about the document — `verify/guarantees.py` | `test_T101_a_policy_with_no_approve_rule_makes_G1_and_G2_not_applicable`, `test_T102_a_policy_with_no_effect_templates_makes_G3_G4_and_G5_not_applicable` |
@@ -133,7 +133,7 @@ keeps it honest:
 ## The capability matrix
 
 Rendered from `capabilities.yaml`; the six rows are the six groups of the verify
-catalogue, `GUARANTEES` (`verify/guarantees.py:51`).
+catalogue, `GUARANTEES` (`verify/guarantees.py:55`).
 
 | Claim | Code | Proof |
 |---|---|---|
@@ -239,7 +239,7 @@ sentence that rots quietly.
 
 | Page | Claim | Proved by |
 |---|---|---|
-| `production/index` | the readiness block — version, test count, guarantee count, the two stores, the soak, the chain, the licence | rendered by `tools/docs_audit/render_readiness.py` from `pyproject.toml`, `pytest --collect-only`, the `GUARANTEES` catalogue — `verify/guarantees.py:51` — and `research/soak/results/`; `test_the_readiness_block_is_the_generators_in_every_place_it_appears` asserts the same block in the README, the docs home and this page, and `test_the_readiness_block_refuses_a_shrunken_suite_and_accepts_a_grown_one` makes the count a floor |
+| `production/index` | the readiness block — version, test count, guarantee count, the two stores, the soak, the chain, the licence | rendered by `tools/docs_audit/render_readiness.py` from `pyproject.toml`, `pytest --collect-only`, the `GUARANTEES` catalogue — `verify/guarantees.py:55` — and `research/soak/results/`; `test_the_readiness_block_is_the_generators_in_every_place_it_appears` asserts the same block in the README, the docs home and this page, and `test_the_readiness_block_refuses_a_shrunken_suite_and_accepts_a_grown_one` makes the count a floor |
 | `production/index` | the **Not yet** list: no external security audit, no third-party review of the kernel, no sector packs | stated rather than measured, because nothing in a repository can measure an absence. A fourth line — *no soak of the length the roadmap asks for* — was **derived** from the published run until `SPEC-v0.6.md` §8.1 removed the duration from the criterion on 2026-09-07, which removed the thing being derived; the run's own duration is still printed on the soak line above the list. The list lives inside the generated block so it cannot be scrolled past. `test_the_not_yet_list_is_inside_the_block_and_not_below_it`, `test_the_not_yet_list_is_the_constant_and_derives_nothing_from_the_soak` and `test_the_readiness_block_does_not_report_the_soak_as_an_unmet_gate` assert all of it; removing a stated line is its own pull request with the row that makes the new sentence true |
 | `production/index` | "SQLite is the default and it is production-grade on one host… Postgres is for many hosts" | the header row above; `test_the_first_line_of_the_section_says_which_store_and_why` asserts the order, because Postgres first would tell a reader with one host something false |
 | `production/how-reservation-works` | the two rows: an exception before `COMMIT` is a failed write; one during it is unknown and is re-read | SPEC-v0.6 §4.3 Tables A, A1 and A2; `test_T155_a_connection_killed_during_commit_is_resolved_by_the_re_read`, `test_T155e_a_commit_the_server_never_received_re_issues_the_update`, `test_T155c_the_re_read_identity_check_is_not_an_action_id_match`, `test_T156_a_failed_re_read_refuses_to_proceed`; `test_the_two_rows_of_the_lost_commit_are_not_merged` asserts the page keeps them apart |
