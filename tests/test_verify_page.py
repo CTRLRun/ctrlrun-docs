@@ -87,7 +87,9 @@ def test_the_verify_page_says_what_not_applicable_means():
     page = " ".join(_repository_file(VERIFY_DOC).split())
 
     assert "Not applicable is not a pass" in page
-    assert "never `16/16`" in page
+    # 17/17 since v0.11 item 4: `G31` is applicable wherever a chain can be built, so the
+    # illustrated run is 9 passing over 8 not applicable rather than 8 over 8.
+    assert "never `17/17`" in page
     assert "no flag that folds an N/A into the count" in page
     assert "declared guarantees pass" in page
 

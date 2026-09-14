@@ -14,7 +14,7 @@ what could not be tested at all.
 
 ```console
 $ ctrlrun verify
-CTRLRun verify — ctrlrun 0.10.0, catalogue ctrlrun.guarantees/v6
+CTRLRun verify — ctrlrun 0.10.0, catalogue ctrlrun.guarantees/v7
 policy     examples/authority/payments.yaml (ctrlrun.policy/v7, mode: enforce)
 authority  same document, 3 grants
 store      sqlite, scratch (created and destroyed for this run)
@@ -61,12 +61,13 @@ G24  grant refused off its task       PASS  head-of-support
 G25  a hop narrows or it is refused   PASS  head-of-support
 G26  a hop is named on both sides     PASS  head-of-support
 G27  a swapped upstream is denied     N/A   no action entry pins an upstream
+G31  five receipt schemas verify      PASS  stripe.refund
                                             (a token is unique only as far as your effect keys are:
                                             two stores sharing a provider account must not produce the
                                             same effect-key string for different effects, and nothing
                                             here can check that)
 
-24/24 declared guarantees pass. 3 not applicable: G13, G15, G27.
+25/25 declared guarantees pass. 3 not applicable: G13, G15, G27.
 ```
 
 It reads the policy document — `$CTRLRUN_CONFIG`, else `./ctrlrun.yaml` — and the authority
@@ -139,13 +140,13 @@ G14  token changes across a renewal   N/A   no action declares an `effect:` temp
 G15  renewal past the ceiling refused N/A   no action verify can drive to allow or approve
                                             declares both `effect:` and `max_attempts`
 
-8/8 declared guarantees pass. 8 not applicable: G3, G4, G5, G8, G9, G13, G14, G15.
+9/9 declared guarantees pass. 8 not applicable: G3, G4, G5, G8, G9, G13, G14, G15.
 ```
 
-That run is `8/8`, never `16/16`. There is no flag that folds an N/A into the count, and there
+That run is `9/9`, never `17/17`. There is no flag that folds an N/A into the count, and there
 will not be one: a number that counts guarantees nobody exercised is a number that means
 nothing. Point the same document at Postgres and G13 becomes a graded `PASS`, so the run reads
-`9/9` with seven not applicable: the denominator moves with what the setup can actually
+`10/10` with seven not applicable: the denominator moves with what the setup can actually
 exercise, which is the whole idea.
 
 An N/A is always a statement about your **document**, derived from it. A scenario verify could
