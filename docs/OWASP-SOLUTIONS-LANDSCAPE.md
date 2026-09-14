@@ -101,7 +101,7 @@ example is theirs and is not a claim that CTRLRun uses it.
 | Apply PII & Sensitive data masking injected into agent components | No | Out of scope. Raw resource state never reaches a receipt, because a precondition fingerprint is hashed through the canonicalizer, but that is evidence hygiene, not masking. | none |
 | Apply differential privacy or obfuscation on sensitive data injected into agent memory | No | Out of scope. | none |
 | Data masking on structured data | No | Out of scope. | none |
-| Agent Action Audit | Yes | Every consequential action leaves a receipt naming the principal, the action hash, the decision, the approval and the outcome; `ctrlrun inspect <action_id>` reads one; the chain detects alteration (`G11`) and, with the external anchor, truncation and append. | v0.1, v0.6, v0.11 |
+| Agent Action Audit | Yes | Every consequential action leaves a receipt naming the principal, the action hash, the decision, the approval and the outcome; `ctrlrun inspect <action_id>` reads one; the chain detects alteration (`G11`) and, with the external anchor, truncation (`G28`). An **append is not detected**: it lands above every anchored `seq`, so no anchored pair stops reproducing. | v0.1, v0.6, v0.11 |
 
 ### Test & Evaluate
 
