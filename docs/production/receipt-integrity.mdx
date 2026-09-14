@@ -19,7 +19,7 @@ database directly.
 
 | Name | What it means | What to do |
 |---|---|---|
-| `content_altered` | receipt *n* no longer hashes to its stored hash | the row was edited; the stored hash says what it was, the row says what it is now |
+| `content_altered` | receipt *n* no longer hashes to its stored hash, **or cannot be read back as a receipt at all** | the row was edited; the stored hash says what it was, the row says what it is now |
 | `hash_missing` | receipt *n* has a position and no stored hash | the hash column was cleared; nothing can be compared, and this is a failure rather than a skip |
 | `link_broken` | receipt *n*'s link does not match what *n-1* hashes to | a neighbour changed, or two rows were reordered |
 | `missing` | a gap in `seq` | a receipt was deleted from the middle |
@@ -30,6 +30,20 @@ database directly.
 column destroyed every independent copy of every hash, and an earlier reader **skipped** the
 comparison it could no longer make and called the chain intact. A check that cannot be evaluated
 is not a check that passed.
+
+## One bad row costs one row
+
+A row can be damaged past reading: one declared key set to the wrong type is enough. Until 0.11
+that raised, and since both stores build every row before handing you any, **one `UPDATE`
+blinded every reader at once** — `ctrlrun inspect` on an untouched action included. Now the row
+is named where it sits and the rest still read:
+
+```
+seq 2  ctr_b9db23088ad0…  UNREADABLE  this row could not be read (InvalidArgument)
+```
+
+`--verify-chain` reports `content_altered` at that `seq`, and `ctrlrun stats` reports the rest
+as `unreadable receipts` rather than dropping them from a total.
 
 `unchained` is never a pass either. Rows from before the chain have no position, so they are read
 separately and reported with their count, and the summary says how many of how many were
@@ -61,7 +75,8 @@ exception you must handle, and a log with no hole in it.
   created, because a verification tool with a side effect on the thing it verifies is refused.
   `--verify-chain` is the one that reads yours.
 
-**Verified by** `T164` — six tamper cases, each asserted on the **name** and the `seq` and not
+**Verified by** `T510` and `T511` for the readers that no longer blind and the clean store that
+reads exactly as it did, `T164` — six tamper cases, each asserted on the **name** and the `seq` and not
 merely on "invalid", the reordering case included — `T165` for the positive control without which
 every one of those rows would pass against a detector that always says broken, `T167` for
 truncation caught by the head and only by the head, `T168` for the unchained rows that are never
