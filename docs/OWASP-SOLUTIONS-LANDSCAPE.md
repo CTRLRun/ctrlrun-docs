@@ -55,7 +55,7 @@ stages from that one point rather than covering each in its own right.
 | Stage | Status | What CTRLRun has there | Since |
 |---|---|---|---|
 | Scope & Plan | Partly | A published threat model of the execution boundary ([THREAT_MODEL](/docs/THREAT_MODEL)), and a policy document that *is* the plan for what an agent may do. Nothing that models *your* agent for you. | v0.1 |
-| Develop & Experiment | Yes | `@protect` on any function in the process; `ctrlrun scan` reports the consequential call sites a policy does not cover. | v0.1, scan since v0.6 |
+| Develop & Experiment | Yes | `@protect` on any function in the process; `ctrlrun scan` reports the consequential call sites a policy does not cover, and `ctrlrun scan --coverage` reports what a store shows was declared and never exercised. Both are lists with reasons, not scores. | v0.1, scan since v0.6, coverage since v0.11 |
 | Augment & Fine Tune Data | No | CTRLRun never touches training data, models or memory. | none |
 | Test & Evaluate | Yes | `ctrlrun verify` runs the kernel's own failure scenarios against your configuration and reports pass, fail or **not applicable** per guarantee ([verify](/docs/verify)). | v0.4 |
 | Release | Yes | The `ctrlrun verify` GitHub Action and badge as a release gate; the badge means *declared guarantees pass*, never "this agent is secure by inspection". | v0.4 |
@@ -88,7 +88,7 @@ example is theirs and is not a claim that CTRLRun uses it.
 
 | Checkbox | Status | What it means here | Since |
 |---|---|---|---|
-| Perform SAST/DAST on agent planning code, tool wrappers, & plugin interfaces | Partly | `ctrlrun scan` reads a Python tree and reports the consequential call sites and policy entries CTRLRun is *not* covering. It is a coverage scanner, not a vulnerability scanner, and its report says what it misses by construction on every run. | v0.6 |
+| Perform SAST/DAST on agent planning code, tool wrappers, & plugin interfaces | Partly | `ctrlrun scan` reads a Python tree and reports the consequential call sites and policy entries CTRLRun is *not* covering, and since v0.11 `--coverage` adds the runtime half: what the store shows was declared and never exercised. It is a coverage scanner, not a vulnerability scanner, and its report says what it misses by construction on every run. **Neither half produces a number**: a policy entry nothing exercised may be correctly unused, and saying otherwise would be grading the operator's document. | v0.6, v0.11 |
 | Harden agent loop logic against infinite loops, unsafe function routing, & unauthorized self-modification | Partly | A retry loop cannot turn one intended effect into several (`G3`, `G5`), an unknown action is refused (`G6`), and renewal after `FAILED` has an operator-set ceiling (`G15`). Nothing here inspects loop logic or prevents self-modification. | v0.1, v0.7 |
 | Validate connector (e.g., MCP) contracts (input/output schemas & permissions) | Partly | The gateway maps every MCP tool call onto a policy decision, and a policy entry may pin the hash of an upstream's advertised tool schema so a schema that moved under an approved name is a `deny`. It does not validate schemas in general. | v0.2, v0.10 |
 | Implement policy enforcement hooks in Frameworks (e.g. LangGraph, CrewAI, Others) | Yes | `@protect` for anything in-process; the adapter contract with OpenAI Agents SDK and LangGraph reference adapters, each routing an `approve` through the framework's own interrupt; the OWASP Agent Control Standard adapter ([ACS](/docs/ACS)). | v0.1, v0.2, v0.5 |

@@ -548,6 +548,13 @@ Usage: ctrlrun scan [OPTIONS]
   It is a finder and not a proof. Every run prints what it could not look at,
   and a clean scan means nothing was found where it looked.
 
+  With --coverage it also reads a store and reports what this deployment
+  declared and has never exercised. **That half is a list and not a score**: no
+  percentage, no ratio, no badge. A policy entry nothing exercised may be
+  correctly unused, and it says so. It does not move the exit code, for the same
+  reason: a number that ranked a deployment would be a verdict on the operator's
+  document, which this tool does not give.
+
   Exit codes: 0 nothing was found; 1 something was, including a suppressed
   finding or a call whose name could not be resolved; 2 the scan could not run.
 
@@ -559,6 +566,11 @@ Options:
   --vocabulary TEXT  A file of verbs, one per line, replacing the built-in list.
                      With no value, print the list in force and exit.
   --json             Emit one ctrlrun.scan/v1 document.
+  --coverage         Also report what this store has never exercised (SPEC-v0.11
+                     §7). Opens the store.
+  --store-url TEXT   The store to open. Default: $CTRLRUN_STORE_URL, else the
+                     SQLite database beside the policy (.ctrlrun/state.db, or
+                     wherever $CTRLRUN_STATE points).
   --help             Show this message and exit.
 ```
 
