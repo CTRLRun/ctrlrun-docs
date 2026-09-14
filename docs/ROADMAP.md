@@ -408,6 +408,11 @@ existed and two of them were wrong.
 - **`ctrlrun scan --coverage` is the surface**, and `docs/CONTROL-MAPPING.md` is still not written.
   The v0.11 line cited it in the present tense; roadmap line 136 says it is written only when a
   design partner asks, and none has.
+- **Retention shipped twice.** The build order made an independent review required for the prune,
+  *the one not to skip*, and the merge did not wait for it. The review found seven defects, the
+  first of which made a forged checkpoint launderable with one row in the store's own `anchors`
+  table, and the fixes went in as a second pull request. `SPEC-v0.11.md` §13.4 records all seven
+  and the rule this milestone adds: **a required review is a merge gate, not a step in the item.**
 
 Three surfaces this milestone amends rather than adds to, each named because an amendment to a
 frozen surface is not a patch: `StateStore` gains anchor, checkpoint and hold methods
