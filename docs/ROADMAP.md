@@ -371,7 +371,7 @@ raises. The upgrade was checked against the **released** 0.9.0 from PyPI rather 
 
 Standards: A2A, as code. No conformance claim.
 
-## v0.11 — Evidence
+## v0.11 — Evidence · shipped 2026-09-14
 
 One question: can the record be trusted after the fact, and kept?
 
@@ -383,6 +383,38 @@ One question: can the record be trusted after the fact, and kept?
 - **A malformed value in a receipt row blinded every reader of the chain, and one `UPDATE` was enough. Closed by v0.11's item 1 on 2026-09-14.** Found while building v0.7's item 5, deferred there with a written decision, and named here because it is the evidence surface and this is the evidence milestone. A receipt whose *schema label* is unknown, and a receipt carrying an *added key*, were each already reported at their `seq` and left every other row readable. A malformed **value** of a key the schema declares was not: a float among a receipt's `controls` raised out of `Receipt.from_dict`, so `ctrlrun receipts`, `receipts --verify-chain`, `ctrlrun inspect`, `ctrlrun stats` and the operator MCP server's `receipts` and `stats` tools all stopped together, and a single tampered row hid the whole document rather than naming itself. 0.6.1 behaved the same way and v0.7 neither introduced nor widened it. **The fix is `SPEC-v0.7.md` §12.5's second candidate**, a reader that reports per row: `StateStore.receipts()` hands back a `ctrlrun.receipt.UnreadableReceipt` for a row it cannot construct, naming its `seq` and the type of what refused it. `CHAIN_BREAKS` did **not** grow, and §12.5's first candidate is declined with a reason in `SPEC-v0.11.md` §5.1: `content_altered` already names a document that cannot be canonicalized, so a second name would be two names for one break. **Two corrections this entry earned by being implemented.** It listed `G11` among the readers that stop; `ctrlrun verify` grades `G11` against a scratch store it creates and fills itself, which no `UPDATE` reaches, so `G11` was never blinded by an operator's tampered row. And it omitted the operator MCP server, which is a *network* surface: the same one statement took out the remote console as well as the terminal. Added 2026-09-12, closed 2026-09-14.
 
 **Does not close.** Authorship. An anchor proves the log existed in this form at that time; it does not prove who wrote it, and a malicious administrator who rewrites everything before the next anchor is still out of scope. Signed receipts stay off the roadmap for the reason `SPEC-v0.6.md` §11 gives.
+
+Exit criteria met: `ctrlrun.guarantees/v7` with `G28` to `G32` each grading `PASS` and each grading
+the same under `--only` as in a full run; `examples/anchored-chain` exercises an anchor and prints
+what one does **not** prove; a chain written by the **released** 0.6.1, 0.7.0, 0.8.0, 0.9.0 and
+0.10.0 wheels verifies end to end across five receipt schema versions; a prune across a checkpoint
+verifies and anchors that checkpoint before deleting anything; a held range refuses to prune; and
+two prunes racing under the multi-process standard against Postgres leave no break the store did not
+already have. The upgrade was checked against the **released** 0.10.0 from PyPI rather than a
+fixture: 0.11.0 migrates the store, the chain verifies across the boundary, and 0.10.0 then refuses
+it with `SchemaMismatch` rather than corrupting it.
+
+**Reconciled against what shipped**, because three sentences above were written before the code
+existed and two of them were wrong.
+
+- **The anchor detects truncation and NOT append**, and the bullet above said "erased or appended"
+  until 2026-09-14. A forged receipt lands at head + 1, above every anchored `seq`, so nothing stops
+  reproducing and the next anchor freezes it like any other. `T531` runs a forged append and
+  requires both reports to stay clean, so the limit is a tested property rather than a sentence
+  somebody has to remember.
+- **Enforcement coverage does not come "from events already written."** `ACTION_PROPOSED` carries an
+  `action_hash` and nothing that maps it back to a name. It comes from receipts, which every decided
+  action leaves, **a denial included** -- so an action that is always denied counts as exercised.
+- **`ctrlrun scan --coverage` is the surface**, and `docs/CONTROL-MAPPING.md` is still not written.
+  The v0.11 line cited it in the present tense; roadmap line 136 says it is written only when a
+  design partner asks, and none has.
+
+Three surfaces this milestone amends rather than adds to, each named because an amendment to a
+frozen surface is not a patch: `StateStore` gains anchor, checkpoint and hold methods
+(`SPEC-v0.6.md` §9.2), `StateStore.receipts()` may now hand back an `UnreadableReceipt` instead of
+raising, and `verify_chain` seeds from a checkpoint where a store has one. **`CHAIN_BREAKS` is
+unchanged and stays closed at six**: the anchor has its own set, because putting its kinds in
+`CHAIN_BREAKS` would fail `G11`'s control with `control failed` on every anchoring deployment.
 
 Do not build: a SIEM · dashboards over receipts · a receipt query language · export formats beyond JSON and OTel.
 
