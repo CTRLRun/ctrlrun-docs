@@ -82,6 +82,7 @@
               "docs/production/recovery",
               "docs/production/receipt-integrity",
               "docs/production/anchoring",
+              "docs/production/retention",
               "docs/production/soak",
               "docs/production/operations"
             ]
@@ -489,6 +490,11 @@
     {
       "source": "/production/anchoring",
       "destination": "/docs/production/anchoring",
+      "permanent": true
+    },
+    {
+      "source": "/production/retention",
+      "destination": "/docs/production/retention",
       "permanent": true
     },
     {

@@ -1,0 +1,88 @@
+---
+title: "Retention: pruning the receipt chain"
+description: "Delete old receipts without breaking the chain: ctrlrun prune leaves a checkpoint the reader verifies across, and refuses rather than warns."
+---
+
+Receipts accumulate. Deleting them is the problem: each receipt carries the hash of the one
+before it, so a deletion from the middle or the end **is detected as a break**, and that is the
+feature rather than an obstacle. A retention job that simply deleted would be manufacturing the
+attack the chain exists to catch.
+
+`ctrlrun prune` removes a **prefix** and leaves a **checkpoint** behind. The chain reader seeds
+from that checkpoint, so it verifies across the gap instead of reporting it.
+
+## Running it
+
+```bash
+ctrlrun prune \
+  --through 40000 \
+  --older-than 90d \
+  --provider yourpkg.anchors:provider \
+  --by ops@example.com \
+  --reason "90-day retention"
+```
+
+`--older-than` is **your** number, and the one to use is the longest window on any budget of any
+grant. A ledger row carries no window and no limit; those live in your authority document, and a
+store that resolved them would be reading your policy. So you supply it and the kernel checks
+the rule.
+
+`--provider` is the same [anchor provider](/docs/production/anchoring) you already use. A prune
+**anchors its checkpoint before it deletes anything**, so the prune stays visible in your
+provider's own record even after the receipts are gone.
+
+## It refuses, it does not warn
+
+There is no `--force`, no `--allow-gap` and no setting that admits a break the prune caused.
+
+| Refused | Because |
+|---|---|
+| it would leave a break the store did not already report | that is destroying evidence and calling it retention |
+| it would take the chain's head | nothing chained would be left for the head to name |
+| the checkpoint would move backwards | that is the second of two racing prunes |
+| it overlaps a hold | the refusal names the hold and its reason |
+| a ledger row's effect is `AMBIGUOUS`, `RESERVED` or `EXECUTING` | its charge is still held, and deleting it hands back authority nobody granted |
+| a `COMMITTED` ledger row is newer than `--older-than` | a committed charge is never released, so it still counts against a budget |
+
+A prune **already-broken** store is allowed, as long as the prune adds nothing: a store carrying
+`unchained` rows from before v0.6 can still be pruned, because those rows can never be inside a
+prefix and the alternative would make retention impossible on exactly the oldest stores.
+
+## Holds
+
+```bash
+ctrlrun hold place --id matter-2026-11 --from-seq 1 --to-seq 90000 \
+  --reason "litigation" --by legal@example.com
+ctrlrun hold list
+ctrlrun hold release --id matter-2026-11 --by legal@example.com
+```
+
+**A hold has no expiry.** One that lapsed on a timer would release evidence on a schedule nobody
+reviewed, so a person places it and a person ends it.
+
+## What this does not do
+
+- **It does not prune anything but receipts and the ledger rows tied to them.** Events,
+  approvals, delegations and continuations still grow without bound.
+- **It does not run on a schedule.** Nothing sweeps, nothing reaps, and no hold expires. You run
+  the command, or your scheduler does.
+- **It does not make a checkpoint unforgeable.** Anyone who can insert receipts can write a
+  checkpoint row. What narrows that is the anchor: a prune must anchor its checkpoint before
+  deleting, and an erasure with no anchored checkpoint behind it reports `anchor_broken`.
+- **It does not decide what you may delete.** Retention is not in your policy document,
+  deliberately: a policy key would make pruning subject to `require_approved_policy`, and a
+  deployment that had not approved its current policy could then never prune. What authorises a
+  prune is shell access to the store, which policy does not mediate. Put a human in front of the
+  command, where you already are for every other destructive operation on your database.
+
+**Verified by** `T540` for the chain verifying across the gap, with a naive prefix delete as its
+negative control; `T543` for a store that already had a break; `T545` for a hold; `T546b` for the
+budget window, where pruning a `COMMITTED` row inside it manufactures authority; `T547b` for a
+forged checkpoint with no anchor behind it; and `T549`, which races two prunes in separate OS
+processes against a real Postgres server.
+
+## Next
+
+- [Anchoring](/docs/production/anchoring): the checkpoint's other half.
+- [Receipt integrity](/docs/production/receipt-integrity): the chain, and the six names it reports.
+- [Get started](/docs/get-started/quickstart) · [Why](/docs/why).

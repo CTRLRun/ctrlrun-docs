@@ -50,6 +50,7 @@ that page's frontmatter, never here.
 | `docs/production/recovery` | agent crashed mid action | A restarted process repairs nothing and cannot know the holder is dead. |
 | `docs/production/receipt-integrity` | verify receipt chain | Run ctrlrun receipts --verify-chain and read the six names it can report. |
 | `docs/production/anchoring` | anchor receipt chain outside database | Anchor the chain's head where your database's writer cannot reach it, and what that does not prove. |
+| `docs/production/retention` | delete old receipts hash chain | Prune a prefix of the receipt chain and still verify across the gap, or be refused. |
 | `docs/production/soak` | ctrlrun soak test results | One published run, its measured duration, and the exit criterion it does not meet. |
 | `docs/production/operations` | ctrlrun monitoring | Watch how many effects are sitting in an unknown outcome that nobody has answered. |
 | `docs/mcp/overview` | MCP gateway human approval | CTRLRun works with MCP in four ways. |

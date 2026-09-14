@@ -277,12 +277,20 @@ them is true:
   accepts the break window — `--verify-chain` names the `seq` range, so it is legible — or
   truncates. Receipts written before the chain existed at all report `unchained`, which is a
   different and documented case.
-- **It does not prune, roll or retain.** `effects`, `events`, `receipts`, `approvals`,
-  `delegations` and `continuations` grow without bound. Deciding what may be deleted is a
-  retention policy and this library does not have one; note that deleting receipts from the middle
-  or the end of the chain is detected as a break by design, so a retention job needs to be written
-  with that in mind, and `ctrlrun receipts --verify-chain` will report the boundary as a break
-  because it cannot know the deletion was deliberate.
+- **It does not roll, and it prunes only receipts.** `effects`, `events`, `approvals`,
+  `delegations` and `continuations` still grow without bound, and nothing runs in the background
+  to trim them.
+
+  **Receipts are the exception since 0.11**: `ctrlrun prune --through <seq>` deletes a **prefix**
+  of the receipt chain and leaves a checkpoint the reader seeds from, so
+  `ctrlrun receipts --verify-chain` verifies **across** the gap rather than reporting the
+  boundary as a break. It takes a prefix and nothing else, because deleting from the middle or
+  the end is detected as a break by design and that is the feature rather than an obstacle.
+
+  It **refuses** rather than warning: a prune that would leave the chain reporting a break it did
+  not already report, one through the head, one overlapping a `ctrlrun hold`, and one that would
+  delete a budget ledger row whose charge is still held. There is no `--force`. See
+  [retention](/docs/production/retention).
 - **It does not create the schema, the database, the user or the grants.**
 - **It does not pool, discover a primary, retry a failed connection, or fail over.**
 - **It does not sweep expired leases**, and nothing runs in the background at all.
