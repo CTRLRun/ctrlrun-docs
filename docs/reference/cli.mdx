@@ -29,10 +29,12 @@ Commands:
   deny          Refuse a pending approval request.
   effects       Show the logical effects this store knows about.
   gateway       Front an MCP server, applying this directory's policy to...
+  hold          Refuse to prune a range of receipts, until a person says...
   init          Write a starter ctrlrun.yaml and create .ctrlrun/.
   inspect       Show one action's whole history: proposal, decision,...
   mcp-operator  Answer approvals from an MCP client, over loopback...
   policy        Propose a policy change, or replay one against what already...
+  prune         Delete receipts from the start of the chain, leaving it...
   receipts      Show the receipts this store holds.
   resolve       Say what actually happened to an effect with an unknown...
   revoke        Revoke a delegation, and with it every delegation beneath it.
@@ -144,6 +146,66 @@ Options:
                                 (.ctrlrun/state.db, or wherever $CTRLRUN_STATE
                                 points).
   --help                        Show this message and exit.
+```
+
+## ctrlrun prune
+
+```text
+Usage: ctrlrun prune [OPTIONS]
+
+  Delete receipts from the start of the chain, leaving it verifiable across the
+  gap.
+
+  **This is the only command in this library that destroys evidence.** It takes
+  a prefix, never a suffix and never a middle: a suffix is the attack the anchor
+  exists to catch, a middle is a gap by construction, and only moving the
+  chain's start can leave a chain anybody can still verify.
+
+  It refuses rather than warns. A prune that would leave the chain reporting a
+  break it did not already report is refused with the seq named; so is one
+  overlapping a hold, one through the head, one moving the checkpoint backwards,
+  and one that would delete a ledger row whose charge is still held. There is no
+  --force and there is not going to be one.
+
+  It anchors its checkpoint **before** it deletes anything, so a prune stays
+  visible in your anchor provider's own record even though the receipts are
+  gone.
+
+Options:
+  --through SEQ           Delete receipts through this seq.  [required]
+  --older-than DURATION   Refuse any COMMITTED ledger row newer than this (e.g.
+                          90d). Use the longest window on any budget of any
+                          grant.  [required]
+  --provider MODULE:ATTR  Your anchor provider. The prune anchors its checkpoint
+                          before deleting anything.  [required]
+  --by WHO                Who is running this prune.  [required]
+  --reason TEXT           Why. It goes in the receipt.  [required]
+  --json                  Print the result as JSON.
+  --store-url TEXT        The store to open. Default: $CTRLRUN_STORE_URL, else
+                          the SQLite database beside the policy
+                          (.ctrlrun/state.db, or wherever $CTRLRUN_STATE
+                          points).
+  --help                  Show this message and exit.
+```
+
+## ctrlrun hold
+
+```text
+Usage: ctrlrun hold [OPTIONS] COMMAND [ARGS]...
+
+  Refuse to prune a range of receipts, until a person says otherwise.
+
+  There is no expiry. A hold that lapsed on a timer would release evidence on a
+  schedule nobody reviewed, which is the rule SPEC-v0.9 §4 already states about
+  a budget hold.
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  list     Show every hold this store knows about, live or released.
+  place    Place a hold.
+  release  End a hold.
 ```
 
 ## ctrlrun effects

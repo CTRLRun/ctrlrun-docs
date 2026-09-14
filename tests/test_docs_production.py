@@ -136,6 +136,8 @@ def test_the_section_exists_and_has_a_page_for_each_thing_that_breaks():
         # "what to run" page on a 900-word budget, and the anchor's limits need as much room as
         # its claim, which is what the budget exists to force a decision about.
         "anchoring",
+        # SPEC-v0.11 §4.
+        "retention",
         "soak",
         "operations",
     }
