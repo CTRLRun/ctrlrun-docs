@@ -275,14 +275,30 @@ cycle nobody had recorded, `jwt_identity` ⇄ `revocation`, where `revocation.py
 handler. One copy was always right and the direction was wrong: the class now lives in
 `revocation.py`, which `jwt_identity.py` already imports, and `jwt_identity` re-exports it.
 
-**One layering cycle remains, named in the test rather than left to a reader.** `authority.py`
-imports `Condition` and `parse_conditions` from `policy.py` deliberately, per the exception
-above, and `policy.py` reaches back from `_canonical_authority` and `hash_with_authority`. That
-edge cannot be removed by relocation: `_from_section` *constructs* an `Authority` and
-`canonical_grants` *consumes* one, so neither moves below `policy.py`, and moving the two callers
-up to `control.py` would change what `policy_hash` is taken over, which is evidence in every
-receipt rather than an implementation detail. `RECORDED_LAYERING_CYCLES` holds that one pair and
-nothing else, so a second one fails the suite.
+**And then the last one went too, from the side that was actually loose.** `policy <-> authority`
+looked unfixable, and the reason given was true but incomplete: `_from_section` *constructs* an
+`Authority` and `canonical_grants` *consumes* one, so neither moves below `policy.py`, and moving
+the two callers up to `control.py` would change what `policy_hash` is taken over, which is
+evidence in every receipt rather than an implementation detail. All of that holds. It only
+describes one side of the cycle.
+
+The other side was `authority.py` importing eight names from `policy.py`, and not one of them is
+`Policy`: the supported schemas, the strict YAML loader, the condition grammar, type-strict
+equality, key validation. That is the policy **document grammar**, and it is shared vocabulary
+rather than either axis's property. It now lives in `grammar.py`, below both, so `authority.py`
+does not import `policy.py` at all.
+
+The v0.3 exception above is not repealed by this, it is honoured more exactly. `SPEC-v0.3.md`
+§4.5 requires the two axes to share **one** condition evaluator, because a second would be a
+second place for `True` to start comparing equal to `1`. That one evaluator is now owned by
+neither axis instead of by one of them.
+
+Nothing moved but an address: every block was moved verbatim and `policy.py` re-exports all
+thirty-four names, so `SPEC-v0.1.md` §8's frozen `__init__` block and `SPEC-v0.3.md` §8's
+`from .policy import Condition, parse_conditions` both stay literally true.
+
+**`RECORDED_LAYERING_CYCLES` is now empty, and it is meant to stay empty.** A new entry is a
+decision rather than a fix, and it carries the reason the edge cannot be relocated.
 
 ## 7. What changes after v0.1 (and what doesn't)
 
