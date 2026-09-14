@@ -3,16 +3,16 @@
   "name": "CTRLRun",
   "theme": "mint",
   "colors": {
-    "primary": "#14161A",
-    "light": "#ECECEA",
-    "dark": "#14161A"
+    "primary": "#B8730A",
+    "light": "#F5A623",
+    "dark": "#8A5606"
   },
   "logo": {
     "light": "/images/wordmark-light.svg",
     "dark": "/images/wordmark-dark.svg",
     "href": "/"
   },
-  "favicon": "/images/favicon-c.svg",
+  "favicon": "/images/favicon.svg",
   "description": "CTRLRun stops AI agents from taking wrong, restricted, or malicious actions in your workflows. Every action is checked against your rules before it runs.",
   "navbar": {
     "links": [
