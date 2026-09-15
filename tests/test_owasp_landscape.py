@@ -16,7 +16,6 @@ the registry, against the changelog and against the mapping they claim to summar
 from __future__ import annotations
 
 import re
-import tomllib
 from pathlib import Path
 
 import pytest
@@ -159,10 +158,15 @@ def test_the_catalogue_the_page_names_is_the_one_verify_reports():
 
 
 def test_the_guarantee_range_in_the_header_spans_the_whole_registry():
-    """`G1`-`G32` is a claim about the catalogue's size, so it is read as one."""
-    first, last = reg.GUARANTEES[0].id, reg.GUARANTEES[-1].id
+    """`G1`-`G32` is a claim about the catalogue's size, so it is read as one.
 
-    assert f"guarantees `{first}`–`{last}`" in _flat(), f"{first}-{last}"
+    The page writes the range with an en dash, as the rest of its prose does, so the escape is
+    spelled rather than pasted: a literal one here is `RUF001`, and a hyphen would not match.
+    """
+    first, last = reg.GUARANTEES[0].id, reg.GUARANTEES[-1].id
+    en_dash = "\N{EN DASH}"
+
+    assert f"guarantees `{first}`{en_dash}`{last}`" in _flat(), f"{first}-{last}"
 
 
 def test_the_version_the_page_is_written_against_is_released():
@@ -203,8 +207,10 @@ def test_the_page_says_which_version_a_since_column_names_that_was_never_publish
 
 def test_every_status_is_one_of_the_three_words_the_page_defines():
     """*Yes*, *Partly*, *No*. A fourth word is a hedge the page has no definition for."""
-    for table in ("| Stage | Status | What CTRLRun has there | Since |",
-                  "| Checkbox | Status | What it means here | Since |"):
+    for table in (
+        "| Stage | Status | What CTRLRun has there | Since |",
+        "| Checkbox | Status | What it means here | Since |",
+    ):
         for cells in _rows(_document(), table):
             assert cells[1] in STATUS, cells
 
@@ -265,7 +271,9 @@ def test_all_ten_entries_and_all_nine_lifecycle_stages_appear():
 
     # The nine, and no tenth. Not their order: the page groups Operate beside Deploy and the
     # form lists it after Monitor, which is a reading order and not a claim.
-    stages = {cells[0] for cells in _rows(document, "| Stage | Status | What CTRLRun has there | Since |")}
+    stages = {
+        cells[0] for cells in _rows(document, "| Stage | Status | What CTRLRun has there | Since |")
+    }
     assert stages == set(STAGES), sorted(stages.symmetric_difference(STAGES))
 
 
