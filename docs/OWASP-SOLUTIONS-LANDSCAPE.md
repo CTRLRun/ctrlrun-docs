@@ -1,6 +1,6 @@
 ---
 title: "OWASP Agentic Solutions Landscape"
-description: "A reading of the OWASP Agentic Solutions Landscape checklist against what CTRLRun v1.0 ships, with the boxes it does not tick named."
+description: "A reading of the OWASP Agentic Solutions Landscape checklist against what CTRLRun 0.12.1 ships, with the boxes it does not tick named."
 sidebarTitle: "OWASP Solutions Landscape"
 ---
 
@@ -26,14 +26,16 @@ credible.
 | **Publisher** | OWASP GenAI Security Project, OWASP Foundation |
 | **Form** | [https://genai.owasp.org/solution-submission-agentic/](https://genai.owasp.org/solution-submission-agentic/) |
 | **Read on** | 2026-09-10 |
-| **Written against** | CTRLRun **v1.0**, guarantees `G1`–`G24` |
+| **Written against** | CTRLRun **0.12.1**, guarantees `G1`–`G32`, catalogue `ctrlrun.guarantees/v7` |
 
-**Written against v1.0, and the version is printed on every row that needs one.** The
-guarantee catalogue this page reads is the one v1.0 freezes: `G1`–`G11` ship today, and
-`G12`–`G24` arrive with v0.7 through v0.9 on the chain the [roadmap](/docs/ROADMAP) sets out.
-A row whose *Since* column names a version that is not yet tagged is a **(design)** row until
-it is, and a reader on an earlier release should discount it. Nothing here is ticked on the
-strength of a version that the roadmap does not already commit to before 1.0.
+**Written against what is tagged, and the version is printed on every row that needs one.**
+Every guarantee cited below is in the catalogue `ctrlrun verify` runs today, `G1` through
+`G32`, and every one of them is in the 0.12.1 wheel. **There are no design rows.** A *Since*
+column names the milestone that added the row rather than a separate download: 0.3.0 was
+published to TestPyPI alone, and what it added reached PyPI inside 0.4.0. This page was first written against an unreleased 1.0 and marked the rows that waited
+on it; none of them waits any longer, and the hedge came out rather than being left to read
+as a disclaimer on rows that ship. Nothing here is ticked on the strength of something
+unreleased, and a row whose guarantee loses its test goes back to *No* in the same commit.
 
 The form's entry codes are `ASI01:26` through `ASI10:26`, the same 2026 edition the
 [OWASP Agentic Top 10 reading](/docs/OWASP-AGENTIC-TOP10) was written against; that page
@@ -61,7 +63,7 @@ stages from that one point rather than covering each in its own right.
 | Release | Yes | The `ctrlrun verify` GitHub Action and badge as a release gate; the badge means *declared guarantees pass*, never "this agent is secure by inspection". | v0.4 |
 | Deploy | Yes | The MCP gateway in front of an existing tool server; framework adapters; observe mode to roll out without refusing anything yet. | v0.2, v0.3 |
 | Operate | Yes | Exact-action approvals; `ctrlrun resolve` for an `AMBIGUOUS` effect; the operator MCP server; break-glass as a recorded grant; `ctrlrun revoke --by` / `--under`. | v0.1, v0.8 |
-| Monitor | Yes | Receipts on a hash chain with an external anchor; OpenTelemetry export; `ctrlrun stats`; enforcement coverage from events already written. | v0.6, v0.11 |
+| Monitor | Yes | Receipts on a hash chain with an external anchor; OpenTelemetry export; `ctrlrun stats`; enforcement coverage from events already written; a retention pass that refuses rather than warns, `ctrlrun prune` and `ctrlrun hold place`. | v0.6, v0.11 |
 | Govern | Yes | Authority grants and delegation that cannot escalate; approver entitlement; consequence budgets; task-bound authority; a policy change as a protected action. Action governance, in the one sense the [roadmap](/docs/ROADMAP) permits: what an action is allowed to do, not how an organisation runs its agents. | v0.3, v0.8, v0.9 |
 
 ---
@@ -90,7 +92,7 @@ example is theirs and is not a claim that CTRLRun uses it.
 |---|---|---|---|
 | Perform SAST/DAST on agent planning code, tool wrappers, & plugin interfaces | Partly | `ctrlrun scan` reads a Python tree and reports the consequential call sites and policy entries CTRLRun is *not* covering, and since v0.11 `--coverage` adds the runtime half: what the store shows was declared and never exercised. It is a coverage scanner, not a vulnerability scanner, and its report says what it misses by construction on every run. **Neither half produces a number**: a policy entry nothing exercised may be correctly unused, and saying otherwise would be grading the operator's document. | v0.6, v0.11 |
 | Harden agent loop logic against infinite loops, unsafe function routing, & unauthorized self-modification | Partly | A retry loop cannot turn one intended effect into several (`G3`, `G5`), an unknown action is refused (`G6`), and renewal after `FAILED` has an operator-set ceiling (`G15`). Nothing here inspects loop logic or prevents self-modification. | v0.1, v0.7 |
-| Validate connector (e.g., MCP) contracts (input/output schemas & permissions) | Partly | The gateway maps every MCP tool call onto a policy decision, and a policy entry may pin the hash of an upstream's advertised tool schema so a schema that moved under an approved name is a `deny`. It does not validate schemas in general. | v0.2, v0.10 |
+| Validate connector (e.g., MCP) contracts (input/output schemas & permissions) | Partly | The gateway maps every MCP tool call onto a policy decision, and a policy entry may pin the upstream it authorises, by the SHA-256 of the server's leaf certificate or by the hash of a tool's advertised schema: a tool whose schema moved under an approved action name is refused `upstream_mismatch`, and an upstream nothing observed is refused `upstream_unverified` and never admitted (`G27`). Enforced by `ctrlrun gateway`, the surface that holds the connection; in-process there is no upstream to observe. It does not validate schemas in general. | v0.2, v0.10 |
 | Implement policy enforcement hooks in Frameworks (e.g. LangGraph, CrewAI, Others) | Yes | `@protect` for anything in-process; the adapter contract with OpenAI Agents SDK and LangGraph reference adapters, each routing an `approve` through the framework's own interrupt; the OWASP Agent Control Standard adapter ([ACS](/docs/ACS)). | v0.1, v0.2, v0.5 |
 
 ### Augment & Fine Tune Data
@@ -136,7 +138,7 @@ example is theirs and is not a claim that CTRLRun uses it.
 | Checkbox | Status | What it means here | Since |
 |---|---|---|---|
 | Audit reflection accuracy by comparing stated & observed planning outcomes | No | CTRLRun never sees a plan or a reflection. | none |
-| Use immutable logs (e.g., Sigstore, Immudb) for forensic readiness | Partly | Tamper-evident, not immutable. Each receipt hashes the one before it, so alteration, deletion and reordering are reported by name and by `seq` (`G11`); the head is anchored outside the database at an interval, so a suffix erased or appended between anchors is detected. Receipts are not signed, and the chain says nothing about who wrote it. | v0.6, v0.11 |
+| Use immutable logs (e.g., Sigstore, Immudb) for forensic readiness | Partly | Tamper-evident, not immutable. Each receipt hashes the one before it, so alteration, deletion and reordering are reported by name and by `seq` (`G11`); the head is anchored outside the database at an interval, so a suffix erased below an anchor is detected (`G28`). Retention does not quietly break it: `ctrlrun prune` removes a prefix and leaves a checkpoint the reader seeds from, so the chain verifies across the gap, it refuses rather than warns and has no `--force` (`G29`), an honest prune leaves the anchors reproducing (`G32`), and a range under `ctrlrun hold place` refuses to prune at all, with the hold named (`G30`). Receipts are not signed, and the chain says nothing about who wrote it. | v0.6, v0.11 |
 | Alert on anomalies; e.g., goal reversal, unexpected plan depth, adversarial-input, excessive tool usage, or rapid inter-agent chatter | Partly | Excessive use is refused rather than alerted on: a consequence budget on a grant is consumed on reserve and held until an `AMBIGUOUS` effect is reconciled (`G22`), and every refusal is an event on the sink your alerting reads. CTRLRun ships no alerting and sees no plan or prompt. | v0.2, v0.9 |
 | Correlate telemetry from agent step tracing, tool execution, & message logs | Yes | The OpenTelemetry sink opens one span per action carrying `ctrlrun.action_id`, `ctrlrun.effect_key` and `ctrlrun.approval_id`, and the receipt carries the same `action_id`, so a tool-execution span joins an agent trace and a receipt on one identifier ([export guide](/docs/guides/export-to-opentelemetry)). | v0.2 |
 
@@ -166,21 +168,22 @@ example is theirs and is not a claim that CTRLRun uses it.
 
 The form asks for `ASI01:26` through `ASI10:26` as ten checkboxes. The
 [Agentic Top 10 reading](/docs/OWASP-AGENTIC-TOP10) carries the row-by-row mapping and the
-sentence for each entry saying what is *not* covered; this table is the summary at v1.0, with
-the version that moved each entry.
+sentence for each entry saying what is *not* covered; this table is the summary at 0.12.1,
+with the version that moved each entry. Each row's guarantees are exactly what that reading
+maps to the entry, which is a test and not an intention.
 
 | Entry | Status | Guarantees | What stays out | Since |
 |---|---|---|---|---|
-| `ASI01:26` Agent Goal Hijack | Partly | `G1`, `G6`, `G24` | The hijack itself. A task-bound grant shrinks what a hijacked agent can do; nothing reads the hijack. | v0.1, v0.9 |
-| `ASI02:26` Tool Misuse | Yes | `G3`, `G6`, `G16`, `G22` | Misuse that stays inside the policy, the grant and the budget. | v0.1, v0.7, v0.9 |
-| `ASI03:26` Identity & Privilege Abuse | Yes | `G7`, `G8`, `G9`, `G17`–`G20` | Issuing identity. CTRLRun verifies what it is handed. | v0.3, v0.8 |
-| `ASI04:26` Agentic Supply Chain Vulnerabilities | Partly | upstream identity pinning | Provenance at large. A pinned TLS key or tool-schema hash refuses a swapped upstream; no package, model or registry is ever inspected. | v0.10 |
+| `ASI01:26` Agent Goal Hijack | Partly | `G1`, `G6`, `G16`, `G21`, `G22`, `G23`, `G24` | The hijack itself. Task binding, a budget and a scope provider shrink what a hijacked agent can do; nothing reads the hijack. | v0.1, v0.7, v0.8, v0.9 |
+| `ASI02:26` Tool Misuse | Yes | `G3`, `G6`, `G23`, `G27` | Misuse that stays inside the policy, the grant and the budget. | v0.1, v0.9, v0.10 |
+| `ASI03:26` Identity & Privilege Abuse | Yes | `G7`, `G8`, `G9`, `G17`, `G18`, `G19`, `G20`, `G21`, `G24`, `G25`, `G26` | Issuing identity. CTRLRun verifies what it is handed. | v0.1, v0.3, v0.8, v0.9, v0.10 |
+| `ASI04:26` Agentic Supply Chain Vulnerabilities | No | none | Out of scope, and no guarantee maps to it: no package, model, build, registry or signature chain is ever inspected. Upstream pinning binds one connection and one tool schema, and it is mapped under `ASI02:26` and `ASI07:26`, where binding a peer belongs, rather than here. | none |
 | `ASI05:26` Unexpected Code Execution | No | none | Out of scope: nothing here sandboxes an interpreter. | none |
-| `ASI06:26` Memory & Context Poisoning | Partly | `G1`, `G6`, `G16`, `G23` | The poisoning. A scope provider now bites on an identifier an attacker chose, fetched before the reservation and fail-closed; the recheck still cannot run inside the atomic write, and that residual gap is stated wherever the feature is. | v0.1, v0.7, v0.9 |
-| `ASI07:26` Insecure Inter-Agent Communication | Partly | hop propagation | Transport security. Authority across an A2A hop is a subset of the sender's, checked at the hop and on every evaluation; the channel itself is not CTRLRun's. | v0.10 |
-| `ASI08:26` Cascading Failures | Yes | `G3`, `G4`, `G5`, `G10`, `G12`, `G15`, `G22` | A failure that never reaches a consequential action. | v0.1, v0.7, v0.9 |
-| `ASI09:26` Human-Agent Trust Exploitation | Partly | `G1`, `G2`, `G17`, `G18`, `G19` | Persuasion. A human misled into approving the right action for the wrong reason gives a valid approval, and the receipt records it as one. | v0.1, v0.8 |
-| `ASI10:26` Rogue Agents | Partly | `G8`, `G9`, `G20`, `G22`, `G24` | Detection. A rogue agent is bounded, expired and revoked; it is not recognised as rogue. | v0.3, v0.8, v0.9 |
+| `ASI06:26` Memory & Context Poisoning | Partly | `G1`, `G6`, `G23` | The poisoning. A scope provider bites on an identifier an attacker chose, fetched before the reservation and fail-closed; the recheck still cannot run inside the atomic write, and that residual gap is stated wherever the feature is. | v0.1, v0.9 |
+| `ASI07:26` Insecure Inter-Agent Communication | Partly | `G25`, `G26`, `G27` | Transport security. Authority across an A2A hop is a subset of the sender's, checked at the hop and on every evaluation, and a pinned upstream refuses a swapped peer; the channel itself is not CTRLRun's. | v0.10 |
+| `ASI08:26` Cascading Failures | Yes | `G3`, `G4`, `G5`, `G10`, `G12`, `G13`, `G14`, `G15`, `G22` | A failure that never reaches a consequential action. | v0.1, v0.7, v0.9 |
+| `ASI09:26` Human-Agent Trust Exploitation | Partly | `G1`, `G2`, `G11`, `G12`, `G16`, `G17`, `G18`, `G19`, `G28`, `G29`, `G30`, `G31`, `G32` | Persuasion. A human misled into approving the right action for the wrong reason gives a valid approval, and the receipt records it as one. | v0.1, v0.6, v0.7, v0.8, v0.11 |
+| `ASI10:26` Rogue Agents | Partly | `G8`, `G9`, `G15`, `G20`, `G21`, `G22`, `G24`, `G25`, `G26` | Detection. A rogue agent is bounded, expired and revoked; it is not recognised as rogue. | v0.3, v0.7, v0.8, v0.9, v0.10 |
 
 ---
 
@@ -193,9 +196,13 @@ ticked on the form and its row here says *No*, the form is wrong. If a guarantee
 [Agentic Top 10 reading](/docs/OWASP-AGENTIC-TOP10) already follows.
 
 This page is regenerated when the guarantee catalogue changes, when a version named in a
-*Since* column is tagged, and when OWASP revises the form. It was written against
-`ctrlrun.guarantees/v5` as the [roadmap](/docs/ROADMAP) defines it for v0.9 and the form as
-read on 2026-09-10.
+*Since* column is tagged, and when OWASP revises the form. The first two both happened without
+it, so the rule is now a test rather than a sentence: `tests/test_owasp_landscape.py` checks
+that every guarantee cited here exists in the registry, that the catalogue named is the one
+`ctrlrun verify` reports, that no *Since* column names a version the changelog has not
+released, and that each `ASI` row's guarantees are exactly what the
+[Agentic Top 10 reading](/docs/OWASP-AGENTIC-TOP10) maps to that entry. It was written against
+`ctrlrun.guarantees/v7`, the catalogue 0.12.1 ships, and the form as read on 2026-09-10.
 
 ## Next
 
