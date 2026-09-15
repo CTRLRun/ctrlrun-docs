@@ -1,6 +1,6 @@
 ---
 title: "OWASP Agentic Solutions Landscape"
-description: "A reading of the OWASP Agentic Solutions Landscape checklist against what CTRLRun 0.12.1 ships, with the boxes it does not tick named."
+description: "A reading of the OWASP Agentic Solutions Landscape checklist against what CTRLRun 0.12.2 ships, with the boxes it does not tick named."
 sidebarTitle: "OWASP Solutions Landscape"
 ---
 
@@ -26,11 +26,11 @@ credible.
 | **Publisher** | OWASP GenAI Security Project, OWASP Foundation |
 | **Form** | [https://genai.owasp.org/solution-submission-agentic/](https://genai.owasp.org/solution-submission-agentic/) |
 | **Read on** | 2026-09-10 |
-| **Written against** | CTRLRun **0.12.1**, guarantees `G1`–`G32`, catalogue `ctrlrun.guarantees/v7` |
+| **Written against** | CTRLRun **0.12.2**, guarantees `G1`–`G32`, catalogue `ctrlrun.guarantees/v7` |
 
 **Written against what is tagged, and the version is printed on every row that needs one.**
 Every guarantee cited below is in the catalogue `ctrlrun verify` runs today, `G1` through
-`G32`, and every one of them is in the 0.12.1 wheel. **There are no design rows.** A *Since*
+`G32`, and every one of them is in the 0.12.2 wheel. **There are no design rows.** A *Since*
 column names the milestone that added the row rather than a separate download: 0.3.0 was
 published to TestPyPI alone, and what it added reached PyPI inside 0.4.0. This page was first written against an unreleased 1.0 and marked the rows that waited
 on it; none of them waits any longer, and the hedge came out rather than being left to read
@@ -168,7 +168,7 @@ example is theirs and is not a claim that CTRLRun uses it.
 
 The form asks for `ASI01:26` through `ASI10:26` as ten checkboxes. The
 [Agentic Top 10 reading](/docs/OWASP-AGENTIC-TOP10) carries the row-by-row mapping and the
-sentence for each entry saying what is *not* covered; this table is the summary at 0.12.1,
+sentence for each entry saying what is *not* covered; this table is the summary at 0.12.2,
 with the version that moved each entry. Each row's guarantees are exactly what that reading
 maps to the entry, which is a test and not an intention.
 
@@ -202,7 +202,7 @@ that every guarantee cited here exists in the registry, that the catalogue named
 `ctrlrun verify` reports, that no *Since* column names a version the changelog has not
 released, and that each `ASI` row's guarantees are exactly what the
 [Agentic Top 10 reading](/docs/OWASP-AGENTIC-TOP10) maps to that entry. It was written against
-`ctrlrun.guarantees/v7`, the catalogue 0.12.1 ships, and the form as read on 2026-09-10.
+`ctrlrun.guarantees/v7`, the catalogue 0.12.2 ships, and the form as read on 2026-09-10.
 
 ## Next
 

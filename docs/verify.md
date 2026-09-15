@@ -14,7 +14,7 @@ what could not be tested at all.
 
 ```console
 $ ctrlrun verify
-CTRLRun verify — ctrlrun 0.12.1, catalogue ctrlrun.guarantees/v7
+CTRLRun verify — ctrlrun 0.12.2, catalogue ctrlrun.guarantees/v7
 policy     examples/authority/payments.yaml (ctrlrun.policy/v7, mode: enforce)
 authority  same document, 3 grants
 store      sqlite, scratch (created and destroyed for this run)
