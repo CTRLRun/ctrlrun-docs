@@ -4,6 +4,7 @@ import { createHandler } from './api/interest.mjs';
 
 const pro = { intent: 'pro-waitlist', email: 'engineer@example.com', company: 'Example', agents: 'Support agent', requestId: '11111111-1111-4111-8111-111111111111' };
 const enterprise = { intent: 'enterprise-contact', email: 'cto@example.com', company: 'Example', message: 'Approvals in Slack, on-prem deployment.', requestId: '22222222-2222-4222-8222-222222222222' };
+const updates = { intent: 'launch-updates', email: 'reader@example.com', requestId: '33333333-3333-4333-8333-333333333333' };
 const request = (body, headers = {}) => ({ method: 'POST', headers: { origin: 'https://ctrlrun.dev', 'content-type': 'application/json', 'x-vercel-forwarded-for': '192.0.2.1', ...headers }, body });
 const response = () => ({ code: 200, headers: {}, body: null, setHeader(key, value) { this.headers[key] = value; }, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; }, end() { return this; } });
 const handler = (overrides = {}) => createHandler({ env: { RESEND_API_KEY: 'test-only' }, rateStore: new Map(), fetcher: async () => ({ ok: true, json: async () => ({ id: 'test-email' }) }), ...overrides });
@@ -86,5 +87,51 @@ test('preflight is allowed for site origins and refused for everything else', as
   for (const origin of ['https://ctrlrun.dev', 'https://unrelated.mintlify.site']) {
     const res = response(); await fn({ ...request(pro, { origin }), method: 'OPTIONS' }, res);
     assert.equal(res.code, origin.includes('unrelated') ? 403 : 204);
+  }
+});
+
+test('launch updates takes an address and nothing else', async () => {
+  // ctrlrun.dev has no tiers and no sales path, so the one form on it asks for one field. If
+  // `company` were required here, as it is for the two commercial intents, the site's only form
+  // would reject every submission it receives -- and it would do so at the endpoint, where the
+  // page cannot see it.
+  let sent;
+  const fn = handler({ fetcher: async (url, options) => { sent = { url, ...options }; return { ok: true, json: async () => ({ id: 'test-email' }) }; } });
+  const res = response();
+
+  await fn(request(updates), res);
+
+  assert.equal(res.code, 200);
+  assert.equal(res.body.ok, true);
+  const body = JSON.parse(sent.body);
+  // No company, so no trailing dash: a subject line ending in ' — ' is the bug this catches.
+  assert.equal(body.subject, 'CTRLRun launch updates');
+  assert.equal(body.reply_to, updates.email);
+  assert.ok(!body.text.includes('Company:'), body.text);
+});
+
+test('a company sent with launch updates is carried, not silently dropped', async () => {
+  // Optional is not ignored. Somebody who types an employer should see it in the mail.
+  let sent;
+  const fn = handler({ fetcher: async (url, options) => { sent = { url, ...options }; return { ok: true, json: async () => ({ id: 'test-email' }) }; } });
+  const res = response();
+
+  await fn(request({ ...updates, company: 'Example' }), res);
+
+  assert.equal(res.code, 200);
+  const body = JSON.parse(sent.body);
+  assert.equal(body.subject, 'CTRLRun launch updates — Example');
+  assert.ok(body.text.includes('Company: Example'), body.text);
+});
+
+test('the commercial intents still require a company', async () => {
+  // Making `company` conditional must not relax it where it was required. Without this, the
+  // change that added one intent quietly loosened validation for the other two.
+  const fn = handler();
+  for (const input of [pro, enterprise]) {
+    const res = response();
+    const { company, ...without } = input;
+    await fn(request(without), res);
+    assert.equal(res.code, 400, input.intent);
   }
 });
