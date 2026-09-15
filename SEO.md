@@ -153,5 +153,3 @@ not needed; the assistants that do read `llms.txt` get Mintlify's.
 |---|---|
 | `index` | stop wrong, restricted, or malicious AI agent actions · control AI agents running in your platform · works with agents you can and can't modify · any AI agent whatsapp slack claude code cursor codex chatgpt |
 | `execution-boundary` | what stops an agent action · AI agent execution boundary · how an agent execution boundary is adopted |
-| `risk-check` | AI agent execution risk assessment |
-| `protect-my-agent` | AI agent execution boundary, connection coverage and ctrlrun Pro/Enterprise governance for businesses |

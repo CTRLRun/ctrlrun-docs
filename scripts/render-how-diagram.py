@@ -39,7 +39,7 @@ NARROW_RULES: list[tuple[str, list[str]]] = [
     ("Outcome unknown", ["No retry until a person resolves it.", "Nothing runs twice on a guess."]),
 ]
 
-# The two ends name what the reader already has, in the vocabulary /protect-my-agent uses.
+# The two ends name what the reader already has, in the vocabulary the home page uses.
 # No worked example: the process is the point, and a refund makes it look like a payments tool.
 TOP = (
     "YOUR AGENTS, TOOLS AND WORKFLOWS",

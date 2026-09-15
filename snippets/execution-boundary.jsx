@@ -372,7 +372,7 @@ export const ExecutionBoundary = () => {
             <span className="cr-story-go">Draw it above →</span>
           </button>)}
         </div>
-        <div className="cr-domain-cta"><strong>{questions[selected.id]}</strong><a className="cr-text-link" href={'/protect-my-agent?domain=' + encodeURIComponent(selected.id)} onClick={() => track('protect_clicked')}>Get a safety review ↗</a></div>
+        <div className="cr-domain-cta"><strong>{questions[selected.id]}</strong><a className="cr-text-link" href="/docs/get-started/quickstart" onClick={() => track('quickstart_from_boundary')}>Protect your first action →</a></div>
       </section>
     </div>
   );

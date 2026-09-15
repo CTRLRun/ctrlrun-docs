@@ -25,18 +25,14 @@
         "label": "Docs"
       },
       {
-        "href": "/#pro-and-enterprise",
-        "label": "Free, Pro, Enterprise"
-      },
-      {
         "href": "https://github.com/CTRLRun/ctrlrun",
         "label": "GitHub"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Protect my agent",
-      "href": "/protect-my-agent"
+      "label": "Protect your first action",
+      "href": "/docs/get-started/quickstart"
     }
   },
   "navigation": {
@@ -1230,6 +1226,16 @@
     {
       "source": "/ROADMAP",
       "destination": "/docs/ROADMAP",
+      "permanent": true
+    },
+    {
+      "source": "/protect-my-agent",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/risk-check",
+      "destination": "/",
       "permanent": true
     }
   ]

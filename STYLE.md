@@ -103,4 +103,4 @@ python tools/docs_audit/render_capabilities.py --check
 
 ## Product experience
 
-The `/`, `/risk-check`, and `/protect-my-agent` pages use Mintlify custom mode. The product brief governs their concise copy and layout; the documentation-only Next section, fixed-copy, and three-domain-list rules do not apply to these pages. Technical pages under `/docs` retain the rules above.
+The `/` and `/execution-boundary` pages use Mintlify custom mode. The product brief governs their concise copy and layout; the documentation-only Next section, fixed-copy, and three-domain-list rules do not apply to these pages. Technical pages under `/docs` retain the rules above.

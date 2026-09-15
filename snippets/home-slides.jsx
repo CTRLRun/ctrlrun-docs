@@ -7,7 +7,7 @@ export const HomeSlides = () => {
   const SLIDES = [
     { id: 'overview', label: 'Overview' },
     { id: 'how-it-works', label: 'How it works' },
-    { id: 'pro-and-enterprise', label: 'Free, Pro, Enterprise' },
+    { id: 'updates', label: 'What comes next' },
   ];
   const LAST = SLIDES.length - 1;
   const [active, setActive] = useState(0);

@@ -6,8 +6,13 @@ const RECIPIENT = 'contact@arpanghoshal.com';
 // Pro takes a waiting-list place and needs nothing else; Enterprise is a conversation, so it
 // asks what the deployment needs. The intent decides which, and nothing else in the request does.
 const INTENTS = {
-  'pro-waitlist': { subject: 'CTRLRun Pro waiting list', heading: 'CTRLRun Pro waiting list request', requiresMessage: false },
-  'enterprise-contact': { subject: 'CTRLRun Enterprise enquiry', heading: 'CTRLRun Enterprise enquiry', requiresMessage: true }
+  'pro-waitlist': { subject: 'CTRLRun Pro waiting list', heading: 'CTRLRun Pro waiting list request', requiresMessage: false, requiresCompany: true },
+  'enterprise-contact': { subject: 'CTRLRun Enterprise enquiry', heading: 'CTRLRun Enterprise enquiry', requiresMessage: true, requiresCompany: true },
+  // ctrlrun.dev carries no tiers and no sales path; this is the only thing the site asks for.
+  // An address and nothing else, so `company` is not required for it -- asking a stranger to
+  // name their employer before they have run `pip install` is a lead form wearing a mailing
+  // list's clothes. The intent decides that here, not the browser.
+  'launch-updates': { subject: 'CTRLRun launch updates', heading: 'CTRLRun launch updates signup', requiresMessage: false, requiresCompany: false }
 };
 const requests = new Map();
 const WINDOW_MS = 600_000;
@@ -26,7 +31,7 @@ export function validate(input) {
   if (!shape) throw new Error('Unknown request type.');
   const email = field('email', 254);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || /[\r\n]/.test(email)) throw new Error('Enter a valid work email.');
-  const company = field('company', 100);
+  const company = field('company', 100, shape.requiresCompany);
   const message = field('message', 600, shape.requiresMessage);
   const agents = field('agents', 200, false);
   const requestId = field('requestId', 36);
@@ -64,12 +69,12 @@ export function createHandler({ env = process.env, fetcher = fetch, now = Date.n
     const entry = rateStore.get(rateKey) || { start: time, count: 0 };
     if (entry.count >= MAX_REQUESTS || rateStore.size >= 10_000) { res.setHeader('Retry-After', '600'); return res.status(429).json({ error: 'Too many requests. Please try again later or email us directly.' }); }
     rateStore.set(rateKey, { start: entry.start, count: entry.count + 1 });
-    const text = [data.shape.heading, '', 'Company: ' + data.company, 'Reply email: ' + data.email, data.agents && 'Agents and actions: ' + data.agents, data.message && 'What they need: ' + data.message].filter(Boolean).join('\n');
+    const text = [data.shape.heading, '', data.company && 'Company: ' + data.company, 'Reply email: ' + data.email, data.agents && 'Agents and actions: ' + data.agents, data.message && 'What they need: ' + data.message].filter(Boolean).join('\n');
     try {
       const response = await fetcher('https://api.resend.com/emails', {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json', 'Idempotency-Key': data.intent + '/' + data.requestId },
-        body: JSON.stringify({ from: 'CTRLRun <reviews@updates.arpanghoshal.com>', to: [RECIPIENT], reply_to: data.email, subject: data.shape.subject + ' — ' + data.company.replace(/[\r\n]/g, ' '), text }),
+        body: JSON.stringify({ from: 'CTRLRun <reviews@updates.arpanghoshal.com>', to: [RECIPIENT], reply_to: data.email, subject: data.company ? data.shape.subject + ' — ' + data.company.replace(/[\r\n]/g, ' ') : data.shape.subject, text }),
         signal: AbortSignal.timeout(10_000)
       });
       if (!response.ok) return res.status(502).json({ error: 'We could not confirm submission. Retry this request or email contact@arpanghoshal.com.' });

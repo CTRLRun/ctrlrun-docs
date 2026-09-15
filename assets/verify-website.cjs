@@ -58,52 +58,24 @@ module.exports = async function verifyWebsite(page, base = 'http://localhost:300
   }
   await page.setViewportSize({ width: 1280, height: 900 });
 
-  await page.goto(base + '/risk-check');
-  await page.getByLabel('Move money', { exact: true }).check();
-  for (let index = 0; index < 5; index++) await page.locator('input[name="risk-' + index + '"][value="' + ([2, 4].includes(index) ? 'No' : 'Yes') + '"]').check();
-  await page.getByRole('button', { name: 'Check my execution risk →' }).click();
-  assert((await page.locator('.cr-risk-result').innerText()).includes('5 execution-risk patterns'), 'All five indicated patterns appear in the risk result');
-  assert((await page.locator('.cr-risk-result').innerText()).includes('Execution risk: High'), 'High result has a transparent threshold');
-  await page.locator('input[name="risk-0"][value="Unsure"]').check();
-  assert(await page.locator('.cr-risk-result').count() === 0, 'Changing an answer clears the stale result');
-  for (let index = 0; index < 5; index++) await page.locator('input[name="risk-' + index + '"][value="' + ([2, 4].includes(index) ? 'Yes' : 'No') + '"]').check();
-  await page.getByRole('button', { name: 'Check my execution risk →' }).click();
-  assert((await page.locator('.cr-risk-result').innerText()).includes('Lower indicated risk'), 'Controls present produce a lower indicated result');
-  await page.setViewportSize({ width: 375, height: 812 });
-  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Risk check fits mobile');
-  await page.goto(base + '/protect-my-agent?domain=DevOps&risk=High&patterns=4&unknowns=1');
-  assert((await page.locator('.cr-domain-context').innerText()).includes('DevOps'), 'Domain context carries into the review form');
-  await page.getByRole('button', { name: 'Review my request →' }).click();
-  assert(await page.locator('.cr-email-preview').count() === 0, 'Empty form cannot prepare a request');
-  await page.getByLabel('Work email', { exact: true }).fill('engineer@example.com');
-  await page.getByLabel('Company', { exact: true }).fill('Example test company');
-  await page.getByLabel('What does your agent do?').fill('Test deployment workflow');
-  await page.getByLabel('Which actions can it execute?').fill('Deploy production releases');
-  await page.getByLabel('Retry safety', { exact: true }).check();
-  await page.getByRole('button', { name: 'Review my request →' }).click();
-  const href = await page.getByRole('link', { name: 'Use my email app instead ↗' }).getAttribute('href');
-  assert(href.startsWith('mailto:contact@arpanghoshal.com?'), 'Review handoff uses the approved recipient');
-  const body = decodeURIComponent(href.split('&body=')[1]);
-  assert(body.includes('Example test company') && body.includes('Deploy production releases') && body.includes('Retry safety') && body.includes('High'), 'Email brief includes qualification and risk context');
-  assert((await page.locator('.cr-email-preview').innerText()).includes('has not been sent'), 'The form never falsely claims delivery');
-  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Review form fits mobile');
-  await page.getByLabel('Company', { exact: true }).fill('Updated test company');
-  assert(await page.locator('.cr-email-preview').count() === 0, 'Editing the brief clears the prepared handoff');
-  await page.getByRole('button', { name: 'Review my request →' }).click();
-  const submissions = [];
-  await page.route('https://ctrlrun-review-form.vercel.app/api/review', async route => {
-    submissions.push(route.request().postDataJSON());
-    await route.fulfill({ status: submissions.length === 1 ? 502 : 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(submissions.length === 1 ? { error: 'Provider temporarily unavailable.' } : { ok: true, id: 'mock-only-no-email-sent' }) });
+  // The home page's one form. `/risk-check` and `/protect-my-agent` were checked here until
+  // v0.12; both pages were removed when the site became technical only, and the walkthroughs
+  // that drove their multi-step forms went with them. What is left is the single signup.
+  await page.goto(base + '/');
+  await page.locator('#updates').scrollIntoViewIfNeeded();
+  const signups = [];
+  await page.route('https://ctrlrun-review-form.vercel.app/api/interest', async route => {
+    signups.push(route.request().postDataJSON());
+    await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ ok: true, id: 'test-email' }) });
   });
-  await page.getByRole('button', { name: 'Send review request →' }).click();
-  await page.getByRole('alert').filter({ hasText: 'Provider temporarily unavailable.' }).waitFor();
-  assert((await page.locator('.cr-email-preview').innerText()).includes('has not been sent'), 'Provider failure never claims success');
-  await page.getByRole('button', { name: 'Retry submission →' }).click();
-  await page.getByRole('heading', { name: 'Review request submitted.' }).waitFor();
-  assert(submissions.length === 2 && submissions[0].requestId === submissions[1].requestId, 'Uncertain email retries reuse the same idempotency key');
-  assert(submissions[1].email === 'engineer@example.com', 'Work email is included for replies');
-  assert(await page.getByRole('button', { name: 'Send review request →' }).count() === 0, 'Successful submission cannot be double-clicked');
-  await page.unroute('https://ctrlrun-review-form.vercel.app/api/review');
+  await page.locator('.cr-updates-form input[type=email]').fill('reader@example.com');
+  await page.getByRole('button', { name: 'Keep me posted →' }).click();
+  await page.locator('.cr-updates-done').waitFor();
+  assert(signups.length === 1 && signups[0].intent === 'launch-updates', 'The signup posts the launch-updates intent');
+  assert(signups[0].email === 'reader@example.com', 'The address reaches the endpoint');
+  assert(!('company' in signups[0]) || !signups[0].company, 'The signup asks for nothing but an address');
+  await page.unroute('https://ctrlrun-review-form.vercel.app/api/interest');
+  assert(await page.locator('text=/Pro|Enterprise|Pricing/i').count() === 0, 'No commercial copy on the home page');
   await page.setViewportSize({ width: 1280, height: 900 });
   assert((await page.goto(base + '/docs')).status() === 200, 'Documentation landing responds without a redirect loop');
   await page.locator('#sidebar').waitFor();

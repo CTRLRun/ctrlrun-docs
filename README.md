@@ -14,7 +14,7 @@ This repository is the Mintlify site root, so a file's path here is the URL it s
 | Path | What it is |
 |---|---|
 | `docs.json` | Site configuration and the whole navigation tree |
-| `index.mdx`, `execution-boundary.mdx`, `risk-check.mdx`, `protect-my-agent.mdx` | The top-level pages |
+| `index.mdx`, `execution-boundary.mdx` | The top-level pages |
 | `docs/` | Every documentation page: guides, concepts, cookbook, reference, architecture |
 | `snippets/`, `images/`, `style.css`, `*.js` | Components, media and the browser demos |
 | `capabilities.yaml` | The capability matrix's source. Edit the YAML, never a rendered table |
@@ -88,7 +88,8 @@ Apache-2.0, the same as the library. See [LICENSE](LICENSE).
   action, the five checks and the refusal each one raises, so the prose beside it stays short.
 - `docs.mdx` serves `/docs`: the technical overview.
 - `docs/` is every technical page, published under `/docs/...`.
-- `risk-check.mdx` and `protect-my-agent.mdx` are custom-mode product pages.
+- `execution-boundary.mdx` is a custom-mode page. The two commercial pages it sat beside,
+  `risk-check.mdx` and `protect-my-agent.mdx`, were removed when the site became technical only.
 - `snippets/` holds small client-side React components. Mintlify injects React hooks; do not
   add cross-snippet imports or third-party browser dependencies.
 - `style.css` scopes product styling to `.cr-site`; documentation keeps the native layout.
@@ -143,7 +144,7 @@ fallback stays available, and a browser retry reuses its request id, so success 
 once the server confirms Resend accepted the message.
 
 `website-events.js` and the components emit `ctrlrun:conversion` events for page visits, CTA
-clicks, selections, scenario outcomes, risk-check completion and review submission. No
+clicks, selections, scenario outcomes and the launch-updates signup. No
 analytics provider is configured: these are integration hooks and not stored analytics. Event
 payloads exclude contact details and free-text form contents.
 
