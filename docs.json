@@ -41,9 +41,7 @@
         "tab": "CTRLRun",
         "pages": [
           "index",
-          "execution-boundary",
-          "risk-check",
-          "protect-my-agent"
+          "execution-boundary"
         ]
       },
       {
