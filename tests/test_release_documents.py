@@ -110,6 +110,11 @@ DISCLAIMS: dict[str, tuple[str, ...]] = {
         # SPEC-v0.11 §1.1 rule 1 — the anchor consumes a timestamp and issues nothing,
         # which is a sentence about what CTRLRun does NOT do and has to say the word.
         "no revocation, no signing. Signing stays off the roadmap for the reason `SPEC-v0.6.md` §11",  # noqa: E501
+        # v0.12's SBOM. "Signed" here is the *distribution*, by the attestation step in
+        # `release.yml`, and not a receipt. The distinction is the whole of what T180 guards, so
+        # the line is allow-listed rather than reworded: an SBOM that ships unsigned beside signed
+        # artifacts is the weakest link in the pair, and saying so requires the word.
+        "`release.yml` writes it into `dist/` **before** the attestation step, so it is signed with the",  # noqa: E501
     ),
     "docs/postgres.md": (
         "Receipts are not signed, alteration is not authorship, and the chain is not tamper-proof",
