@@ -73,13 +73,22 @@ accepts `2025-11-25`, `2025-06-18` and `2025-03-26`.
 
     ```json
     {"jsonrpc": "2.0", "id": 13,
-     "error": {"code": -41002, "message": "mcp.ops.delete_namespace: a human must approve",
-               "data": {"error": "ctrlrun.approval_required", "request_id": "apr_…"}}}
+     "error": {"code": -41002,
+               "message": "mcp.ops.delete_namespace requires approval: a human runs
+                           'ctrlrun approve apr_…', then this same call runs",
+               "data": {"error": "ctrlrun.approval_required", "request_id": "apr_…",
+                        "action_hash": "sha256:…", "expires_at": "…"}}}
     ```
 
     A human runs `ctrlrun approve apr_…`, or answers in Slack through the webhook, and the
     agent's next identical call runs. A different call, a different namespace, a different
     cluster, does not: the approval is bound to the hash of what the human saw.
+
+    **There is nothing for the client to do differently on the retry.** It re-sends the same
+    `tools/call`. The decorator has a second step here -- `ctrlrun.with_approval(...)` -- and
+    this path does not, because the gateway finds the granted approval by the action's hash.
+    Until v0.12 the error text said otherwise: it carried the decorator's wording verbatim and
+    sent clients, in any language, looking for a Python context manager.
 
     | Code | Token | HTTP | Meaning |
     |---|---|---|---|
