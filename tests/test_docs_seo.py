@@ -147,8 +147,8 @@ def test_the_site_declares_its_social_image_and_indexing():
 
 
 def test_the_home_pages_share_title_is_not_the_site_name_twice():
-    """Mintlify renders `<title> - <site name>`, so a home page titled `CTRLRun` on a site
-    named `CTRLRun` shared as **"CTRLRun - CTRLRun"**. The override says something instead."""
+    """Mintlify renders `<title> - <site name>`, so a home page titled `ctrlrun` on a site
+    named `ctrlrun` shared as **"ctrlrun - ctrlrun"**. The override says something instead."""
     text = (DOCS / "index.mdx").read_text(encoding="utf-8")
     document = json.loads((DOCS / "docs.json").read_text(encoding="utf-8"))
     for tag in ("og:title", "twitter:title"):

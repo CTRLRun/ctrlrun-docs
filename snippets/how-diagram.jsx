@@ -7,8 +7,8 @@ export const HowDiagram = () => (
   <>
     <svg className="cr-diagram cr-dia-wide" viewBox="0 0 1200 418" role="img"
       aria-labelledby="cr-dia-t cr-dia-d" preserveAspectRatio="xMidYMid meet">
-      <title id="cr-dia-t">How CTRLRun works</title>
-      <desc id="cr-dia-d">An action leaves the agents, tools and workflows you already run. Inside CTRLRun it is normalized into one action, decided against your rules, held for approval, reserved so it cannot run twice, executed, resolved and recorded. Only then does it reach your systems. An action with no rule is blocked, changed arguments void the approval, and an unknown outcome is never retried.</desc>
+      <title id="cr-dia-t">How ctrlrun works</title>
+      <desc id="cr-dia-d">An action leaves the agents, tools and workflows you already run. Inside ctrlrun it is normalized into one action, decided against your rules, held for approval, reserved so it cannot run twice, executed, resolved and recorded. Only then does it reach your systems. An action with no rule is blocked, changed arguments void the approval, and an unknown outcome is never retried.</desc>
       <rect className="cr-dia-strip" x="1" y="1" width="1198" height="54" rx="6" />
       <text className="cr-dia-label" x="24" y="33">YOUR AGENTS, TOOLS AND WORKFLOWS</text>
       <text className="cr-dia-claim" x="390" y="34">An action is about to run.</text>
@@ -16,7 +16,7 @@ export const HowDiagram = () => (
       <path className="cr-dia-arrow" d="M600 56V83" />
       <path className="cr-dia-head" d="M595 82h10L600 90Z" />
       <rect className="cr-dia-box" x="1" y="92" width="1198" height="230" rx="6" />
-      <text className="cr-dia-label" x="24" y="122">CTRLRun · THE EXECUTION BOUNDARY</text>
+      <text className="cr-dia-label" x="24" y="122">ctrlrun · THE EXECUTION BOUNDARY</text>
       <rect className="cr-dia-node" x="24" y="138" width="144" height="86" rx="5" />
       <text className="cr-dia-num" x="37" y="162">1</text>
       <text className="cr-dia-name" x="37" y="186">Normalize</text>
@@ -73,8 +73,8 @@ export const HowDiagram = () => (
     </svg>
     <svg className="cr-diagram cr-dia-narrow" viewBox="0 0 360 748" role="img"
       aria-labelledby="cr-dia-tn cr-dia-dn" preserveAspectRatio="xMidYMid meet">
-      <title id="cr-dia-tn">How CTRLRun works</title>
-      <desc id="cr-dia-dn">An action leaves the agents, tools and workflows you already run. Inside CTRLRun it is normalized into one action, decided against your rules, held for approval, reserved so it cannot run twice, executed, resolved and recorded. Only then does it reach your systems. An action with no rule is blocked, changed arguments void the approval, and an unknown outcome is never retried.</desc>
+      <title id="cr-dia-tn">How ctrlrun works</title>
+      <desc id="cr-dia-dn">An action leaves the agents, tools and workflows you already run. Inside ctrlrun it is normalized into one action, decided against your rules, held for approval, reserved so it cannot run twice, executed, resolved and recorded. Only then does it reach your systems. An action with no rule is blocked, changed arguments void the approval, and an unknown outcome is never retried.</desc>
       <rect className="cr-dia-strip" x="1" y="1" width="358" height="76" rx="6" />
       <text className="cr-dia-label" x="16" y="25">YOUR AGENTS, TOOLS AND WORKFLOWS</text>
       <text className="cr-dia-claim" x="16" y="47">An action is about to run.</text>
@@ -82,7 +82,7 @@ export const HowDiagram = () => (
       <path className="cr-dia-arrow" d="M180 78V95" />
       <path className="cr-dia-head" d="M175 94h10L180 102Z" />
       <rect className="cr-dia-box" x="1" y="104" width="358" height="536" rx="6" />
-      <text className="cr-dia-label" x="16" y="130">CTRLRun · THE EXECUTION BOUNDARY</text>
+      <text className="cr-dia-label" x="16" y="130">ctrlrun · THE EXECUTION BOUNDARY</text>
       <path className="cr-dia-spine" d="M28 150V420" />
       <rect className="cr-dia-node" x="28" y="142" width="316" height="34" rx="4" />
       <text className="cr-dia-num" x="40" y="164">1</text>

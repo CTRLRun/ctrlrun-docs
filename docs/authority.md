@@ -4,7 +4,7 @@ description: "Grants, containment and the omission rule in plain language: who m
 sidebarTitle: "Authority in depth"
 ---
 
-Until v0.3, a CTRLRun policy could see the action and nothing else. It answered *how much
+Until v0.3, a ctrlrun policy could see the action and nothing else. It answered *how much
 autonomy does this action have* — run it, ask a human, refuse it — and the principal was
 attribution on a receipt. That is a real question and it is still the one `actions:` answers.
 

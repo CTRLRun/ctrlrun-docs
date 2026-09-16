@@ -58,7 +58,7 @@ def test_the_readme_opens_with_the_homepage_h1_and_lede():
     head = _prose(_readme().split("\n## ", 1)[0])
     h1, lede = _opening()
 
-    assert h1.startswith("CTRLRun ") and h1.endswith("."), h1
+    assert h1.startswith("ctrlrun ") and h1.endswith("."), h1
     assert head.startswith(h1), f"the README does not open with the homepage H1: {head[:120]!r}"
     after_h1 = head[len(h1) :].lstrip()
     assert after_h1.startswith(lede), (

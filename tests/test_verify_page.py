@@ -135,7 +135,7 @@ def test_T119_the_page_uses_no_forbidden_word_as_a_claim(word):
 def test_the_page_would_see_a_forbidden_word_used_as_a_claim():
     """The positive control. A paragraph splitter that never matched would pass the test above
     on any page at all, which is the shape of false green this repository keeps finding."""
-    page = "CTRLRun is certified for production use.\n\nSomething else entirely."
+    page = "ctrlrun is certified for production use.\n\nSomething else entirely."
     offending = [
         paragraph
         for paragraph in page.split("\n\n")

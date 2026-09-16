@@ -10,7 +10,7 @@ const response = () => ({ code: 200, headers: {}, body: null, setHeader(key, val
 const handler = (overrides = {}) => createHandler({ env: { RESEND_API_KEY: 'test-only' }, rateStore: new Map(), fetcher: async () => ({ ok: true, json: async () => ({ id: 'test-email' }) }), ...overrides });
 
 test('each intent sends to the fixed recipient with its own subject and idempotency key', async () => {
-  for (const [input, subject] of [[pro, 'CTRLRun Pro waiting list — Example'], [enterprise, 'CTRLRun Enterprise enquiry — Example']]) {
+  for (const [input, subject] of [[pro, 'ctrlrun Pro waiting list — Example'], [enterprise, 'ctrlrun Enterprise enquiry — Example']]) {
     let sent;
     const fn = handler({ fetcher: async (url, options) => { sent = { url, ...options }; return { ok: true, json: async () => ({ id: 'test-email' }) }; } });
     const res = response(); await fn(request({ ...input, to: 'attacker@example.com', from: 'spoof@example.com' }), res);
@@ -18,7 +18,7 @@ test('each intent sends to the fixed recipient with its own subject and idempote
     const body = JSON.parse(sent.body);
     assert.deepEqual(body.to, ['contact@arpanghoshal.com']);
     assert.equal(body.reply_to, input.email);
-    assert.equal(body.from, 'CTRLRun <reviews@updates.arpanghoshal.com>');
+    assert.equal(body.from, 'ctrlrun <reviews@updates.arpanghoshal.com>');
     assert.equal(body.subject, subject);
     assert.equal(sent.headers['Idempotency-Key'], input.intent + '/' + input.requestId);
   }
@@ -105,7 +105,7 @@ test('launch updates takes an address and nothing else', async () => {
   assert.equal(res.body.ok, true);
   const body = JSON.parse(sent.body);
   // No company, so no trailing dash: a subject line ending in ' — ' is the bug this catches.
-  assert.equal(body.subject, 'CTRLRun launch updates');
+  assert.equal(body.subject, 'ctrlrun launch updates');
   assert.equal(body.reply_to, updates.email);
   assert.ok(!body.text.includes('Company:'), body.text);
 });
@@ -120,7 +120,7 @@ test('a company sent with launch updates is carried, not silently dropped', asyn
 
   assert.equal(res.code, 200);
   const body = JSON.parse(sent.body);
-  assert.equal(body.subject, 'CTRLRun launch updates — Example');
+  assert.equal(body.subject, 'ctrlrun launch updates — Example');
   assert.ok(body.text.includes('Company: Example'), body.text);
 });
 

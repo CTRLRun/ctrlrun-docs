@@ -1,10 +1,10 @@
 ---
-title: "CTRLRun and MCP"
+title: "ctrlrun and MCP"
 sidebarTitle: "Overview"
 description: "Four ways: the gateway enforces policy in front of any MCP server, and the operator server lets an approver answer from their assistant."
 ---
 
-CTRLRun works with MCP in four ways. The gateway sits in front of any MCP server and applies
+ctrlrun works with MCP in four ways. The gateway sits in front of any MCP server and applies
 your policy to every `tools/call`, with no change to the agent or the server. The operator
 server lets the person who has to answer an approval answer it from the assistant they are
 already talking to. This documentation is itself an MCP server your coding tool can search. And
@@ -20,7 +20,7 @@ wire is relayed untouched.
 
 ```text
 before    agent  ──▶  MCP server
-after     agent  ──▶  CTRLRun gateway  ──▶  MCP server
+after     agent  ──▶  ctrlrun gateway  ──▶  MCP server
 ```
 
 - No code changes: the agent and the server are untouched.
@@ -82,7 +82,7 @@ configuration and a transcript.
 
 The guarantees are the same three ways in. A refund refused by the gateway is refused for the
 same reason, recorded in the same receipt shape, and verified by the same `ctrlrun verify` as
-one refused by the decorator. An agent that calls a CTRLRun tool to check its own actions would
+one refused by the decorator. An agent that calls a ctrlrun tool to check its own actions would
 not be enforcement, because a tool the agent chooses to call is a tool it can choose not to; the
 gateway is in the path whether the agent likes it or not.
 

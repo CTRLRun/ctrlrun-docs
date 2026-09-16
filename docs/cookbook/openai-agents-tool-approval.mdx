@@ -65,7 +65,7 @@ print(result.final_output)
 The SDK asks before invoking, because `protected_tool` answers its `needs_approval` from the
 policy; the run returns with one interruption naming the tool and its arguments. After
 `state.approve(item)` the resumed run invokes the tool with exactly that call's arguments, and
-CTRLRun records `openai-agents:tool-approval` as the approver. A refusal by CTRLRun, a
+ctrlrun records `openai-agents:tool-approval` as the approver. A refusal by ctrlrun, a
 duplicate for instance, reaches your `except` as `DuplicateEffect` through `gate.run`, not the
 model as "please try again".
 
@@ -73,7 +73,7 @@ model as "please try again".
 
 `approve/committed`. The binding across the interrupt is the SDK's, keyed by `call_id`, so the
 receipt attributes the approval and cannot re-check the arguments against the hash: that is
-attribution, and the adapter's README says so in that word. A rejection leaves no CTRLRun
+attribution, and the adapter's README says so in that word. A rejection leaves no ctrlrun
 evidence at all, because the SDK never invokes a rejected tool; record it where you call
 `state.reject(item)`.
 

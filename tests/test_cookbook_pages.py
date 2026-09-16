@@ -59,7 +59,7 @@ def test_every_extracted_script_carries_the_licence_the_kernel_requires():
     never carried the tags.
     """
     tags = (
-        "# SPDX-FileCopyrightText: 2026 The CTRLRun contributors",
+        "# SPDX-FileCopyrightText: 2026 The ctrlrun contributors",
         "# SPDX-License-Identifier: Apache-2.0",
     )
     checked = 0

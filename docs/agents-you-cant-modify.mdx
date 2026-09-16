@@ -1,13 +1,13 @@
 ---
 title: "Control AI agents you can't modify"
 sidebarTitle: "Agents you can't modify"
-description: "WhatsApp, Slack and Teams bots, Claude Code, Cursor, Codex, ChatGPT: if an agent acts through your tools or API, CTRLRun checks the action first."
+description: "WhatsApp, Slack and Teams bots, Claude Code, Cursor, Codex, ChatGPT: if an agent acts through your tools or API, ctrlrun checks the action first."
 ---
 
-CTRLRun works with agents you can't modify as well as the ones you can, because it checks the
+ctrlrun works with agents you can't modify as well as the ones you can, because it checks the
 action, not the agent. A WhatsApp, Slack or Teams bot, Claude Code, Cursor or Codex, a ChatGPT
 connector, a no-code builder: if the agent's actions reach a tool server or an API you run,
-CTRLRun sits at that point and decides each one before it runs. The agent is not rebuilt,
+ctrlrun sits at that point and decides each one before it runs. The agent is not rebuilt,
 redeployed or told. That is [the principle](/docs/why): autonomy belongs to the action, not the
 agent. If you own the agent's code, [Three ways in](/docs/get-started/three-ways-in) covers it.
 
@@ -15,7 +15,7 @@ agent. If you own the agent's code, [Three ways in](/docs/get-started/three-ways
 
 It depends on where the action goes, not on who built the agent.
 
-| The agent | For example | Where CTRLRun goes |
+| The agent | For example | Where ctrlrun goes |
 |---|---|---|
 | Connects to a tool server you choose | A hosted assistant with a custom MCP connector | `ctrlrun gateway`, between the agent and the server |
 | Calls an API you own | A custom action, an OpenAPI tool, a webhook step in a no-code builder | `@ctrlrun.protect` on the handler that acts |
@@ -27,7 +27,7 @@ The first two cover most business agents. The third is the one to check before y
 
 Any AI agent you have. An unlisted tool is covered like the row it resembles.
 
-| Kind | Examples | How CTRLRun covers it |
+| Kind | Examples | How ctrlrun covers it |
 |---|---|---|
 | Coding agents | Claude Code, Cursor, Codex, GitHub Copilot, Windsurf, Gemini CLI | Point their MCP config at the gateway. Their own shell and file edits do not pass through it; the MCP tools you give them do |
 | Hosted assistants | ChatGPT, Claude.ai, Microsoft Copilot, Gemini | A custom connector or action points at a public gateway or a protected API |
@@ -85,7 +85,7 @@ action. [Protect a function](/docs/guides/protect-a-function) has the version th
 
 When a platform's agent uses the platform's own tool, the call starts and ends inside the
 platform. Meta AI sending a WhatsApp message never touches anything you run, so nothing you run
-can check it, CTRLRun included. The way to a yes is to move the capability, not to intercept it:
+can check it, ctrlrun included. The way to a yes is to move the capability, not to intercept it:
 
 1. **Take the built-in away.** Turn off the native action, or run the agent under an account
    with no write access to the system that matters.

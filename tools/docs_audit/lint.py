@@ -5,7 +5,7 @@ Two lists, because the rules that produced them are different rules.
 **Positioning words** — *runtime control*, *governance*, *guardrails*, *compliant*, *secure* as a
 bare adjective, *exactly-once*, *transaction* — never appear where a stranger forms a first
 impression: a heading, a page title, a description, a hero line. They are allowed in a body
-sentence that explains what CTRLRun is not, or names the thing it is being compared with. So
+sentence that explains what ctrlrun is not, or names the thing it is being compared with. So
 these are checked in **headline scope**: Markdown headings and the frontmatter fields Mintlify
 renders as the page's title, description and social preview.
 
@@ -77,12 +77,12 @@ RULES: tuple[Rule, ...] = (
         "headline",
         "a bare adjective that promises what verify cannot see",
     ),
-    _rule("exactly-once", r"\bexactly[ -]once\b", "headline", "what CTRLRun cannot guarantee"),
+    _rule("exactly-once", r"\bexactly[ -]once\b", "headline", "what ctrlrun cannot guarantee"),
     _rule(
         "transaction",
         r"\btransactions?\b",
         "headline",
-        "allowed once, in the sentence that says CTRLRun is not one",
+        "allowed once, in the sentence that says ctrlrun is not one",
     ),
     _rule("compliance", r"\bcompliance\b", "everywhere", "no compliance claims"),
     _rule("conformant", r"\bconformant\b", "everywhere", "no standards claims"),

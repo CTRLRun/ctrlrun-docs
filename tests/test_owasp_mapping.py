@@ -2,7 +2,7 @@
 
 The mapping is complete in **both** directions, and the second direction is the one that makes
 the first credible: every entry with no guarantee is listed by name under "Not covered by
-CTRLRun", so a reader can see the size of what is left out without counting rows.
+ctrlrun", so a reader can see the size of what is left out without counting rows.
 """
 
 from __future__ import annotations
@@ -70,9 +70,9 @@ def _flat() -> str:
 
 
 def _sections() -> tuple[str, str]:
-    """The mapping table and the `Not covered by CTRLRun` half, as text."""
+    """The mapping table and the `Not covered by ctrlrun` half, as text."""
     text = _document()
-    split = text.index("## Not covered by CTRLRun")
+    split = text.index("## Not covered by ctrlrun")
     return text[:split], text[split:]
 
 
@@ -85,7 +85,7 @@ def _guarantee_table() -> str:
     """
     text = _document()
     start = text.index("## Guarantee")
-    return text[start : text.index("## Not covered by CTRLRun")]
+    return text[start : text.index("## Not covered by ctrlrun")]
 
 
 # --- T121: the mapping is complete in both directions --------------------------------------
@@ -135,7 +135,7 @@ def test_T121_the_two_uncovered_entries_are_listed_by_name():
         assert code in not_covered, code
         assert ENTRIES[code] in not_covered, code
         assert code not in _guarantee_table(), code
-    assert "Two of the ten entries are not addressed by CTRLRun at all" in _flat()
+    assert "Two of the ten entries are not addressed by ctrlrun at all" in _flat()
 
 
 def test_T121_a_partly_addressed_entry_appears_in_both_halves():

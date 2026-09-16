@@ -26,7 +26,7 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.AuthorityDenied`](/docs/reference/api/AuthorityDenied) | class | The principal holds no grant that covers this action (SPEC-v0.3 §4.3). |
 | [`ctrlrun.AuthorityEscalation`](/docs/reference/api/AuthorityEscalation) | class | A delegation that may not exist: it is not contained in its parent (SPEC-v0.3 §5.3). |
 | [`ctrlrun.AuthorityResult`](/docs/reference/api/AuthorityResult) | class | What the authority axis decided, and which grant it decided on (§4.8). |
-| [`ctrlrun.CTRLRunError`](/docs/reference/api/CTRLRunError) | class | Base class for every error raised by CTRLRun. |
+| [`ctrlrun.CTRLRunError`](/docs/reference/api/CTRLRunError) | class | Base class for every error raised by ctrlrun. |
 | [`ctrlrun.Condition`](/docs/reference/api/Condition) | class | One `<argument>_<op>: operand` test against an action's arguments (SPEC-v0.1 §3.2). |
 | [`ctrlrun.Control`](/docs/reference/api/Control) | class | Policy, state and evidence composed around a single action (SPEC-v0.1 §8). |
 | [`ctrlrun.Decision`](/docs/reference/api/Decision) | class | What may happen to an action: exactly three outcomes in v0.1 (SPEC-v0.1 §3.3). |
@@ -84,7 +84,7 @@ a name with no docstring fails a test, so every page has one.
 | [`ctrlrun.postgres.PostgresStateStore`](/docs/reference/api/postgres-PostgresStateStore) | class | Approvals, effects and evidence in a Postgres schema (SPEC-v0.6 §4). |
 | [`ctrlrun.otel.OTelEventSink`](/docs/reference/api/otel-OTelEventSink) | class | Export every `Event` and `Receipt` as OpenTelemetry spans (SPEC-v0.2 §8). |
 | [`ctrlrun.jwt_identity.JWTIdentityProvider`](/docs/reference/api/jwt_identity-JWTIdentityProvider) | class | Verify a bearer JWT and map its verified claims onto a `Principal` (SPEC-v0.3 §3.4). |
-| [`ctrlrun.acs.AcsControlHook`](/docs/reference/api/acs-AcsControlHook) | class | Answer ACS `steps/*` hooks with CTRLRun's decisions and outcomes. |
+| [`ctrlrun.acs.AcsControlHook`](/docs/reference/api/acs-AcsControlHook) | class | Answer ACS `steps/*` hooks with ctrlrun's decisions and outcomes. |
 | [`ctrlrun.gateway.serve`](/docs/reference/api/gateway-serve) | function | Run a gateway in front of one upstream MCP server (SPEC-v0.2 §6.1). |
 | [`ctrlrun.verify.run`](/docs/reference/api/verify-run) | function | Run the applicable guarantees against this configuration and report (§9.1). |
 | [`ctrlrun.conformance.run`](/docs/reference/api/conformance-run) | function | Drive every suite through `adapter` and report what each came to (SPEC-v0.5 §5). |

@@ -3,7 +3,7 @@ title: "Exit codes"
 description: "What each ctrlrun command's exit status means: 0 done, 1 a refusal or a failed guarantee, 2 a usage error or an unusable configuration."
 ---
 
-Every `ctrlrun` command exits 0 when it did what it was asked, 1 when CTRLRun refused
+Every `ctrlrun` command exits 0 when it did what it was asked, 1 when ctrlrun refused
 (a `CTRLRunError`, printed as one line), and 2 on a usage error. `ctrlrun verify` adds a third
 code for its own failure, because a verifier that crashed must not look like one that refused.
 
@@ -12,7 +12,7 @@ code for its own failure, because a verifier that crashed must not look like one
 | Code | Meaning | Examples |
 |---|---|---|
 | `0` | the command did what it was asked | a grant written, a receipt printed, a revocation applied (revoking an already-revoked delegation is idempotent and exits 0) |
-| `1` | CTRLRun refused, and said why on one line | `resolve` on an effect that is not `AMBIGUOUS`; `approve` on a request that expired; `delegate` beyond the parent's grant; a `--store-url` naming a database this binary does not recognise |
+| `1` | ctrlrun refused, and said why on one line | `resolve` on an effect that is not `AMBIGUOUS`; `approve` on a request that expired; `delegate` beyond the parent's grant; a `--store-url` naming a database this binary does not recognise |
 | `2` | the command line was wrong | a missing argument, an unknown option, `resolve` without exactly one of `--committed` and `--failed` |
 
 A refusal is the command's exit code and its last line. Nothing is retried on the operator's

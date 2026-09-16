@@ -3,7 +3,7 @@ title: "Fail closed"
 description: "An unknown action, a missing or malformed policy, a missing or expired principal, a missing or mismatched approval: every one of them is denied."
 ---
 
-Fail closed means that anything CTRLRun cannot decide, it denies. An unknown action, a missing
+Fail closed means that anything ctrlrun cannot decide, it denies. An unknown action, a missing
 policy, a malformed policy, a missing or expired principal, a missing, expired, consumed or
 mismatched approval, a template that cannot be resolved, a store whose schema it does not
 recognise: all refused, before the executor runs. There is no flag that makes a consequential
@@ -42,7 +42,7 @@ every row above has an acceptance test.
 
 ## What it does not do
 
-Failing closed is about what CTRLRun decides. It cannot refuse a call that bypasses the decorator
+Failing closed is about what ctrlrun decides. It cannot refuse a call that bypasses the decorator
 entirely, a compromised host, or an executor that raises `NotExecuted` after the remote acted;
 those are in the threat model as limits, not as vulnerabilities.
 

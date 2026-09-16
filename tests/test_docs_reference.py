@@ -299,7 +299,7 @@ def test_every_quoted_verify_transcript_is_one_verify_actually_prints():
         # both offset; the cookbook page's are flush.
         policy = re.search(r"```yaml[^\n]*\n(\s*schema: ctrlrun\.policy.*?)```", text, re.S)
         assert policy, f"{page.name} quotes no policy"
-        quoted = re.search(r"```text\n(.*?CTRLRun verify.*?)```", text, re.S)
+        quoted = re.search(r"```text\n(.*?ctrlrun verify.*?)```", text, re.S)
         assert quoted, f"{page.name} quotes no transcript"
 
         with tempfile.TemporaryDirectory() as directory:

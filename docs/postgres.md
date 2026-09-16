@@ -33,7 +33,7 @@ store = PostgresStateStore("postgresql://ctrlrun@db.internal:5432/ctrlrun")
 
 The URL is passed to `psycopg.connect` unchanged, so everything libpq accepts works: a
 `postgres://` scheme, `?sslmode=require`, `?connect_timeout=5`, a `service=` name, or the
-standard `PG*` environment variables with an otherwise-bare URL. CTRLRun parses none of it.
+standard `PG*` environment variables with an otherwise-bare URL. ctrlrun parses none of it.
 
 A second schema is a keyword:
 
@@ -47,7 +47,7 @@ be a plain identifier — letters, digits and underscores — which is what make
 interpolate; it is the only name in the module that reaches SQL, and it never comes from an
 action, an argument or a request header.
 
-On the command line the schema travels in the URL, as CTRLRun's own query parameter, peeled off
+On the command line the schema travels in the URL, as ctrlrun's own query parameter, peeled off
 before anything reaches the driver:
 
 ```bash
@@ -97,7 +97,7 @@ touches no other schema.
 
 **The store refuses a database whose `server_encoding` is not `UTF8`**, at open, naming it.
 
-This looks fussy and is not. CTRLRun hashes the exact code points it is given and applies no
+This looks fussy and is not. ctrlrun hashes the exact code points it is given and applies no
 Unicode normalization (`SPEC-v0.1.md` §2.3). An effect key that survives a round trip through
 `SQL_ASCII` as different bytes is a **different identity**, so two attempts at one logical effect
 would reserve two different keys and both would execute. That is a double execution reached
@@ -192,7 +192,7 @@ neither. Reads would appear to work, which is the problem.
 ### Losing the primary, honestly
 
 An asynchronous replica that is promoted after losing transactions loses effect records with
-them, and CTRLRun cannot tell that this happened — a key that was reserved and executed comes
+them, and ctrlrun cannot tell that this happened — a key that was reserved and executed comes
 back absent, and the next attempt reserves it again and executes again. If you need the store's
 guarantee to survive a failover, you need the *database's* durability to survive it: synchronous
 commit to at least one standby. This is a property of your Postgres configuration and not

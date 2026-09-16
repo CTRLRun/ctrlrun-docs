@@ -94,7 +94,7 @@ stripe.refund  status=ERROR  result=ambiguous  events=5
 argument values in attributes: none
 ```
 
-A refusal is `UNSET`, not an error: CTRLRun doing its job is not a fault in the trace.
+A refusal is `UNSET`, not an error: ctrlrun doing its job is not a fault in the trace.
 
 ## The receipt
 
@@ -103,7 +103,7 @@ ctrlrun receipts --last 3
 ```
 
 The receipts are still in the store and the JSONL file, chained; the spans carry the receipt
-id so a trace can be joined back to the evidence. Deleting a trace deletes nothing CTRLRun
+id so a trace can be joined back to the evidence. Deleting a trace deletes nothing ctrlrun
 relies on.
 
 ## When an AMBIGUOUS appears

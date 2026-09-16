@@ -38,8 +38,8 @@ tool-approval interruption: every path ends in the same two store calls, `grant_
 one nobody is watching.
 
 Where a framework carries the arguments the human answered against, the adapter hands them
-back and CTRLRun rebuilds the hash and compares: that is *prevention*. Where it carries only
-the verdict, CTRLRun records who answered and cannot re-check what they answered about: that
+back and ctrlrun rebuilds the hash and compares: that is *prevention*. Where it carries only
+the verdict, ctrlrun records who answered and cannot re-check what they answered about: that
 is *attribution*, and the adapter's page says which it is, in that word.
 
 ## The guarantee it supports
@@ -49,7 +49,7 @@ by `ctrlrun verify` against your own policy, wherever it has an `approve` rule.
 
 ## What it does not do
 
-An approval does not prove the human was right, or that the human was who they said; CTRLRun
+An approval does not prove the human was right, or that the human was who they said; ctrlrun
 records the approver as given and authenticates nobody. It does not survive a policy change in
 one direction: if the policy now denies the action, the action is refused and the approval is
 left granted; if the policy now allows it outright, the action runs and the approval is

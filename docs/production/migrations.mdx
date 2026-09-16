@@ -3,7 +3,7 @@ title: "Migrations and schema versions"
 description: "Migrations run at open, forward only, and nothing half-applies. Five shapes a database can be in, and three of them are a refusal."
 ---
 
-Deploy a newer CTRLRun over an existing database and it migrates at open, forward only, one
+Deploy a newer ctrlrun over an existing database and it migrates at open, forward only, one
 transaction per migration. You run no command and set no flag, because there is no flag: a
 database that opened un-migrated would be a database serving reads it half understands.
 
@@ -22,7 +22,7 @@ Let *known* be the migration ids your binary ships, and *applied* be what the da
 Those five are the shapes a database that already records a schema version can be in, and they
 are exhaustive: the store classifies into exactly one, and anything it cannot place is refused
 rather than opened. Three more sit in front of them. An **empty** database is migrated to head.
-A database with **CTRLRun's tables and no version record** — anything from before v0.6 — is
+A database with **ctrlrun's tables and no version record** — anything from before v0.6 — is
 adopted, given the record it never had, and migrated; that is the case an upgrade actually meets.
 A database with **foreign tables and no effects table** is refused, naming what it found.
 

@@ -83,7 +83,7 @@ the spans without one).
 
   <Step title="Read the span">
     The span's status is an error for `failed` and `ambiguous`, unset for a refusal (a refusal
-    is CTRLRun doing its job, not an error), and ok for `committed`. Attributes carry the action
+    is ctrlrun doing its job, not an error), and ok for `committed`. Attributes carry the action
     name, the decision, the effect key, the outcome and the receipt id; the receipt itself stays
     in the store. Open spans are bounded, so a process that dies mid-action leaves at most a
     fixed number unended, stated rather than solved.
@@ -94,7 +94,7 @@ the spans without one).
 
 It is not the evidence. Receipts live in the store and the JSONL file, are chained, and are
 what `ctrlrun receipts --verify-chain` checks; a trace is a view of them for the people who
-already look at traces. Deleting a trace deletes nothing CTRLRun relies on.
+already look at traces. Deleting a trace deletes nothing ctrlrun relies on.
 
 ## If it didn't work
 

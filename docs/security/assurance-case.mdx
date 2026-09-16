@@ -4,7 +4,7 @@ description: "Why the three guarantees hold: the threat model and its boundary, 
 ---
 
 An assurance case is the argument, with its evidence, that a system meets its security
-requirements. This page is CTRLRun's. It adds no guarantee; it says why the ones the
+requirements. This page is ctrlrun's. It adds no guarantee; it says why the ones the
 [threat model](/docs/THREAT_MODEL) states can be relied on, and where the evidence for each
 sits. Read it beside that page and the [architecture](/docs/ARCHITECTURE).
 
@@ -18,13 +18,13 @@ The threat model names three assets, and each one is a requirement on the kernel
 | **R2. Integrity of human approval** | What a human approved is what executes. An approval binds to the hash of the canonical action, is consumed once, and expires. |
 | **R3. Integrity of evidence** | Receipts reflect what happened, in order, and an edit, a reordering or a deletion within the retained chain is detected. Erasing the end of the log and rewinding the head is outside this guarantee, and the [receipt chain page](/docs/security/receipt-chain) says so. |
 
-Everything below argues these three. What CTRLRun does not defend against is listed in the
+Everything below argues these three. What ctrlrun does not defend against is listed in the
 threat model under *Out of scope* and is not argued here.
 
 ## The trust boundary
 
 Untrusted: agent reasoning, model outputs, tool outputs, retry logic, other agents, and every
-token or header a caller presents. Trusted: the CTRLRun process, the policy file, the state
+token or header a caller presents. Trusted: the ctrlrun process, the policy file, the state
 store, and the approver's shell.
 
 Data crosses the boundary in one place: the proposed action with its arguments, and whatever

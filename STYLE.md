@@ -32,7 +32,7 @@ reviewer reads for.
 
 ## The words
 
-- **CTRLRun**, always in that capitalisation. Never *Ctrlrun*, *ctrlrun* in prose, or *CTRL Run*.
+- **ctrlrun**, always in that capitalisation. Never *Ctrlrun*, *ctrlrun* in prose, or *CTRL Run*.
   In code, the package and command are `ctrlrun`.
 - **The fixed copy** is fixed. The tagline, the principle, the category line, the promise and
   the opener are quoted from `IA.md` and are not paraphrased.
@@ -54,7 +54,7 @@ reviewer reads for.
   understands it. It is never the only one.
 - **Real names, invented values.** `stripe.refund`, `k8s.delete_namespace`, `iam.grant_role`,
   `crm.update_record`, `email.send`. Amounts, ids and addresses are obviously invented.
-- **The share unit is a failure.** An example shows an agent doing something wrong and CTRLRun
+- **The share unit is a failure.** An example shows an agent doing something wrong and ctrlrun
   refusing. A list of features is not an example.
 
 ## The code blocks

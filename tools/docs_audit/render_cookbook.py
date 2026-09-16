@@ -31,7 +31,7 @@ HEADER = (
 # suite went red on output this repository produced. Not the `.yaml` files: that test checks the
 # two suffixes it names, and the extracted policies have never carried the tags.
 SPDX = (
-    "# SPDX-FileCopyrightText: 2026 The CTRLRun contributors\n"
+    "# SPDX-FileCopyrightText: 2026 The ctrlrun contributors\n"
     "# SPDX-License-Identifier: Apache-2.0\n"
 )
 SPDX_SUFFIXES = (".py", ".sh")

@@ -1,6 +1,6 @@
 ---
 title: "The gateway in five minutes"
-description: "You already run an MCP server. Two commands put CTRLRun between the agent and it."
+description: "You already run an MCP server. Two commands put ctrlrun between the agent and it."
 ---
 
 You already run an MCP server and an agent that calls it. Put `ctrlrun gateway` between them
@@ -10,7 +10,7 @@ server does not change at all.
 
 ```text
 before    agent  ──▶  http://localhost:8000/mcp
-after     agent  ──▶  http://127.0.0.1:8900/mcp  (CTRLRun)  ──▶  http://localhost:8000/mcp
+after     agent  ──▶  http://127.0.0.1:8900/mcp  (ctrlrun)  ──▶  http://localhost:8000/mcp
 ```
 
 **Prerequisites:** `pip install "ctrlrun[gateway]"`; the server reachable over HTTP; a
@@ -49,7 +49,7 @@ accepts `2025-11-25`, `2025-06-18` and `2025-03-26`.
     ```
 
     ```text
-    CTRLRun gateway  →  http://localhost:8000/mcp  as mcp.ops.*
+    ctrlrun gateway  →  http://localhost:8000/mcp  as mcp.ops.*
     listening on http://127.0.0.1:8900/mcp   environment: production
     identity: fixed principal deploy-agent   authority: none
     1 action(s) have no effect: template and get no reservation:
@@ -136,4 +136,4 @@ accepts `2025-11-25`, `2025-06-18` and `2025-03-26`.
 ## Next
 
 - [Put the gateway in front of MCP](/docs/guides/gateway-in-front-of-mcp): the longer guide, with the lost-reply case.
-- [CTRLRun and MCP](/docs/mcp/overview) · [Get started](/docs/get-started/quickstart) · [Why](/docs/why).
+- [ctrlrun and MCP](/docs/mcp/overview) · [Get started](/docs/get-started/quickstart) · [Why](/docs/why).

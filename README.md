@@ -1,4 +1,4 @@
-# CTRLRun documentation
+# ctrlrun documentation
 
 The source of [ctrlrun.dev](https://ctrlrun.dev): the pages, the tools that render them from
 the library's own source, and the tests that check them.
@@ -124,7 +124,7 @@ sources to their destinations, which makes them self-redirects.
 The Medical Affairs workbench uses `medical-workbench.js`, styles scoped to
 `#cr-medical-workbench`, and the library's `examples/medical_workbench.py`. Keep its embedded
 `MODULE` equivalent to that Python source; `tests/test_medical_workbench.py` checks the copy
-against the library checkout. The browser loads CTRLRun on demand. Evidence and synthesis are
+against the library checkout. The browser loads ctrlrun on demand. Evidence and synthesis are
 synthetic; release decisions and receipts execute in Python.
 `assets/verify-medical-workbench.cjs` exercises browser Python, both downloads, error
 recovery and all six stages at three viewport widths.

@@ -1,20 +1,20 @@
 ---
 title: "Architecture"
-description: "The boundary CTRLRun owns, the six steps every protected call takes, the data model, and the key design decisions with their trade-offs."
+description: "The boundary ctrlrun owns, the six steps every protected call takes, the data model, and the key design decisions with their trade-offs."
 ---
 
-Context: agent frameworks model work as `model → tool call → response`. That is fine for reads. For writes it is missing the semantics every serious system has around consequential operations: authorization bound to the exact operation, identity of the effect (not the request), atomic reservation, and an honest distinction between *failed* and *unknown*. CTRLRun adds those semantics around the dangerous part and nothing else.
+Context: agent frameworks model work as `model → tool call → response`. That is fine for reads. For writes it is missing the semantics every serious system has around consequential operations: authorization bound to the exact operation, identity of the effect (not the request), atomic reservation, and an honest distinction between *failed* and *unknown*. ctrlrun adds those semantics around the dangerous part and nothing else.
 
 The contract is in [`SPEC-v0.1.md`](https://github.com/CTRLRun/ctrlrun/blob/main/docs/SPEC-v0.1.md). This document explains the shape and the reasoning.
 
-## 1. The boundary CTRLRun owns
+## 1. The boundary ctrlrun owns
 
 ```
 Agent reasoning                     (not ours)
       │  "I want to do X"
       ▼
 ┌──────────────────────────────┐
-│           CTRLRun            │
+│           ctrlrun            │
 │  normalize → decide →        │
 │  approve → reserve →         │
 │  execute → resolve → record  │
@@ -24,7 +24,7 @@ Agent reasoning                     (not ours)
 Real-world effect                   (not ours either)
 ```
 
-CTRLRun sits between *intention* and *consequence*. It does not sit between prompt and model. Everything upstream (planning, prompting, retrieval, memory) and everything downstream (the remote system's own semantics) is out of scope.
+ctrlrun sits between *intention* and *consequence*. It does not sit between prompt and model. Everything upstream (planning, prompting, retrieval, memory) and everything downstream (the remote system's own semantics) is out of scope.
 
 ## 2. Canonical flow
 
@@ -87,7 +87,7 @@ A retry is a new proposal (`action_id`) for the same logical effect (`effect_key
 *Trade-off:* the developer has to declare the key. We make that one decorator argument and fail loudly on a bad template rather than silently degrading.
 
 ### 4.4 AMBIGUOUS is a first-class terminal state
-A timeout after a request was sent is not a failure. The remote may have committed. Frameworks that map timeout → failed → retry are how double refunds happen. CTRLRun refuses to guess: `AMBIGUOUS` blocks retries until a human resolves it.
+A timeout after a request was sent is not a failure. The remote may have committed. Frameworks that map timeout → failed → retry are how double refunds happen. ctrlrun refuses to guess: `AMBIGUOUS` blocks retries until a human resolves it.
 
 *Trade-off:* this creates operational work (someone must run `ctrlrun resolve`). That is the correct place for the work to land. v0.2 adds a `reconcile` hook (`SPEC-v0.2.md` §2) for executors that can ask the remote what happened: it is the second — and only other — authority permitted to move a record out of `AMBIGUOUS`, and only where its answer points. An answer it cannot give is `"unknown"`, which changes nothing.
 

@@ -8,7 +8,7 @@ Every page on this site says *agent*, and the failure underneath them does not r
 retry that repeats a write whose outcome nobody knows is a bug in ordinary software, and it was
 a bug in ordinary software for twenty years before anything called itself an agent. If you run
 a task queue, a webhook handler or a cron job that moves money, sends mail or deletes records,
-this is your problem too, and CTRLRun does not ask whether a model was involved.
+this is your problem too, and ctrlrun does not ask whether a model was involved.
 
 Three examples in the repository have no model, no prompt and no framework in them.
 
@@ -24,7 +24,7 @@ each of them re-runs the task when it raises, and none of them can tell *nothing
 python examples/without-an-agent/retried-task/main.py
 ```
 
-CTRLRun records the outcome as `AMBIGUOUS` rather than failed, and the second and third attempts
+ctrlrun records the outcome as `AMBIGUOUS` rather than failed, and the second and third attempts
 are refused before they reach the processor.
 [`retried-task/main.py`](https://github.com/CTRLRun/ctrlrun/blob/main/examples/without-an-agent/retried-task/main.py).
 

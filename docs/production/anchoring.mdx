@@ -25,7 +25,7 @@ ctrlrun anchor --provider yourpkg.anchors:provider              # on a schedule
 ctrlrun anchor --provider yourpkg.anchors:provider --verify     # in the job after a restore
 ```
 
-CTRLRun **ships no provider**. An RFC 3161 client is a network client, and this library's core is
+ctrlrun **ships no provider**. An RFC 3161 client is a network client, and this library's core is
 the standard library plus `pyyaml` and `click`. You supply one with four calls: `make`, `check`,
 `latest` and `since`.
 
@@ -41,7 +41,7 @@ anchored pair failing to reproduce. That includes the administrator who rewrites
 *including* the head, which the chain alone cannot catch, because the operator's own record is
 what decides rather than a row in the database under suspicion.
 
-The verification asks your provider what it holds **before** reading CTRLRun's local table, so
+The verification asks your provider what it holds **before** reading ctrlrun's local table, so
 deleting rows from that table does not remove the question: a store whose anchor cache was emptied
 reports `anchor_missing`, which is a break.
 

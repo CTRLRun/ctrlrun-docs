@@ -129,7 +129,7 @@ BADGES: tuple[Badge, ...] = (
         "https://docs.ctrlrun.dev/how-this-is-built",
     ),
     Badge(
-        "CTRLRun verified",
+        "ctrlrun verified",
         f"https://img.shields.io/endpoint?url={BADGES_BRANCH}/verify-badge.json",
         "https://docs.ctrlrun.dev/security/verify-guarantees",
     ),

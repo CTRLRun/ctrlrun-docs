@@ -61,12 +61,12 @@ export function createHandler({ env = process.env, fetcher = fetch, now = Date.n
     const entry = rateStore.get(rateKey) || { start: time, count: 0 };
     if (entry.count >= MAX_REQUESTS || rateStore.size >= 10_000) { res.setHeader('Retry-After', '600'); return res.status(429).json({ error: 'Too many requests. Please try again later or email us directly.' }); }
     rateStore.set(rateKey, { start: entry.start, count: entry.count + 1 });
-    const text = ['CTRLRun architecture review request', '', 'Company: ' + data.company, 'Reply email: ' + data.email, data.domain && 'Domain: ' + data.domain, 'Agent purpose: ' + data.purpose, 'Actions it can execute: ' + data.actions, 'Production status: ' + data.status, 'Primary concerns: ' + (data.concerns.join(', ') || 'Discuss during review'), data.risk && 'Execution risk check: ' + data.risk].filter(Boolean).join('\n');
+    const text = ['ctrlrun architecture review request', '', 'Company: ' + data.company, 'Reply email: ' + data.email, data.domain && 'Domain: ' + data.domain, 'Agent purpose: ' + data.purpose, 'Actions it can execute: ' + data.actions, 'Production status: ' + data.status, 'Primary concerns: ' + (data.concerns.join(', ') || 'Discuss during review'), data.risk && 'Execution risk check: ' + data.risk].filter(Boolean).join('\n');
     try {
       const response = await fetcher('https://api.resend.com/emails', {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json', 'Idempotency-Key': 'architecture-review/' + data.requestId },
-        body: JSON.stringify({ from: 'CTRLRun <reviews@updates.arpanghoshal.com>', to: [RECIPIENT], reply_to: data.email, subject: 'CTRLRun architecture review — ' + data.company.replace(/[\r\n]/g, ' '), text }),
+        body: JSON.stringify({ from: 'ctrlrun <reviews@updates.arpanghoshal.com>', to: [RECIPIENT], reply_to: data.email, subject: 'ctrlrun architecture review — ' + data.company.replace(/[\r\n]/g, ' '), text }),
         signal: AbortSignal.timeout(10_000)
       });
       if (!response.ok) return res.status(502).json({ error: 'We could not confirm submission. Retry this request or email contact@arpanghoshal.com.' });

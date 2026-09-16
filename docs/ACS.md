@@ -1,6 +1,6 @@
 ---
 title: "The Agent Control Standard"
-description: "What was read, what maps onto CTRLRun's guarantees, where the standard is silent, and how the adapter is built."
+description: "What was read, what maps onto ctrlrun's guarantees, where the standard is silent, and how the adapter is built."
 ---
 
 What was read, what maps, what does not, and how the adapter is built.
@@ -34,7 +34,7 @@ Two things the repository does **not** have at that commit, both of which shaped
   version-sync tooling. So there is nothing to conform *to* except the schemas, and this
   adapter is written against them directly.
 - **No `examples/` directory**, and so no house format for a community example. `examples/acs/`
-  therefore follows CTRLRun's own convention.
+  therefore follows ctrlrun's own convention.
 
 ## What ACS defines
 
@@ -52,12 +52,12 @@ allow · deny · modify · ask · defer
 `deny` requires `reasoning`. `modify` requires `reasoning` and `modifications`. `ask` requires
 `reasoning` and `ask_details`. `defer` requires `reasoning` and `defer_details`.
 
-Of the 22 hooks, CTRLRun answers **two**, and it is worth being explicit that it declines the
+Of the 22 hooks, ctrlrun answers **two**, and it is worth being explicit that it declines the
 other twenty: `SessionStart`, `SessionEnd`, `AgentTrigger`, `TurnStart`, `TurnEnd`,
 `UserMessage`, `AgentResponse`, `KnowledgeRetrieval`, `MemoryContextRetrieval`, `MemoryStore`,
 `PreCompact`, `PostCompact`, `SubagentStart`, `SubagentStop`, `SkillRegister`, `SkillLoad`,
 `SkillUnload`, `SystemPing`, `AgbomSnapshot`, `AgbomChanged`. Those are checkpoints about what
-the model is thinking, remembering or composed of. CTRLRun's product rule is that it decides
+the model is thinking, remembering or composed of. ctrlrun's product rule is that it decides
 actions that can affect the real world, and nothing else — so an unanswered method returns a
 JSON-RPC error in ACS's reserved range rather than an opinion.
 
@@ -65,7 +65,7 @@ JSON-RPC error in ACS's reserved range rather than an opinion.
 
 ### `steps/toolCallRequest` → build the Action, decide it, take the reservation
 
-| ACS field | CTRLRun |
+| ACS field | ctrlrun |
 |---|---|
 | `params.metadata.agent_id` | `Principal.agent` — **only where no `identity` provider is configured**. With one it is **ignored**: not merged, not a fallback, not compared (SPEC-v0.3 §8.4) |
 | `params.metadata.user_context.user_id` | `Principal.user`, under the same rule |
@@ -114,7 +114,7 @@ to be able to say different things about `create` and `void`.
 
 The decision maps out:
 
-| CTRLRun | ACS |
+| ctrlrun | ACS |
 |---|---|
 | `ALLOW` | `allow` |
 | `DENY` | `deny` + `reasoning` + `reason_codes` |
@@ -130,13 +130,13 @@ human answers with `ctrlrun approve`, and `timeout_seconds`. All three are requi
 `ask-details.json`.
 
 `ask_details.intent_extension` is **not** used. It grants capabilities for `this_request` or
-`session`, which is an authority model — CTRLRun has none until v0.3, and a grant it cannot
+`session`, which is an authority model — ctrlrun has none until v0.3, and a grant it cannot
 represent is one it must not claim to honour.
 
 ### `steps/toolCallResult` → close the reservation
 
 ACS describes this hook as *"fires after tool execution, before results reach the agent,
-serving as an output redaction checkpoint"*. CTRLRun redacts nothing, so it always answers
+serving as an output redaction checkpoint"*. ctrlrun redacts nothing, so it always answers
 `allow`; the work is the outcome it records.
 
 `exit_status` is `success | failure | timeout | blocked`. **ACS does not say what any of them
@@ -165,7 +165,7 @@ what the Instrument layer was built for.
 `request_id_ref` links a result to its request. Neither identifies the *effect*: two calls that
 would refund the same payment get two unrelated UUIDs. There is no idempotency key, no
 `capability`-plus-argument identity, nothing an implementer could use to recognise that a retry
-is a repeat. CTRLRun supplies one from the policy's `effect:` template.
+is a repeat. ctrlrun supplies one from the policy's `effect:` template.
 
 **2. `exit_status` is a status of the call, not an outcome of the effect.** Four values, and
 the vocabulary itself carries the confusion: `timeout` sits alongside `failure` as though both
@@ -177,13 +177,13 @@ retry is unsafe until a human resolves it".
 approver. What comes back is a decision on *the request*, and `intent_extension` can widen a
 capability for the session. Neither pins the approval to a canonical form of the arguments, so
 nothing in ACS prevents an agent from getting `refund(2000)` approved and then calling
-`refund(5000)`. CTRLRun binds to `action_hash`, which covers the principal, the arguments, the
+`refund(5000)`. ctrlrun binds to `action_hash`, which covers the principal, the arguments, the
 resource and the environment.
 
 **4. No terminal unknown state.** ACS's decisions are about the future of a call. There is no
 way for a Guardian to record that an effect's outcome is unresolved and that *no* further call
 on that effect may proceed until a human says which way it went. `AMBIGUOUS` has no ACS
-counterpart, and it is the state most of CTRLRun's design exists to protect.
+counterpart, and it is the state most of ctrlrun's design exists to protect.
 
 **5. The Guardian does not execute.** ACS is advisory by construction — the platform runs the
 tool. That is a reasonable separation, but it means a Guardian cannot make reserve-and-execute
@@ -196,7 +196,7 @@ to lease-expire into `AMBIGUOUS` by the ordinary path of v0.1 §5.3 E3.
 `ctrlrun.acs.AcsControlHook`, in `ctrlrun[gateway]` — it needs no new dependency, and it is
 kept out of core for the same reason the gateway is: `import ctrlrun` must not grow.
 
-The shape is forced by the seam above. ACS is advisory and CTRLRun is executing, so one action
+The shape is forced by the seam above. ACS is advisory and ctrlrun is executing, so one action
 is split across two hooks and the reservation is held between them. That is exactly the shape
 `Suspended` and `Control.resume` were built for in SPEC-v0.2 §6.9 — a reservation held across a
 round trip the kernel does not control — so the adapter reuses them rather than reaching for
@@ -220,7 +220,7 @@ steps/toolCallResult
 `Control` remains the only module that composes the others (ARCHITECTURE §6). The adapter
 translates two vocabularies and decides nothing.
 
-**What it does not do.** It does not use `modify` — CTRLRun refuses or permits an action as
+**What it does not do.** It does not use `modify` — ctrlrun refuses or permits an action as
 proposed, and rewriting an agent's arguments is a different product. It does not use `defer`.
 It does not answer the other twenty hooks. It makes no claim of conformance: the schemas are
 `v0.1.0`, the repository is a public preview, there is no reference implementation to test

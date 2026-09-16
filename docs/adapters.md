@@ -5,7 +5,7 @@ description: "The three ways in, when you do not need an adapter, what an adapte
 
 ## You probably do not need one
 
-There are **three ways to put CTRLRun in front of a consequential action**, and only one of them
+There are **three ways to put ctrlrun in front of a consequential action**, and only one of them
 is an adapter.
 
 | | Covers | Needs |
@@ -36,7 +36,7 @@ the date read, and every place its framework's behaviour shows through the contr
 **Prevention or attribution** is the sentence to read first. `carries_approved_arguments = True`
 means the framework's resumption carries the arguments a human answered against, and core
 re-checks them against the proposal's `action_hash` — a mutated action is *refused*.
-`False` means the framework carries nothing an adapter can inspect: CTRLRun records **who
+`False` means the framework carries nothing an adapter can inspect: ctrlrun records **who
 answered** and cannot re-check **what they answered about**. Neither is a defect; they are
 different frameworks. An adapter that blurred the two would be the false-green problem in prose.
 
@@ -85,7 +85,7 @@ Three things bite here, and all three were found the hard way:
   `control.policy.mode` is `observe` (§3.6). Otherwise a human is asked, and because your
   framework will not invoke a declined tool, their *no* **stops an action that observe mode
   promises to let run**.
-- **The framework's answer is keyed to *its* unit, not to a CTRLRun action.** A tool body can
+- **The framework's answer is keyed to *its* unit, not to a ctrlrun action.** A tool body can
   raise `ApprovalRequired` more than once. Bind the answer to the action you gated, and to one
   request, or one human "yes" authorizes everything raised under that call.
 - **Exceptions.** If your framework wraps or swallows what a tool raised, restore it (§12.7).

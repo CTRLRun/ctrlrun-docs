@@ -172,7 +172,7 @@ def test_the_guarantee_range_in_the_header_spans_the_whole_registry():
 def test_the_version_the_page_is_written_against_is_released():
     major, minor, patch = _released()
 
-    assert f"CTRLRun **{major}.{minor}.{patch}**" in _document()
+    assert f"ctrlrun **{major}.{minor}.{patch}**" in _document()
 
 
 def test_no_since_column_names_a_version_that_is_not_out():
@@ -208,7 +208,7 @@ def test_the_page_says_which_version_a_since_column_names_that_was_never_publish
 def test_every_status_is_one_of_the_three_words_the_page_defines():
     """*Yes*, *Partly*, *No*. A fourth word is a hedge the page has no definition for."""
     for table in (
-        "| Stage | Status | What CTRLRun has there | Since |",
+        "| Stage | Status | What ctrlrun has there | Since |",
         "| Checkbox | Status | What it means here | Since |",
     ):
         for cells in _rows(_document(), table):
@@ -272,7 +272,7 @@ def test_all_ten_entries_and_all_nine_lifecycle_stages_appear():
     # The nine, and no tenth. Not their order: the page groups Operate beside Deploy and the
     # form lists it after Monitor, which is a reading order and not a claim.
     stages = {
-        cells[0] for cells in _rows(document, "| Stage | Status | What CTRLRun has there | Since |")
+        cells[0] for cells in _rows(document, "| Stage | Status | What ctrlrun has there | Since |")
     }
     assert stages == set(STAGES), sorted(stages.symmetric_difference(STAGES))
 
