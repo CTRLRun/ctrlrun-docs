@@ -41,9 +41,14 @@ answers from these pages rather than from memory.
 
 ## Discovery: the registries
 
-The gateway is what you run to put CTRLRun in front of an MCP server, and it is listed in the
-MCP registries as such once the listing is live. Until then this section carries no link rather
-than a placeholder; the registry entry is a launch-day item.
+The operator server is the MCP server this project publishes, and it is listed in the
+[official MCP registry](https://registry.modelcontextprotocol.io/v0/servers/io.github.CTRLRun%2Fctrlrun-mcp-operator/versions)
+as `io.github.CTRLRun/ctrlrun-mcp-operator`, and on [Glama](https://glama.ai/mcp/servers/CTRLRun/ctrlrun).
+A client that installs from a registry gets `ctrlrun mcp-operator --stdio`, which is the
+configuration in [Approve from your assistant](/docs/mcp/approve-from-your-assistant).
+
+The gateway is not listed, and the reason is what it is: a proxy you run in front of an MCP
+server you already have, not a server a registry can point a client at.
 
 ## Answering: the operator server
 
@@ -66,8 +71,9 @@ approver's assistant  ──▶  ctrlrun mcp-operator  ──▶  the same appro
   binding, single use and expiry.
 - Nothing here can make an agent act. There is no tool that proposes or executes an action, and
   no auto-approve.
-- It binds loopback and has no flag that changes that, because its read tools answer without a
-  credential.
+- Over HTTP it binds loopback and has no flag that changes that, because its read tools answer
+  without a credential. With `--stdio` it binds nothing: the client that launched it is its only
+  client, and the approver is that client's OS login.
 
 [Approve from your assistant](/docs/mcp/approve-from-your-assistant) is the page with the
 configuration and a transcript.
