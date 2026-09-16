@@ -1,6 +1,6 @@
 ---
 title: "Use the LangChain middleware"
-description: "Gate every tool call a LangChain agent makes with ctrlrun-langchain, through wrap_tool_call, so a refused call never runs and every decision leaves a receipt."
+description: "Gate every LangChain tool call with ctrlrun-langchain, through wrap_tool_call, so a refused call never runs and every decision leaves a receipt."
 ---
 
 This guide provides a quick overview for getting started with the CTRLRun [middleware](https://docs.langchain.com/oss/langchain/middleware/overview). CTRLRun checks every tool call your agent makes against a policy you write, before the call runs, and records what happened after.
@@ -103,7 +103,8 @@ then ask again. The tool did not run.
 
 To have the human answered *inside* the run instead, use [`ctrlrun-langgraph`](https://pypi.org/project/ctrlrun-langgraph/), which routes the approval through LangGraph's `interrupt()` and re-presents the same proposal on resume.
 
-## API reference
+## Next
 
-- [Adapters](/docs/adapters), and [the LangGraph adapter](/docs/guides/langgraph-adapter) for approvals answered inside the run
-- [`ctrlrun-langchain` source](https://github.com/CTRLRun/ctrlrun/tree/main/adapters/langchain)
+- [Use the LangGraph adapter](/docs/guides/langgraph-adapter): approvals answered inside the run, through `interrupt()`.
+- [Adapters](/docs/adapters): the three ways in, and why this one is prevention.
+- [The middleware's README](https://github.com/CTRLRun/ctrlrun/blob/main/adapters/langchain/README.md) · [Get started](/docs/get-started/quickstart) · [Why](/docs/why).
