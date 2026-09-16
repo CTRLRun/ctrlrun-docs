@@ -1,20 +1,17 @@
 ---
 title: "Stop wrong, restricted, or malicious AI agent actions"
-sidebarTitle: "CTRLRun"
+sidebarTitle: "Overview"
 description: "Every AI agent action is checked against your rules before it runs. Allowed ones go through, sensitive ones wait for a person, forbidden ones are blocked."
-mode: "custom"
+mode: "wide"
 "og:title": "CTRLRun: stop wrong, restricted, or malicious agent actions"
 "twitter:title": "CTRLRun: stop wrong, restricted, or malicious agent actions"
 canonical: "https://ctrlrun.dev/"
 "og:url": "https://ctrlrun.dev/"
 ---
 
-import { HomeSlides } from "/snippets/home-slides.jsx";
 import { HowDiagram } from "/snippets/how-diagram.jsx";
-import { LaunchUpdates } from "/snippets/launch-updates.jsx";
 
 <div className="cr-site cr-home">
-  <HomeSlides />
   <section id="overview" className="cr-home-hero" aria-labelledby="cr-title">
     <div className="cr-home-pitch">
       <p className="cr-eyebrow">THE AGENT IS PROBABILISTIC. THE ACTION IS NOT.</p>
@@ -67,13 +64,14 @@ import { LaunchUpdates } from "/snippets/launch-updates.jsx";
     <p className="cr-how-after"><a className="cr-text-link" href="/execution-boundary" data-cr-event="try_clicked">Interactive walkthrough: follow one agent action through every check →</a></p>
   </section>
 
-  <section className="cr-section cr-home-updates" id="updates" aria-labelledby="cr-updates-title">
-    <div className="cr-updates-inner">
-      <p className="cr-eyebrow">WHAT COMES NEXT</p>
-      <h2 id="cr-updates-title">Something is coming that makes controlling agents easy for your business<span className="cr-dot">.</span></h2>
-      <p className="cr-updates-body">CTRLRun today is a library you install and wire in yourself. What we are building next takes the same boundary and makes it something a team runs without writing the wiring. Leave an address and we will tell you when it is ready. Nothing else, and no one else gets it.</p>
-      <LaunchUpdates />
-    </div>
-  </section>
-
 </div>
+
+## Built on this kernel
+
+Two products run on CTRLRun and credit it on every page. [ctrl ai agents](https://ctrlaiagents.com), the hosted product for a person or a team, puts this boundary under any agent you buy or build, with the inbox, the receipts and the analysis in one dashboard. [ctrl payments](https://ctrlpayments.com) is the same boundary for money: every payment an agent attempts is allowed, held for a person, or refused before it leaves, and there is a receipt either way. The kernel that decides and refuses is this one, Apache-2.0, and the receipt format they write is the one documented here.
+
+## Next
+
+- [Why](/docs/why): what CTRLRun believes and why.
+- [Quickstart](/docs/get-started/quickstart): protect your first action.
+- [The execution boundary](/execution-boundary): follow one agent action through every check.

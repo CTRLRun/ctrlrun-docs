@@ -784,14 +784,6 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
    `.cr-tier-error` and `.cr-button` rather than restating them: the signup is a narrower version
    of a form that already existed here, and a second copy of the field styling would be a second
    thing to keep in step with the type scale. */
-.cr-home-updates { border-top:1px solid var(--cr-line); }
-.cr-updates-inner { max-width:640px; }
-.cr-updates-body { margin:18px 0 28px; color:var(--cr-muted); }
-.cr-updates-form fieldset { display:flex; flex-wrap:wrap; gap:12px; border:0; padding:0; margin:0; align-items:flex-end; }
-.cr-updates-field { flex:1 1 260px; }
-.cr-updates-field input { width:100%; }
-.cr-updates-done { border-top:2px solid var(--cr-accent); padding:20px 0 0; font-weight:550; }
-.cr-updates-form .cr-caption { margin-top:12px; }
 /* The label is present for a screen reader and absent for everyone else: one field with a
    placeholder needs no visible label, and a form with no label at all is not navigable. */
 .cr-visually-hidden { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
