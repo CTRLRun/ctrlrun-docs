@@ -109,6 +109,7 @@
               "docs/guides/verify-in-ci",
               "docs/guides/export-to-opentelemetry",
               "docs/adapters",
+              "docs/guides/langchain-middleware",
               "docs/guides/langgraph-adapter",
               "docs/guides/openai-agents-adapter"
             ]
@@ -609,6 +610,11 @@
     {
       "source": "/guides/export-to-opentelemetry",
       "destination": "/docs/guides/export-to-opentelemetry",
+      "permanent": true
+    },
+    {
+      "source": "/guides/langchain-middleware",
+      "destination": "/docs/guides/langchain-middleware",
       "permanent": true
     },
     {

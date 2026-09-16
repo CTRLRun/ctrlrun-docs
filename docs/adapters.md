@@ -26,6 +26,7 @@ rather than growing by one each time a framework is named.
 
 | Distribution | Framework | Shape | Reuses | Binding |
 |---|---|---|---|---|
+| `ctrlrun-langchain` | LangChain | the call itself is handed over | `AgentMiddleware.wrap_tool_call`, so `handler` **is** the executor | **prevention** |
 | `ctrlrun-langgraph` | LangGraph | resumed in place | `interrupt()` + `Command(resume=...)`, and the checkpointer | **prevention** |
 | `ctrlrun-openai-agents` | OpenAI Agents SDK | decided before invocation | the tool-approval interruption | **attribution** |
 
