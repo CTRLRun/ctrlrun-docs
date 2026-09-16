@@ -75,6 +75,7 @@ that page's frontmatter, never here.
 | `docs/guides/run-on-postgres` | ctrlrun postgres | Use Postgres when workers on more than one host must share one store. |
 | `docs/guides/verify-in-ci` | verify agent safety configuration CI | `ctrlrun verify` runs the kernel's own failure scenarios against your policy. |
 | `docs/guides/export-to-opentelemetry` | opentelemetry AI agent actions | `OTelEventSink` turns every action into one OpenTelemetry span. |
+| `docs/guides/langchain-middleware` | langchain middleware tool call policy | CTRLRun checks every tool call your agent makes against a policy you write, before the call runs, and records what happened after. |
 | `docs/guides/langgraph-adapter` | langgraph interrupt human approval | `ctrlrun-langgraph` makes an `approve` decision surface as a LangGraph `interrupt()`. |
 | `docs/guides/openai-agents-adapter` | openai agents sdk tool approval | `ctrlrun-openai-agents` makes an `approve` decision stop the run with the SDK's own `ToolApprovalItem`. |
 | `docs/cookbook/index` | AI agent policy examples | Each recipe is a situation an agent is put in. |
