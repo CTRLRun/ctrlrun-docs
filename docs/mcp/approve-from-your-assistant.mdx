@@ -38,13 +38,21 @@ and `--stdio` is that server:
 The core install is enough; the operator imports nothing from an extra. `CTRLRUN_CONFIG` names
 the policy your agents run against, and the store is found beside it.
 
-It opens no socket. The approver is the **OS login of the process**, which the client that
-launched it cannot choose: not the environment it set, not anything it sends, but what the
-kernel says the real uid is. Answers are recorded as `mcp-operator:<your login>` with the issuer
-`os-login:<host>`, so the evidence says how the answer arrived. A login carries no roles and no
-expiry, so a control that names an `approver_role` refuses over stdio. It takes no header, JWT
-or origin flag; each is refused by name, because a flag that cannot take effect is a flag you
-would believe took effect.
+It opens no socket. The approver is the **account the process runs as**, read from the real
+uid and from nothing the client sends or sets: not the environment, not `clientInfo`, not
+`SUDO_USER`. Answers are recorded as `mcp-operator:<your login>` with the issuer
+`os-login:<host>`, so the evidence says how the answer arrived. Two things to know before you
+rely on it:
+
+- **The login has no expiry.** This process holds `approve`, `deny` and `resolve` under your
+  name for as long as it runs, so the confirmation your client shows before a write is the human
+  step. Leave it on for these three tools.
+- **Root is an account, not a person.** Under `sudo` or in a container running as root, every
+  write is refused and reads still answer.
+
+A login carries no roles, so a control that names an `approver_role` refuses over stdio. It
+takes no header, JWT or origin flag; each is refused by name, because a flag that cannot take
+effect is a flag you would believe took effect.
 
 ## Start it behind a proxy
 

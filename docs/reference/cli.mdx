@@ -425,8 +425,8 @@ Options:
   --stdio                         Speak MCP on stdin and stdout to the client
                                   that launched this process (a desktop
                                   assistant, Cursor, an editor). Opens no
-                                  socket. The approver is the OS login of this
-                                  process, which the client cannot choose; takes
+                                  socket. The approver is the account this
+                                  process runs as, read from the real uid; takes
                                   no header, JWT or origin flag (SPEC-mcp-
                                   operator §2.3).
   --principal-header TEXT         Take the approver's agent from this header,
