@@ -373,7 +373,13 @@ body:has(.cr-subpage) #search-bar-entry-mobile,body:has(.cr-subpage) #assistant-
 /* How it works: the boundary, drawn. Two ends we do not own, one box we do. */
 /* How it works, drawn. Two variants: the wide one keeps seven stages on one spine, the
    narrow one stacks them -- one SVG scaled down to a phone renders its labels at 4px. */
-.cr-diagram { display:block; width:100%; height:auto; }
+/* The overview took the documentation's own layout on 2026-09-16 and the `.cr-site` wrapper
+   went with the hero, so the diagram carries the tokens it reads rather than inheriting them.
+   Inside `.cr-site`, on `/execution-boundary`, the wrapper's values still win: these are set
+   on the SVG, and the wrapper sets them on an ancestor of it only when there is one. */
+.cr-diagram { display:block; width:100%; height:auto; --cr-ink:#20221f; --cr-muted:#656963; --cr-line:#e0e3dc; --cr-paper:#fafbf8; --cr-panel:#f2f4ee; --cr-accent:#a96308; }
+.dark .cr-diagram { --cr-ink:#f0f1e9; --cr-muted:#b0b5a9; --cr-line:#343b30; --cr-paper:#171b15; --cr-panel:#20261e; --cr-accent:#efb752; }
+.cr-site .cr-diagram { --cr-ink:inherit; --cr-muted:inherit; --cr-line:inherit; --cr-paper:inherit; --cr-panel:inherit; --cr-accent:inherit; }
 .cr-dia-narrow { display:none; }
 .cr-diagram text { font-family:inherit; }
 .cr-dia-label,.cr-dia-num { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; fill:var(--cr-accent); }

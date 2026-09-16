@@ -166,7 +166,7 @@ def test_every_page_links_to_why_and_to_get_started_or_is_one_of_them(page: Path
     text = _body(page)
     if slug != "docs/why":
         assert "](/docs/why)" in text, f"{page.name} does not link to Why"
-    if not slug.startswith("docs/get-started/") and slug != "docs":
+    if not slug.startswith("docs/get-started/"):
         assert "](/docs/get-started/" in text, f"{page.name} does not link to Get started"
 
 
@@ -181,7 +181,7 @@ def test_every_page_but_a_reference_page_fits_the_word_budget(page: Path):
     slug = page.relative_to(DOCS).with_suffix("").as_posix()
     if (
         slug.startswith("docs/reference/")
-        or slug in {"index", "docs"}
+        or slug == "index"
         or slug.removeprefix("docs/") in LONG_FORM
     ):
         return
@@ -205,7 +205,10 @@ def test_every_concepts_page_says_what_it_does_not_do(page: Path):
 
 
 def test_the_documentation_root_preserves_the_technical_overview():
-    text = (DOCS / "docs.mdx").read_text(encoding="utf-8")
+    """`/docs` was a second page titled Overview, one entry below this one in the same
+    sidebar group and opening on the same claim. It was merged into the root page on
+    2026-09-16; what it carried that the hero did not has to survive that merge."""
+    text = (DOCS / "index.mdx").read_text(encoding="utf-8")
     assert "The last check before an AI agent does something it can't undo." in text
     assert "Autonomy belongs to the action, not the agent." in text
     assert "generated from capabilities.yaml (mdx)" in text

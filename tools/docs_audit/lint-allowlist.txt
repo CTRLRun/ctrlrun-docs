@@ -85,7 +85,7 @@ allow docs/compare/governance-toolkits.mdx oversight toolkits
 # neighbours**, so under `*` a real sector-pack claim written directly above or below it would
 # be permitted anywhere. An independent review found the wider glob.
 allow README.md No sector packs\. \(the policy templates are starting points
-allow docs.mdx No sector packs\. \(the policy templates are starting points
+allow index.mdx No sector packs\. \(the policy templates are starting points
 allow docs/production/index.mdx No sector packs\. \(the policy templates are starting points
 allow generated/readiness.* No sector packs\. \(the policy templates are starting points
 allow docs/CLAIMS.md no external security audit, no third-party review of the kernel, no sector packs

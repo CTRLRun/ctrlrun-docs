@@ -21,10 +21,6 @@
         "label": "How it works"
       },
       {
-        "href": "/docs",
-        "label": "Docs"
-      },
-      {
         "href": "https://github.com/CTRLRun/ctrlrun",
         "label": "GitHub"
       }
@@ -44,7 +40,6 @@
             "group": "Start",
             "pages": [
               "index",
-              "docs",
               "docs/why",
               "docs/not-only-agents",
               "docs/agents-you-cant-modify",
@@ -372,6 +367,11 @@
     "indexing": "navigable"
   },
   "redirects": [
+    {
+      "source": "/docs",
+      "destination": "/",
+      "permanent": true
+    },
     {
       "source": "/why",
       "destination": "/docs/why",

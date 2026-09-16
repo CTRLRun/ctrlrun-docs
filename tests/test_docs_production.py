@@ -422,7 +422,7 @@ def test_every_production_page_is_in_the_production_group():
 #: CTRLRun does, how to use it and how it works. The block has two homes on the site, where a
 #: reader who wants the numbers goes, and the generator still refuses a shrunken suite: what
 #: was dropped is one embedding, not the guard.
-READINESS_HOMES = ("docs.mdx", "docs/production/index.mdx")
+READINESS_HOMES = ("index.mdx", "docs/production/index.mdx")
 
 
 @pytest.mark.parametrize("home", READINESS_HOMES)
@@ -709,7 +709,7 @@ def test_the_readme_says_where_it_runs_before_the_badges():
 
 
 def test_the_home_page_offers_to_run_it_for_real():
-    home = (DOCS / "docs.mdx").read_text(encoding="utf-8")
+    home = (DOCS / "index.mdx").read_text(encoding="utf-8")
     assert "Run it for real" in home
     assert "/docs/production/index" in home
 

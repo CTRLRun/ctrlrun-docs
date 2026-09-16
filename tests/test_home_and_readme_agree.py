@@ -20,6 +20,7 @@ from _core import CORE_ROOT
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 HOME = REPO_ROOT / "index.mdx"
+_FRONTMATTER = re.compile(r"\A---\n.*?\n---\n", re.S)
 DIAGRAM = REPO_ROOT / "snippets" / "how-diagram.jsx"
 README = CORE_ROOT / "README.md"
 
@@ -31,10 +32,20 @@ def _prose(markup: str) -> str:
     return " ".join(re.sub(r"<[^>]+>", "", text).split())
 
 
-def _homepage(pattern: str) -> str:
-    match = re.search(pattern, HOME.read_text(encoding="utf-8"), re.S)
-    assert match, f"index.mdx no longer carries {pattern!r}"
-    return _prose(match.group(1))
+def _opening() -> tuple[str, str]:
+    """The two sentences the overview opens with: the claim, then how it is met.
+
+    They were an `<h1>` and a `<p>` in a hand-built hero until 2026-09-16, when the page was
+    merged with `/docs` and took the documentation's own layout. They are the page's first two
+    paragraphs now, the claim in bold, and the README still has to open with them.
+    """
+    body = _FRONTMATTER.sub("", HOME.read_text(encoding="utf-8"), count=1)
+    body = re.sub(r"^import .*$", "", body, flags=re.M).strip()
+    paragraphs = [block.strip() for block in body.split("\n\n") if block.strip()]
+    assert len(paragraphs) >= 2, "index.mdx no longer opens with two paragraphs"
+    claim = re.fullmatch(r"\*\*(.+?)\*\*", paragraphs[0], re.S)
+    assert claim, f"index.mdx no longer opens with the claim in bold: {paragraphs[0][:80]!r}"
+    return _prose(claim.group(1)), _prose(paragraphs[1])
 
 
 def _readme() -> str:
@@ -45,8 +56,7 @@ def test_the_readme_opens_with_the_homepage_h1_and_lede():
     """In sequence, not merely present: the README's prose opens with the H1 and the lede
     follows it directly. Prose before the H1, or the lede ahead of it, fails here."""
     head = _prose(_readme().split("\n## ", 1)[0])
-    h1 = _homepage(r'<h1 id="cr-title">(.*?)</h1>')
-    lede = _homepage(r'<p className="cr-lede">(.*?)</p>')
+    h1, lede = _opening()
 
     assert h1.startswith("CTRLRun ") and h1.endswith("."), h1
     assert head.startswith(h1), f"the README does not open with the homepage H1: {head[:120]!r}"

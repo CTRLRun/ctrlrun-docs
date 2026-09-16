@@ -80,13 +80,13 @@ Apache-2.0, the same as the library. See [LICENSE](LICENSE).
 
 ## The site, file by file
 
-- `index.mdx` serves `/`: the homepage, the hallucinated-refund example, the execution
-  boundary and its four rules, and the integration entry point.
+- `index.mdx` serves `/`: the one Overview. The hero and the hallucinated-refund example, the
+  seven-step diagram, and below them the technical overview `docs.mdx` used to carry at
+  `/docs` until the two were merged on 2026-09-16. `/docs` redirects here.
 - `execution-boundary.mdx` serves `/execution-boundary`: the boundary in three sections -- the drawing, the three
   ways it goes into a codebase, and the four steps by which autonomy widens. The drawing lives
   in `snippets/execution-boundary.jsx` and is chosen by one control, the domain: it carries the
   action, the five checks and the refusal each one raises, so the prose beside it stays short.
-- `docs.mdx` serves `/docs`: the technical overview.
 - `docs/` is every technical page, published under `/docs/...`.
 - `execution-boundary.mdx` is a custom-mode page. The two commercial pages it sat beside,
   `risk-check.mdx` and `protect-my-agent.mdx`, were removed when the site became technical only.
