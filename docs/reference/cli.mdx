@@ -32,7 +32,7 @@ Commands:
   hold          Refuse to prune a range of receipts, until a person says...
   init          Write a starter ctrlrun.yaml and create .ctrlrun/.
   inspect       Show one action's whole history: proposal, decision,...
-  mcp-operator  Answer approvals from an MCP client, over loopback...
+  mcp-operator  Answer approvals from an MCP client, over loopback or stdio...
   policy        Propose a policy change, or replay one against what already...
   prune         Delete receipts from the start of the chain, leaving it...
   receipts      Show the receipts this store holds.
@@ -410,16 +410,25 @@ Options:
 ```text
 Usage: ctrlrun mcp-operator [OPTIONS]
 
-  Answer approvals from an MCP client, over loopback (SPEC-mcp-operator.md).
+  Answer approvals from an MCP client, over loopback or stdio (SPEC-mcp-
+  operator.md).
 
   There is no --principal and no --allow-remote, and both absences are load-
   bearing: a static principal cannot attribute an answer to a person (§3.1), and
   a server whose read tools answer without a credential must not be the one that
-  opens a port (§2.1).
+  opens a port (§2.1). --stdio opens none at all, and its approver is the one
+  name the launching client cannot set: the OS login of the process (§2.3).
 
 Options:
   --listen TEXT                   HOST:PORT.  [default: 127.0.0.1:8901]
   --path TEXT                     The MCP endpoint path.  [default: /mcp]
+  --stdio                         Speak MCP on stdin and stdout to the client
+                                  that launched this process (a desktop
+                                  assistant, Cursor, an editor). Opens no
+                                  socket. The approver is the OS login of this
+                                  process, which the client cannot choose; takes
+                                  no header, JWT or origin flag (SPEC-mcp-
+                                  operator §2.3).
   --principal-header TEXT         Take the approver's agent from this header,
                                   set by a proxy that authenticates them.
   --user-header TEXT              Take the approver's name from this header.

@@ -17,16 +17,48 @@ approver's assistant  ──▶  ctrlrun mcp-operator  ──▶  the approval r
 and the store your agents already use. It speaks MCP revision `2026-07-28` and accepts
 `2025-11-25`, `2025-06-18` and `2025-03-26`.
 
-## Start it
+## From the assistant on your own machine
+
+If the person answering is the one at the keyboard, there is nothing to proxy. Desktop
+assistants, Cursor and the editors launch an MCP server as a subprocess and speak to it on stdin and stdout,
+and `--stdio` is that server:
+
+```json
+{
+  "mcpServers": {
+    "ctrlrun-operator": {
+      "command": "uvx",
+      "args": ["ctrlrun", "mcp-operator", "--stdio"],
+      "env": { "CTRLRUN_CONFIG": "/path/to/your/ctrlrun.yaml" }
+    }
+  }
+}
+```
+
+The core install is enough; the operator imports nothing from an extra. `CTRLRUN_CONFIG` names
+the policy your agents run against, and the store is found beside it.
+
+It opens no socket. The approver is the **OS login of the process**, which the client that
+launched it cannot choose: not the environment it set, not anything it sends, but what the
+kernel says the real uid is. Answers are recorded as `mcp-operator:<your login>` with the issuer
+`os-login:<host>`, so the evidence says how the answer arrived. A login carries no roles and no
+expiry, so a control that names an `approver_role` refuses over stdio. It takes no header, JWT
+or origin flag; each is refused by name, because a flag that cannot take effect is a flag you
+would believe took effect.
+
+## Start it behind a proxy
+
+For an approver who is not at the keyboard of the machine the store is on:
 
 ```bash
 ctrlrun mcp-operator --principal-header x-approver --user-header x-approver-user
 ```
 
-It binds `127.0.0.1:8901` and there is **no flag that changes that**. Its read tools answer
-without a credential, so it must not be the process that opens a port to a network; put a proxy
-in front of it on the same host, terminating authentication there and overwriting both headers
-on every request. That proxy is what makes the headers worth anything.
+Over HTTP it binds `127.0.0.1:8901` and there is **no flag that changes that**; `--stdio` binds
+nothing at all. Its read tools answer without a credential, so it must not be the process that
+opens a port to a network; put a proxy in front of it on the same host, terminating
+authentication there and overwriting both headers on every request. That proxy is what makes
+the headers worth anything.
 
 There is no `--principal` either. A fixed name would attribute every approval to the same
 string whoever gave it, and an approver that distinguishes nobody is not attribution. With
@@ -100,6 +132,9 @@ The agent then runs the refund it was waiting on, and the receipt says who let i
 - **Approve an action other than the one the request names.** The grant carries the
   `action_hash` stored when the request was created; change an argument and the call is refused.
 - **Take an answer from a machine.** A credential naming an agent and no person is `-41013`.
+- **Take a name from the client that launched it.** Over `--stdio` the approver is the OS login
+  of the real uid. `clientInfo`, the environment and every argument are the client's word, and
+  none of them is used.
 - **Take an expired credential.** `-41014`, distinct from `-41007`, because refreshing a token
   and obtaining one are different fixes.
 - **Decide whether you were allowed to answer.** It authenticates *who* answered and records it.
@@ -111,6 +146,11 @@ The agent then runs the refund it was waiting on, and the receipt says who let i
 - Exits at start naming `--user-header` or `--identity-jwt-user-claim`: a write tool refuses a
   credential that names no person, so a configuration that could never write is refused early.
 - Exits at start naming loopback: there is no `--allow-remote`; put a proxy in front instead.
+- Exits at start naming a flag beside `--stdio`: there are no headers over a pipe, so a header,
+  JWT or origin flag cannot take effect and is refused rather than ignored.
+- Your client reports output that is not JSON: the startup block goes to stderr, and a client
+  that shows it there is showing you information, not an error. A release from before
+  `--stdio` existed has no such mode at all; upgrade.
 - `-41003` with reason `expired`: the request timed out. The agent proposes it again.
 - `-32020`: a mirrored MCP header disagrees with the body. The body is believed and the request
   is refused rather than guessed at.
