@@ -38,22 +38,17 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "CTRLRun",
-        "pages": [
-          "index",
-          "execution-boundary"
-        ]
-      },
-      {
         "tab": "Documentation",
         "groups": [
           {
             "group": "Start",
             "pages": [
+              "index",
               "docs",
               "docs/why",
               "docs/not-only-agents",
-              "docs/agents-you-cant-modify"
+              "docs/agents-you-cant-modify",
+              "execution-boundary"
             ]
           },
           {
