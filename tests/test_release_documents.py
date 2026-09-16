@@ -88,7 +88,7 @@ def _load(name: str) -> set[str]:
 #: Sentences that **disclaim** one of the words. §8's T180 describes the whole
 #: list this way, and this half of it is.
 DISCLAIMS: dict[str, tuple[str, ...]] = {
-    # The 2026-09-09 rewrite cut the README to what CTRLRun does, how to use it and how it
+    # The 2026-09-09 rewrite cut the README to what ctrlrun does, how to use it and how it
     # works, and the two paragraphs that used to carry this are now one bullet in "What it does
     # not do". Both halves survived the cut, which is the half §6.4 cares about: the chain
     # detects alteration, and the same sentence says alteration is not authorship.
@@ -108,7 +108,7 @@ DISCLAIMS: dict[str, tuple[str, ...]] = {
         "which half it does not: **truncation at the end**, authorship, an adversary who can rewrite",  # noqa: E501
         '- Receipts are not signed. A database administrator can alter history. **This line read "(v0.6)" until v0.6 was built, and that was a promise v0.6 does not keep**: v0.6 adds a hash chain, which detects alteration and is not evidence of authorship, and it does not stop an administrator who can rewrite every row including the chain head. Signing is out of scope (`SPEC-v0.6.md` §11).',  # noqa: E501
         # SPEC-v0.11 §1.1 rule 1 — the anchor consumes a timestamp and issues nothing,
-        # which is a sentence about what CTRLRun does NOT do and has to say the word.
+        # which is a sentence about what ctrlrun does NOT do and has to say the word.
         "no revocation, no signing. Signing stays off the roadmap for the reason `SPEC-v0.6.md` §11",  # noqa: E501
         # v0.12's SBOM. "Signed" here is the *distribution*, by the attestation step in
         # `release.yml`, and not a receipt. The distinction is the whole of what T180 guards, so
@@ -157,7 +157,7 @@ ANOTHER_SUBJECT: dict[str, tuple[str, ...]] = {
     "docs/THREAT_MODEL.md": (
         "| A forged or tampered token | `JWTIdentityProvider` verifies the signature against a JWKS or a pinned key, with the algorithm taken from its own allow-list and never from the token (RFC 8725 §3.1) |",  # noqa: E501
         "| Signing keys fetched from somewhere else | JWKS over HTTPS only, redirects refused outright, a duplicate `kid` refused rather than resolved, a failed fetch never emptying the cache |",  # noqa: E501
-        "- **A compromised identity provider.** CTRLRun *consumes* identities: it verifies a token somebody else issued and maps the verified claims onto a `Principal`. It issues nothing, and an issuer that signs a token for the wrong subject has told CTRLRun the truth as far as CTRLRun can tell. Everything downstream — grants, delegation, receipts — is then wrong, correctly and consistently.",  # noqa: E501
+        "- **A compromised identity provider.** ctrlrun *consumes* identities: it verifies a token somebody else issued and maps the verified claims onto a `Principal`. It issues nothing, and an issuer that signs a token for the wrong subject has told ctrlrun the truth as far as ctrlrun can tell. Everything downstream — grants, delegation, receipts — is then wrong, correctly and consistently.",  # noqa: E501
     ),
 }
 
@@ -209,7 +209,7 @@ def test_T180_the_scan_would_see_a_new_claim() -> None:
     pass this file on any content at all, and the two tests above would both stay green."""
     assert FORBIDDEN.search("Receipts are signed, which proves authorship.")
     assert FORBIDDEN.search("The chain is tamper-proof.")
-    assert FORBIDDEN.search("CTRLRun gives you non-repudiation.")
+    assert FORBIDDEN.search("ctrlrun gives you non-repudiation.")
     # And the words it must not fire on, which is why it is a word-boundary pattern.
     assert not FORBIDDEN.search("the design of the store")
     assert not FORBIDDEN.search("assign the lease to the caller")

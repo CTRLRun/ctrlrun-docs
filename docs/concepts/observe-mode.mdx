@@ -3,7 +3,7 @@ title: "Observe mode"
 description: "mode: observe runs every real decision against real traffic and records what enforcement would have blocked, without blocking anything."
 ---
 
-Observe mode is one top-level line, `mode: observe`, that makes CTRLRun evaluate every action
+Observe mode is one top-level line, `mode: observe`, that makes ctrlrun evaluate every action
 exactly as it would in enforce mode, execute it regardless, and record on the receipt what would
 have been blocked and why. It is how a rollout measures before it enforces. It is not a dry run:
 the executor runs and effects land at remotes.

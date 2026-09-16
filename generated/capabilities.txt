@@ -11,7 +11,7 @@ generated from capabilities.yaml (text) — edit the YAML, never this list
 - Reconciliation: A reconcile hook asks the remote what happened and resolves an AMBIGUOUS effect.
 - Webhook approvals: Approval requests go to a webhook, such as Slack, and the answer comes back.
 - OpenTelemetry export: One span per action, one span event per step; argument values are opt-in.
-- Consumed identity: A principal comes from a verified header or JWT; CTRLRun issues nothing.
+- Consumed identity: A principal comes from a verified header or JWT; ctrlrun issues nothing.
 - Runtime delegation: A principal narrows its own grant at runtime; one revocation cuts the chain.
 - Observe mode: Records what enforcement would have blocked, blocks nothing, and counts it.
 - Verify: Runs the guarantee catalogue against your policy and store; N/A is not a pass.

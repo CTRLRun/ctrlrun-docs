@@ -167,7 +167,7 @@ capabilities:
 
   - id: identity
     name: Consumed identity
-    description: A principal comes from a verified header or JWT; CTRLRun issues nothing.
+    description: A principal comes from a verified header or JWT; ctrlrun issues nothing.
     guarantee: false
     ways_in:
       decorator: true
@@ -175,7 +175,7 @@ capabilities:
       adapter: true
     since: v0.3
     page: docs/concepts/authority-and-delegation
-    claim: CTRLRun issues no credential and defines no identity format
+    claim: ctrlrun issues no credential and defines no identity format
 
   - id: delegation
     name: Runtime delegation

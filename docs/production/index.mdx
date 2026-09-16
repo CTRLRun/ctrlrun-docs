@@ -70,7 +70,7 @@ questions about the store.
 - **It does not run anything for you.** There is no daemon, no scheduler and no background
   thread. Nothing sweeps expired leases, nothing retries on your behalf, and a restarted process
   repairs nothing. See [recovery](/docs/production/recovery) for why that is deliberate.
-- **It does not make an external system idempotent.** CTRLRun refuses to knowingly act twice.
+- **It does not make an external system idempotent.** ctrlrun refuses to knowingly act twice.
   Whether the remote acted is a fact only the remote holds.
 - **It does not roll anything back.** It is not a transaction manager and it never pretends a
   remote write is undone.

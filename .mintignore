@@ -13,7 +13,7 @@ SEO.md
 BUILD-PROMPTS-*.md
 
 # The capability source and the rendered fragments pages embed. A render is a fragment, not a
-# page: `docs.mdx` and `docs/production/index.mdx` include them.
+# page: `index.mdx` and `docs/production/index.mdx` include them.
 capabilities.yaml
 generated/
 

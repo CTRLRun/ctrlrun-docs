@@ -1,6 +1,6 @@
 ---
 title: "Verify in CI"
-description: "Run ctrlrun verify against your policy on every push with the CTRLRun GitHub Action, read the two shapes of report, understand the N/A line."
+description: "Run ctrlrun verify against your policy on every push with the ctrlrun GitHub Action, read the two shapes of report, understand the N/A line."
 ---
 
 `ctrlrun verify` runs the kernel's own failure scenarios against your policy, in a scratch
@@ -32,7 +32,7 @@ guarantees pass.
     ```
 
     ```text
-    CTRLRun verify — ctrlrun 0.12.2, catalogue ctrlrun.guarantees/v7
+    ctrlrun verify — ctrlrun 0.12.2, catalogue ctrlrun.guarantees/v7
     policy     /Users/arpanghoshal/ctrlrun-project/wt/v11-i3/examples/cookbook/verify-in-github-actions/ctrlrun.yaml (ctrlrun.policy/v2, mode: enforce)
     authority  none
     store      sqlite, scratch (created and destroyed for this run)
@@ -100,7 +100,7 @@ guarantees pass.
 
   <Step title="Add the action">
     ```yaml
-    name: CTRLRun verify
+    name: ctrlrun verify
 
     on: [push, pull_request]
 

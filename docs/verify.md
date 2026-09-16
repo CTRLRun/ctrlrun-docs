@@ -3,7 +3,7 @@ title: "ctrlrun verify"
 description: "Running the guarantee catalogue against your own configuration: the report, the N/A rule, the badge, and what verify cannot see."
 ---
 
-Everything CTRLRun guarantees is proven by this repository's tests against this repository's
+Everything ctrlrun guarantees is proven by this repository's tests against this repository's
 configurations. That is the right place to start and the wrong place to stop, because the thing
 you deploy is *your* policy, *your* grants and *your* store — and a guarantee that has never
 been exercised against those is a guarantee nobody has checked.
@@ -14,7 +14,7 @@ what could not be tested at all.
 
 ```console
 $ ctrlrun verify
-CTRLRun verify — ctrlrun 0.12.2, catalogue ctrlrun.guarantees/v7
+ctrlrun verify — ctrlrun 0.12.2, catalogue ctrlrun.guarantees/v7
 policy     examples/authority/payments.yaml (ctrlrun.policy/v7, mode: enforce)
 authority  same document, 3 grants
 store      sqlite, scratch (created and destroyed for this run)
@@ -89,7 +89,7 @@ under a `--store-url postgresql://remote-host/…`.
 > configuration can exercise was exercised, and none of them failed.
 
 That is the whole claim. It is not a statement that your system is secure, that your policy is
-a good policy, or that CTRLRun has audited anything. A configuration that permits everything
+a good policy, or that ctrlrun has audited anything. A configuration that permits everything
 and constrains nobody can pass every guarantee in the catalogue, because they are about **the
 kernel doing what it says under that configuration** — not about whether the configuration is
 wise.
@@ -104,7 +104,7 @@ Verify sees **the configuration, not the code**. It does not check:
   own executors and never imports your module.
 - **Your `reconcile` hooks**, for the same reason: a hook is a Python callable passed to
   `@protect`, and it does not appear in any file verify reads.
-- **Where you put the decorator.** Code that calls the raw function bypasses CTRLRun entirely,
+- **Where you put the decorator.** Code that calls the raw function bypasses ctrlrun entirely,
   and no amount of configuration-reading finds that.
 - **Your deployment.** Whether the proxy in front of `HeaderIdentityProvider` overwrites the
   header, whether `$CTRLRUN_STATE` points where you think, whether two gateways share a state
@@ -116,7 +116,7 @@ Verify sees **the configuration, not the code**. It does not check:
   authoritative-looking opinion it has no basis for.
 
 The words **secure**, **safe**, **compliant**, **certified** and **audited** do not appear as
-claims about CTRLRun or about your system on the badge, in its JSON, in the job summary, or on
+claims about ctrlrun or about your system on the badge, in its JSON, in the job summary, or on
 this page.
 
 ---
@@ -285,7 +285,7 @@ report guarantees about a configuration nobody deployed.
 ## In CI
 
 ```yaml
-name: CTRLRun verify
+name: ctrlrun verify
 
 on: [push, pull_request]
 
@@ -415,10 +415,10 @@ behind it is worth, and the run is in the workflow log.
 Then the badge is:
 
 ```markdown
-[![CTRLRun](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/OWNER/REPO/badges/verify-badge.json)](docs/verify.md#what-the-badge-means)
+[![ctrlrun](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/OWNER/REPO/badges/verify-badge.json)](docs/verify.md#what-the-badge-means)
 ```
 
-It renders as **CTRLRun verified N/M**, where `N` is passes and `M` is **applicable**
+It renders as **ctrlrun verified N/M**, where `N` is passes and `M` is **applicable**
 guarantees — never the catalogue size. It is `brightgreen` when nothing failed and `red`
 otherwise; there is no amber for N/A, because the badge's colour is about failures and the N/A
 count lives in the report the badge links to.
@@ -431,5 +431,5 @@ A partial run (`--only`) and a run that exited 2 or 3 write **no badge at all**.
 
 - [`SPEC-v0.4.md`](https://github.com/CTRLRun/ctrlrun/blob/main/docs/SPEC-v0.4.md) — the contract this implements, guarantee by guarantee.
 - [`OWASP-AGENTIC-TOP10.md`](/docs/OWASP-AGENTIC-TOP10) — a reading of somebody else's taxonomy
-  against these guarantees, with the entries CTRLRun does not address listed by name.
+  against these guarantees, with the entries ctrlrun does not address listed by name.
 - [`THREAT_MODEL.md`](/docs/THREAT_MODEL) — what fail-closed means here, and what is out of scope.

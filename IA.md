@@ -12,7 +12,7 @@ answer. Later sessions write the pages; this file is what they write against, an
 | Principle | Autonomy belongs to the action, not the agent. | Second sentence everywhere; the line people quote |
 | Category | The execution safety layer for AI agents. | GitHub About, PyPI summary, site `<title>`, directory listings |
 | Opener (long-form only) | Everyone is rushing to ship AI agents without thinking about consequences. | First line of Why and of launch posts; never a heading |
-| Promise | A consequential action happens at most once, exactly as approved, and leaves a receipt — and when the outcome is unknown, CTRLRun says so instead of guessing. | Hero subline, README paragraph 2 |
+| Promise | A consequential action happens at most once, exactly as approved, and leaves a receipt — and when the outcome is unknown, ctrlrun says so instead of guessing. | Hero subline, README paragraph 2 |
 | Hook (posts) | Agents can retry. The real world can't. | Social, talk titles; not the README header |
 
 The rules every page is held to are in `STYLE.md`. The tools that hold them are in
@@ -157,7 +157,7 @@ row landed with `docs/SPEC-mcp-operator.md`, which is when it stopped being plan
 
 | Path | Purpose | Query |
 |---|---|---|
-| `docs/mcp/overview` | CTRLRun works with MCP in four ways: enforcement (the gateway in front of any MCP server), answering (the operator server, for approvers), learning (this site is an MCP server), discovery (the registries, once listed). | *MCP gateway* · *MCP server human approval* |
+| `docs/mcp/overview` | ctrlrun works with MCP in four ways: enforcement (the gateway in front of any MCP server), answering (the operator server, for approvers), learning (this site is an MCP server), discovery (the registries, once listed). | *MCP gateway* · *MCP server human approval* |
 | `docs/mcp/gateway-in-5-minutes` | For a reader who already runs an MCP server: before/after, the two commands, what the agent sees on deny and on approval-required, the supported revisions, the principal-flag choice and its security note. | *protect MCP server* · *MCP tool call approval gateway* |
 | `docs/mcp/approve-from-your-assistant` | For the person who answers approvals rather than the one who deploys: what `ctrlrun mcp-operator` is, the two flags, a client configuration, a real transcript ending in the receipt that names the approver, and the five things it will not do. | *approve MCP tool call from an assistant* · *MCP human approval server* |
 | `docs/mcp/use-the-docs-from-your-editor` | The exact configuration for this site's MCP server, three questions an assistant can then answer, a screenshot spec. | *ctrlrun mcp docs* |
@@ -199,7 +199,7 @@ turn readers into users.
 | `docs/guides/verify-in-ci` | The GitHub Action, the two shapes of report, the N/A line and what it means, the badge. | *verify AI agent safety configuration CI* |
 | `docs/guides/export-to-opentelemetry` | `OTelEventSink`: one span per action, one event per step, argument values opt-in. | *opentelemetry AI agent actions* |
 | `docs/guides/langgraph-adapter` | Route an approval through `interrupt()`: the operator builds the `Control`, `wait=True`, `Command(resume=...)`, and prevention versus attribution. | *langgraph interrupt human approval tool call* |
-| `docs/guides/openai-agents-adapter` | Route an approval through the SDK's tool-approval interruption: `protected_tool`, `gate.run`, why a rejection leaves no CTRLRun evidence. | *openai agents sdk tool approval* |
+| `docs/guides/openai-agents-adapter` | Route an approval through the SDK's tool-approval interruption: `protected_tool`, `gate.run`, why a rejection leaves no ctrlrun evidence. | *openai agents sdk tool approval* |
 
 ## Cookbook (session 4)
 
@@ -256,9 +256,9 @@ short table. No vendor name in a heading.
 | Path | Purpose | Query |
 |---|---|---|
 | `docs/compare/framework-hitl` | A framework's interrupt lets a human say yes; it does not bind the yes to the arguments that execute, refuse a retry after a lost response, or leave a receipt. Use both: the adapter routes through the interrupt. | *langgraph human in the loop vs* · *agent framework approval limitations* |
-| `docs/compare/guardrail-libraries` | Guardrails inspect inputs and outputs; CTRLRun sits at the boundary between intention and effect. Different layer; use both. | *AI guardrails vs execution control* |
-| `docs/compare/governance-toolkits` | Governance toolkits catalogue, monitor and report; CTRLRun refuses, in the execution path, per action. | *AI agent governance vs runtime enforcement* |
-| `docs/compare/durable-workflows` | Durable workflow engines retry until success and make that safe with idempotent activities; CTRLRun refuses to retry an unknown outcome and binds approvals. Complementary. | *temporal vs ctrlrun* · *durable execution AI agents idempotency* |
+| `docs/compare/guardrail-libraries` | Guardrails inspect inputs and outputs; ctrlrun sits at the boundary between intention and effect. Different layer; use both. | *AI guardrails vs execution control* |
+| `docs/compare/governance-toolkits` | Governance toolkits catalogue, monitor and report; ctrlrun refuses, in the execution path, per action. | *AI agent governance vs runtime enforcement* |
+| `docs/compare/durable-workflows` | Durable workflow engines retry until success and make that safe with idempotent activities; ctrlrun refuses to retry an unknown outcome and binds approvals. Complementary. | *temporal vs ctrlrun* · *durable execution AI agents idempotency* |
 | `docs/compare/idempotency-keys` | An idempotency key deduplicates at one remote that supports it; an effect key deduplicates at the agent side across remotes, refuses on unknown, and is bound to an approval. The page that says *idempotency* precisely. | *idempotency keys AI agents* · *stripe idempotency key vs* |
 
 ## FAQ
@@ -273,7 +273,7 @@ signature · what is not covered. Query: *ctrlrun faq* and each question verbati
 
 | Path | Purpose | Query |
 |---|---|---|
-| `security/threat-model` | What CTRLRun defends against, what it does not, and the fail-closed rules that follow; renders `docs/THREAT_MODEL.md`. | *ctrlrun threat model* |
+| `security/threat-model` | What ctrlrun defends against, what it does not, and the fail-closed rules that follow; renders `docs/THREAT_MODEL.md`. | *ctrlrun threat model* |
 | `docs/security/verify-guarantees` | The guarantee catalogue G1–G11, what each exercises, what N/A means, what verify cannot see. | *ctrlrun verify guarantees* |
 | `docs/security/receipt-chain` | Each receipt carries the hash of the one before; what the chain detects, what it does not prove, and the two statements that erase the end of the log. Alteration, not authorship. | *tamper evident audit log AI agent* |
 | `security/how-this-is-built` | Spec-first, every MUST mutation-tested with the real numbers, independent review sessions, CLAIMS.md, N/A is not a pass, AI coding agents used throughout with the constraints that make that safe, and what has not been done: no external audit yet. Session 1b. | *is ctrlrun trustworthy* · *how ctrlrun is tested* |
@@ -283,7 +283,7 @@ signature · what is not covered. Query: *ctrlrun faq* and each question verbati
 
 | Path | Purpose | Query |
 |---|---|---|
-| `architecture/overview` | The boundary CTRLRun owns, the canonical flow (normalize · decide · approve · reserve · execute · record), the module map; renders `docs/ARCHITECTURE.md`. | *ctrlrun architecture* |
+| `architecture/overview` | The boundary ctrlrun owns, the canonical flow (normalize · decide · approve · reserve · execute · record), the module map; renders `docs/ARCHITECTURE.md`. | *ctrlrun architecture* |
 | `docs/architecture/specifications` | The six specifications, unchanged, with one line each on what the version asked; plus the OWASP and ACS readings. | *ctrlrun spec* |
 
 ## Changelog
@@ -402,7 +402,7 @@ Two sources with opposite emphases, and the tree above follows both:
 
 What this means concretely for these pages, and what `STYLE.md` enforces: **answer-first
 first paragraphs** and one **definitional sentence** per Concepts page, written for a human;
-**consistent entity naming** (CTRLRun, effect key, action hash, AMBIGUOUS); **comparison
+**consistent entity naming** (ctrlrun, effect key, action hash, AMBIGUOUS); **comparison
 tables** on every Compare page; **FAQ structured data** on the FAQ page; quotable, plain
 claims with a `CLAIMS.md` row behind each; and the generated `llms.txt` left to Mintlify. What
 it does not mean: keyword density, chunked pages, or a second writing style for machines.

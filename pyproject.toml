@@ -1,4 +1,4 @@
-# This repository ships no package. It holds the CTRLRun documentation site, the tools that
+# This repository ships no package. It holds the ctrlrun documentation site, the tools that
 # render it from the library's own source, and the tests that check it -- so the only thing
 # here is configuration for those tools.
 #

@@ -73,7 +73,7 @@ a requirement and decide nothing. v6 gives it one key that decides something.
 | Key | Type | Since | When omitted | Notes |
 |---|---|---|---|---|
 | `title` | string | v4 | required | what the control requires, in a sentence |
-| `source` | string | v4 | none | where the requirement comes from. CTRLRun does not interpret it |
+| `source` | string | v4 | none | where the requirement comes from. ctrlrun does not interpret it |
 | `approver_role` | non-empty string | v6 | **this control gates nobody** | the role a principal must hold for their approval of an action citing this control to be consumable. Matched **byte for byte** against the claim the deployment names: no case folding, no trimming, no prefix matching and no pattern grammar, because a wildcard in a role would be an entitlement nobody wrote. Leading or trailing whitespace is a load error rather than a role that matches nothing for ever. Where an action cites several controls, **every** required role must be held, since any-of would let the weakest control in a set decide who may answer. Inside the policy hash |
 
 **Omission is not entitlement, and it is not refusal either.** A control with no `approver_role`
@@ -84,7 +84,7 @@ principal.
 
 **What the kernel refuses is an approval whose *recorded* entitlement does not cover the role.**
 What entitled it was decided where the credential was verified — the operator MCP server, or an
-embedding application. CTRLRun does not interpret the role, does not check that such a role exists
+embedding application. ctrlrun does not interpret the role, does not check that such a role exists
 anywhere, and claims nothing about a standard or an audit on the strength of one.
 
 ## A rule
@@ -99,7 +99,7 @@ anywhere, and claims nothing about a standard or an audit on the strength of one
 
 A condition key is `<subject>_<operator>`. The subject is an argument name, or the derived
 `data_scope`; the operator is one of seven, and there is no other syntax. Amounts and every
-other numeric operand are integers: `float` is refused everywhere in CTRLRun.
+other numeric operand are integers: `float` is refused everywhere in ctrlrun.
 
 | Operator | Meaning | Example |
 |---|---|---|

@@ -1,11 +1,11 @@
 ---
-title: "CTRLRun and durable workflow engines"
+title: "ctrlrun and durable workflow engines"
 sidebarTitle: "vs durable workflows"
-description: "A workflow engine makes a workflow finish, retrying until it succeeds. CTRLRun decides whether an effect may happen at all, and never retries an unknown."
+description: "A workflow engine makes a workflow finish, retrying until it succeeds. ctrlrun decides whether an effect may happen at all, and never retries an unknown."
 ---
 
 A durable workflow engine guarantees that a workflow finishes: it persists every step, replays
-after a crash, and retries an activity until it succeeds. CTRLRun guarantees that a consequential
+after a crash, and retries an activity until it succeeds. ctrlrun guarantees that a consequential
 effect is authorized and happens at most once, and refuses to retry when nobody knows whether it
 already happened. One drives work forward; the other decides whether the work may happen. They
 compose, and the second question is not the first one's job.
@@ -16,11 +16,11 @@ Long-running processes that must survive a crash, a deploy or a week of waiting.
 replay. Timers, signals, child workflows, fan-out. Visibility into where a workflow is. An
 activity that fails transiently and should be retried until the network cooperates. If your
 agent's work is a multi-step process with state, that is exactly the problem they solve, and
-CTRLRun does not solve it.
+ctrlrun does not solve it.
 
 ## What they do not do
 
-| | Durable engines | CTRLRun |
+| | Durable engines | ctrlrun |
 |---|---|---|
 | Guarantee | the workflow progresses; activities run at least once | the effect happens at most once per intent, or not at all |
 | Retry policy | retry until success is the default | a retry against an unknown outcome is refused |
@@ -31,7 +31,7 @@ CTRLRun does not solve it.
 | Evidence | the workflow history | a receipt per action, portable, chained, readable without the engine |
 
 The sharp edge is the retry default. Retry until it succeeds is right for a read and wrong for a
-refund, and the usual advice, make your activities idempotent, is exactly the work CTRLRun does
+refund, and the usual advice, make your activities idempotent, is exactly the work ctrlrun does
 for you: an effect key per consequence, reserved atomically, enforced by the store rather than
 by convention.
 
@@ -45,8 +45,8 @@ effect key already reserved.
 
 ## The distinction that matters
 
-An engine asks *has this step finished*. CTRLRun asks *did this effect happen, and may it happen
-now*. An engine that cannot get an answer retries. CTRLRun that cannot get an answer stops and
+An engine asks *has this step finished*. ctrlrun asks *did this effect happen, and may it happen
+now*. An engine that cannot get an answer retries. ctrlrun that cannot get an answer stops and
 says so.
 
 ## Next

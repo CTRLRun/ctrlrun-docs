@@ -1,10 +1,10 @@
 ---
-title: "CTRLRun and framework human-in-the-loop"
+title: "ctrlrun and framework human-in-the-loop"
 sidebarTitle: "vs framework HITL"
 description: "A framework interrupt is where a human says yes. It does not bind that yes to the arguments that execute, or refuse a retry after a lost reply. Use both."
 ---
 
-A framework's human-in-the-loop primitive is the right place for a human to answer, and CTRLRun
+A framework's human-in-the-loop primitive is the right place for a human to answer, and ctrlrun
 uses it rather than replacing it. What it does not do is bind that answer to the exact action
 that executes, notice that the same effect already happened, or leave evidence outside the
 framework's own run state. Those are different jobs, and an adapter joins them.
@@ -19,7 +19,7 @@ replaces that; the adapters exist so a human keeps answering there.
 
 ## What it does not do
 
-| | A framework interrupt | CTRLRun |
+| | A framework interrupt | ctrlrun |
 |---|---|---|
 | Where the yes is given | in the framework's own console | the same place, through an adapter |
 | What the yes authorizes | a tool call, identified by the framework's id | one canonical action, identified by a SHA-256 over its name, arguments, resource, principal and environment |
@@ -42,10 +42,10 @@ anyway, and `ApprovalRequired` is raised for your own code to handle.
 
 ## The distinction that matters
 
-A framework binds an approval to *a call it is about to make*. CTRLRun binds it to *what that
+A framework binds an approval to *a call it is about to make*. ctrlrun binds it to *what that
 call would do*. Where the framework's resumption carries the arguments the human saw, an
-adapter hands them back and CTRLRun re-checks the hash: prevention. Where it carries only a
-verdict, CTRLRun records who answered and cannot re-check what about: attribution. Each
+adapter hands them back and ctrlrun re-checks the hash: prevention. Where it carries only a
+verdict, ctrlrun records who answered and cannot re-check what about: attribution. Each
 adapter's page says which it is, in that word.
 
 ## Next

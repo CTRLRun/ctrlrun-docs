@@ -24,7 +24,7 @@ happened" — an explicit opt-in signal, never a default and never inferred. The
 outcome to record: the effect record stays `EXECUTING`, its lease is extended, the
 continuation is held, and the caller gets this back to relay.
 
-`continuation` is whatever the remote said to present again. It is opaque here — CTRLRun
+`continuation` is whatever the remote said to present again. It is opaque here — ctrlrun
 never parses it, and only ever compares it with `hmac.compare_digest`.
 
 ## Next

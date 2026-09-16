@@ -34,7 +34,7 @@ Both shapes are the ones Mintlify's documentation gives for a hosted docs server
 
 ## Three questions it can now answer
 
-- *What happens in CTRLRun when a tool call times out?* The assistant finds
+- *What happens in ctrlrun when a tool call times out?* The assistant finds
   [Outcomes and AMBIGUOUS](/docs/concepts/outcomes-and-ambiguous) and answers that a timeout is
   `AMBIGUOUS`, not `FAILED`, and that a retry is refused until a human or a reconcile hook
   resolves it.
@@ -49,11 +49,11 @@ Both shapes are the ones Mintlify's documentation gives for a hosted docs server
 ## What it is not
 
 It is not enforcement. An assistant that can search this documentation can tell you what the
-gateway does; it cannot stand in the agent's path. An agent that called a CTRLRun tool to check
+gateway does; it cannot stand in the agent's path. An agent that called a ctrlrun tool to check
 its own actions could also choose not to, which is why the gateway is a process between the
 agent and its tools and not a tool the agent picks.
 
 ## Next
 
-- [CTRLRun and MCP](/docs/mcp/overview).
+- [ctrlrun and MCP](/docs/mcp/overview).
 - [Get started](/docs/get-started/quickstart) · [Why](/docs/why).

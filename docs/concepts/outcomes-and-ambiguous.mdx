@@ -3,7 +3,7 @@ title: "Outcomes and AMBIGUOUS"
 description: "An executed action ends COMMITTED, FAILED or AMBIGUOUS. Only NotExecuted, raised by the executor, means FAILED."
 ---
 
-An outcome is what CTRLRun knows about the consequence after the executor returns or raises,
+An outcome is what ctrlrun knows about the consequence after the executor returns or raises,
 and there are three: `COMMITTED`, the remote did it; `FAILED`, the remote definitely did not;
 and `AMBIGUOUS`, nobody knows. A timeout is not a failure. A lost reply is not a failure. An
 exception nobody expected is not a failure. All three are `AMBIGUOUS`, and an `AMBIGUOUS` effect
@@ -93,7 +93,7 @@ ambiguous) in `ctrlrun verify`.
 
 ## What it does not do
 
-CTRLRun cannot find out what the remote did. It refuses to guess, and it makes the question
+ctrlrun cannot find out what the remote did. It refuses to guess, and it makes the question
 impossible to skip. It also cannot tell that an executor lied with `NotExecuted`; that is the
 integration bug the threat model names as the most dangerous one available.
 

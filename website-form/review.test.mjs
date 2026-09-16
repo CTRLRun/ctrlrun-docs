@@ -14,7 +14,7 @@ test('validated lead is sent only to the fixed recipient with reply-to and idemp
   assert.equal(res.code, 200); assert.equal(res.body.ok, true);
   const body = JSON.parse(sent.body);
   assert.deepEqual(body.to, ['contact@arpanghoshal.com']); assert.equal(body.reply_to, valid.email);
-  assert.equal(body.from, 'CTRLRun <reviews@updates.arpanghoshal.com>');
+  assert.equal(body.from, 'ctrlrun <reviews@updates.arpanghoshal.com>');
   assert.equal(sent.headers['Idempotency-Key'], 'architecture-review/' + valid.requestId);
 });
 

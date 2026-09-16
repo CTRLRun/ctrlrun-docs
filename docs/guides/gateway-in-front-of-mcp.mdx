@@ -11,7 +11,7 @@ language.
 
 ```text
 before    agent  ──▶  MCP server
-after     agent  ──▶  CTRLRun gateway  ──▶  MCP server
+after     agent  ──▶  ctrlrun gateway  ──▶  MCP server
 ```
 
 **Prerequisites:** an MCP server reachable over HTTP, `pip install "ctrlrun[gateway]"`, and a
@@ -56,7 +56,7 @@ validated, never trusted.
     ```
 
     ```text
-    CTRLRun gateway  →  http://localhost:8000/mcp  as mcp.acme.*
+    ctrlrun gateway  →  http://localhost:8000/mcp  as mcp.acme.*
     listening on http://127.0.0.1:8900/mcp   environment: production
     identity: fixed principal refund-agent   authority: none
     1 action(s) have no effect: template and get no reservation:

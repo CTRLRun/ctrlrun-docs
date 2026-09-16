@@ -1,4 +1,4 @@
-# CTRLRun website form endpoints
+# ctrlrun website form endpoints
 
 Dependency-free Vercel Node.js Functions for the Mintlify website. There is no frontend here.
 
@@ -6,7 +6,7 @@ Dependency-free Vercel Node.js Functions for the Mintlify website. There is no f
 - Endpoints:
   - `https://ctrlrun-review-form.vercel.app/api/review` — the architecture review brief
   - `https://ctrlrun-review-form.vercel.app/api/interest` — the Pro waiting list and Enterprise enquiry
-- Sender: `CTRLRun <reviews@updates.arpanghoshal.com>`
+- Sender: `ctrlrun <reviews@updates.arpanghoshal.com>`
 - Recipient: `contact@arpanghoshal.com`, fixed in server code
 - Reply-to: the validated work email submitted by the visitor
 - Secret: `RESEND_API_KEY`, a sensitive Vercel production environment variable

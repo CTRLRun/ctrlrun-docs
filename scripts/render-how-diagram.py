@@ -48,13 +48,13 @@ TOP = (
 )
 BOT = ("YOUR SYSTEMS", "The action arrives already checked.")
 BOT_NOTE = "Allowed by your rules, approved where you require it, and never run twice."
-BOX_LABEL = "CTRLRun · THE EXECUTION BOUNDARY"
+BOX_LABEL = "ctrlrun · THE EXECUTION BOUNDARY"
 
 # The commercial band that used to sit on the boundary is gone. The tiers have their own
 # section directly below the diagram, and the drawing repeated it a screen early.
 
 DESC = (
-    "An action leaves the agents, tools and workflows you already run. Inside CTRLRun it is "
+    "An action leaves the agents, tools and workflows you already run. Inside ctrlrun it is "
     "normalized into one action, decided against your rules, held for approval, reserved so it "
     "cannot run twice, executed, resolved and recorded. Only then does it reach your systems. "
     "An action with no rule is blocked, changed arguments void the approval, and an unknown "
@@ -133,7 +133,7 @@ def wide() -> str:
     return (
         f'    <svg className="cr-diagram cr-dia-wide" viewBox="0 0 1200 {total}" role="img"\n'
         '      aria-labelledby="cr-dia-t cr-dia-d" preserveAspectRatio="xMidYMid meet">\n'
-        '      <title id="cr-dia-t">How CTRLRun works</title>\n'
+        '      <title id="cr-dia-t">How ctrlrun works</title>\n'
         f'      <desc id="cr-dia-d">{esc(DESC)}</desc>\n      {body}\n    </svg>\n'
     )
 
@@ -194,7 +194,7 @@ def narrow() -> str:
     return (
         f'    <svg className="cr-diagram cr-dia-narrow" viewBox="0 0 360 {total}" role="img"\n'
         '      aria-labelledby="cr-dia-tn cr-dia-dn" preserveAspectRatio="xMidYMid meet">\n'
-        '      <title id="cr-dia-tn">How CTRLRun works</title>\n'
+        '      <title id="cr-dia-tn">How ctrlrun works</title>\n'
         f'      <desc id="cr-dia-dn">{esc(DESC)}</desc>\n'
         f"      {joined}\n    </svg>\n"
     )

@@ -5,13 +5,13 @@
 #                             permitted whatever words it contains
 #
 # Every entry carries its reason. An `allow` line is for a sentence that uses a forbidden
-# word to say what CTRLRun is *not* — a negation — and never for a sentence that makes the
+# word to say what ctrlrun is *not* — a negation — and never for a sentence that makes the
 # claim. The regex is deliberately narrow: it names the negating phrase, not the word.
 #
 # Three documents are exempt by the rule itself and are not listed here:
 # docs/OWASP-AGENTIC-TOP10.md, docs/OWASP-SOLUTIONS-LANDSCAPE.md and docs/THREAT_MODEL.md,
 # which exist to list what is not covered. The landscape page quotes another body's checkbox
-# wording verbatim in order to say, box by box, which ones CTRLRun does not tick. The lint
+# wording verbatim in order to say, box by box, which ones ctrlrun does not tick. The lint
 # hard-codes them (EXEMPT_BY_RULE) so that this file cannot un-exempt them by accident or
 # exempt another by analogy.
 
@@ -68,7 +68,7 @@ allow docs/ACS.md a compliance claim with nothing behind it
 
 # The Compare pages name the other thing they are compared with, in the heading of the section
 # that says what it is good at. That is the page's whole job, and the fixed copy permits a
-# category name where it is accurate; what it still forbids is CTRLRun describing *itself* that
+# category name where it is accurate; what it still forbids is ctrlrun describing *itself* that
 # way, which the body of each page does the opposite of.
 allow docs/compare/guardrail-libraries.mdx guardrail
 allow docs/compare/governance-toolkits.mdx oversight toolkits
@@ -85,7 +85,7 @@ allow docs/compare/governance-toolkits.mdx oversight toolkits
 # neighbours**, so under `*` a real sector-pack claim written directly above or below it would
 # be permitted anywhere. An independent review found the wider glob.
 allow README.md No sector packs\. \(the policy templates are starting points
-allow docs.mdx No sector packs\. \(the policy templates are starting points
+allow index.mdx No sector packs\. \(the policy templates are starting points
 allow docs/production/index.mdx No sector packs\. \(the policy templates are starting points
 allow generated/readiness.* No sector packs\. \(the policy templates are starting points
 allow docs/CLAIMS.md no external security audit, no third-party review of the kernel, no sector packs

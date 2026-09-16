@@ -1,9 +1,9 @@
 ---
 title: "Threat model"
-description: "What CTRLRun defends against, what it deliberately does not, and the fail-closed rules that follow from both."
+description: "What ctrlrun defends against, what it deliberately does not, and the fail-closed rules that follow from both."
 ---
 
-CTRLRun sits in the execution path of consequential actions. This document states what it defends against, what it explicitly does not, and the fail-closed rules that follow. It covers every shipped version through v0.6, and grows with the roadmap.
+ctrlrun sits in the execution path of consequential actions. This document states what it defends against, what it explicitly does not, and the fail-closed rules that follow. It covers every shipped version through v0.6, and grows with the roadmap.
 
 ## Assets
 
@@ -15,7 +15,7 @@ CTRLRun sits in the execution path of consequential actions. This document state
 
 ```
  untrusted ─────────────┐        trusted ──────────────────┐
-  agent reasoning       │         CTRLRun process           │
+  agent reasoning       │         ctrlrun process           │
   LLM outputs           │         policy file               │
   tool outputs          │         StateStore (SQLite file)  │
   retry logic           │         approver's shell          │
@@ -24,7 +24,7 @@ CTRLRun sits in the execution path of consequential actions. This document state
 
 The agent is treated as a potentially compromised or hallucinating principal. Everything it proposes is verified; nothing it asserts is trusted.
 
-## In scope — CTRLRun v0.1 defends against
+## In scope — ctrlrun v0.1 defends against
 
 | Threat | Control |
 |---|---|
@@ -40,7 +40,7 @@ The agent is treated as a potentially compromised or hallucinating principal. Ev
 | Malformed or missing policy | Load-time error; no Control without valid policy |
 | Float-based hash collisions/mismatches | Floats rejected in arguments |
 
-## In scope — CTRLRun v0.3 adds
+## In scope — ctrlrun v0.3 adds
 
 The authority model answers a question v0.1 and v0.2 could not: *who is acting, and what are
 they entitled to?* Everything above still holds; these are the threats the second axis closes.
@@ -61,7 +61,7 @@ they entitled to?* Everything above still holds; these are the threats the secon
 | An unauthenticated principal reaching an authorization decision | `--principal-from-client-info` removed; `AcsControlHook` refuses an `Authority` without an `identity` provider |
 | An environment chosen by the caller | The environment is set once on the `Control` and is never read off the wire |
 
-## In scope — CTRLRun v0.9 adds
+## In scope — ctrlrun v0.9 adds
 
 The authority model bounded **one action** and never an aggregate: a grant saying
 `amount_lte: 5000` is silent about the thousand actions that each pass it. v0.9 answers *how
@@ -115,21 +115,21 @@ Stated here because a limit reads like more of a defence than it is.
 - **It does not propagate across agent hops.** A grant is evaluated where the action is
   proposed; `docs/ROADMAP.md` puts propagation in v0.10.
 
-## Out of scope — CTRLRun does not defend against
+## Out of scope — ctrlrun does not defend against
 
-- A compromised CTRLRun process, host, or Python environment.
+- A compromised ctrlrun process, host, or Python environment.
 - A root attacker or a malicious administrator with write access to the policy file or SQLite database.
 - A compromised external service (Stripe lying about outcomes).
-- A compromised approver, or social engineering of the approver. CTRLRun proves *what* was approved, not that the human was right.
-- Executors that raise `NotExecuted` incorrectly (asserting no side effect when one occurred). This is an integration bug, and it is the most dangerous one available: `NotExecuted` is the one exception that makes an effect retryable, so an executor that raises it after the remote acted turns the one guarantee CTRLRun is built around into a licence to act twice. **`ctrlrun verify` does not and cannot check for it.** Verify reads the operator's configuration and supplies its own executors; it never calls the one behind `@protect` and never imports the module it lives in (SPEC-v0.4 §1.2). An earlier version of this line said v0.4 verify would include such a check. It does not, and the sentence was wrong when it was written.
-- Data exfiltration through *read* actions the policy allows. CTRLRun is not DLP.
+- A compromised approver, or social engineering of the approver. ctrlrun proves *what* was approved, not that the human was right.
+- Executors that raise `NotExecuted` incorrectly (asserting no side effect when one occurred). This is an integration bug, and it is the most dangerous one available: `NotExecuted` is the one exception that makes an effect retryable, so an executor that raises it after the remote acted turns the one guarantee ctrlrun is built around into a licence to act twice. **`ctrlrun verify` does not and cannot check for it.** Verify reads the operator's configuration and supplies its own executors; it never calls the one behind `@protect` and never imports the module it lives in (SPEC-v0.4 §1.2). An earlier version of this line said v0.4 verify would include such a check. It does not, and the sentence was wrong when it was written.
+- Data exfiltration through *read* actions the policy allows. ctrlrun is not DLP.
 - Denial of service by flooding approval requests.
 - Bypassing the decorator entirely (calling the raw function). v0.2 gateway mode narrows this; process-level enforcement is out of scope.
-- **A compromised identity provider.** CTRLRun *consumes* identities: it verifies a token somebody else issued and maps the verified claims onto a `Principal`. It issues nothing, and an issuer that signs a token for the wrong subject has told CTRLRun the truth as far as CTRLRun can tell. Everything downstream — grants, delegation, receipts — is then wrong, correctly and consistently.
+- **A compromised identity provider.** ctrlrun *consumes* identities: it verifies a token somebody else issued and maps the verified claims onto a `Principal`. It issues nothing, and an issuer that signs a token for the wrong subject has told ctrlrun the truth as far as ctrlrun can tell. Everything downstream — grants, delegation, receipts — is then wrong, correctly and consistently.
 - **A `HeaderIdentityProvider` behind a proxy that does not overwrite the header.** It is worth exactly what the thing setting it is worth, and RFC 7239 §8.1 says the same of the header it standardizes. If the agent can set the header, the agent chooses its own authority. It warns at construction and it is still the operator's call.
 - **A revoked token before its `exp`, where no feed is configured.** Without one, a verified token is valid until it expires, which is why one with no `exp` is refused, and short lifetimes are the whole of the story. Since v0.8 a deployment may pass `JWTIdentityProvider(revocations=...)` a feed of Security Event Tokens, and a credential the issuer revoked is then refused at resolution. Two things that closes less than they sound: **a revoked credential leaves a log line and no receipt**, because resolution happens before an action exists, where an *expired* one leaves a receipt; and **a feed is worth what its source is worth**. Somebody who can write the file, or stand in front of the poll endpoint, can refuse the operator's own agents at will, which is a denial of service against them and is fail-closed. They cannot admit a principal the issuer revoked: the feed is only ever consulted to refuse, and there is no path on which its answer makes an otherwise-invalid credential valid.
 - **A tenant-templated issuer.** `issuer` is matched as an exact string, so a multi-tenant endpoint cannot be configured correctly here. Pointing it at one without pinning the tenant makes every tenant on that platform a valid issuer — stated because the fail-open is inviting.
-- **Authority across an agent-to-agent hop.** A grant covers the principal CTRLRun resolved for *this* call. Propagating attenuated authority across hops is v0.10.
+- **Authority across an agent-to-agent hop.** A grant covers the principal ctrlrun resolved for *this* call. Propagating attenuated authority across hops is v0.10.
 - **Approving an authority change.** `ctrlrun delegate --as` is an assertion typed at a shell, not an authentication; the record keeps `created_via` so a reader can tell an act from an assertion. Authenticating the *approver* remains out of scope, as in v0.1.
 
 ## Known v0.4 limitations — what `ctrlrun verify` does not see
@@ -144,7 +144,7 @@ cannot see matters more than the feature does, so it is here as well as in
   executors and never imports the operator's module.
 - **Not the operator's `reconcile` hooks**, for the same reason: a hook is a Python callable
   passed to `@protect`, and it does not appear in any file verify reads.
-- **Not where the decorator was placed.** Code that calls the raw function bypasses CTRLRun
+- **Not where the decorator was placed.** Code that calls the raw function bypasses ctrlrun
   entirely — the "bypassing the decorator" line above — and no amount of configuration-reading
   finds that.
 - **Not the deployment.** Whether the proxy in front of `HeaderIdentityProvider` overwrites the
@@ -180,7 +180,7 @@ certified, not audited.
 - Approver identity is free text; no authentication of the approver (v0.3).
 - Receipts are not signed, and they are not signed after v0.6 either. v0.6 adds a **hash chain** (`SPEC-v0.6.md` §6): each receipt carries the hash of the one before it, with `seq` inside the hashed content, so a partial tamper is detected and named — an `UPDATE` on one row, a `DELETE` from the middle, a reordering. What that closes is **alteration that keeps the receipts after it**: changing what receipt *n* says while leaving the rest in place costs a rewrite of all of them plus the head, rather than one statement. **Not a truncation at the end, and not an append.** Two earlier versions of this line claimed the first; a review measured both at **two statements, undetected** — delete the rows and rewind the head, or insert a well-formed row and advance it. The head is a row in the same database as the receipts, so it raises the cost of *forgetting* and not the cost of erasing; an anchor outside the database is what closes that, and **v0.11 adds one**.
 
-- **What the anchor changes, and exactly how far** (`SPEC-v0.11.md` §2.4, §3). An anchor records the pair the head holds, a `seq` and the hash at it, through a provider the operator supplies and CTRLRun does not ship. It **freezes a prefix**: anything at or below an anchored `seq` can no longer be removed or altered without the anchored pair failing to reproduce, and that is decided by the operator's own record rather than by a row in the database under suspicion. So the truncation measured above at two statements is now named `anchor_broken`, and so is the administrator who rewrites every row **including the head**, for everything at or below an anchored `seq`: the malicious-administrator line is narrowed again rather than removed.
+- **What the anchor changes, and exactly how far** (`SPEC-v0.11.md` §2.4, §3). An anchor records the pair the head holds, a `seq` and the hash at it, through a provider the operator supplies and ctrlrun does not ship. It **freezes a prefix**: anything at or below an anchored `seq` can no longer be removed or altered without the anchored pair failing to reproduce, and that is decided by the operator's own record rather than by a row in the database under suspicion. So the truncation measured above at two statements is now named `anchor_broken`, and so is the administrator who rewrites every row **including the head**, for everything at or below an anchored `seq`: the malicious-administrator line is narrowed again rather than removed.
 
   **An append is still not detected**, and this is the half most likely to be misread. A forged receipt lands at head + 1, above every anchored `seq`, so nothing stops reproducing, and a later anchor freezes the forged chain as readily as an honest one. Receipts written and erased entirely **between** two anchors are not detected either, because they were never at or below an anchored `seq`. An earlier version of the roadmap said the anchor closed "a suffix erased or appended"; a review ran both cases and it closes only the first.
 
@@ -200,7 +200,7 @@ model. They shipped in 0.2.0 and every one of them describes behaviour you can r
   scope-challenge `403` — to `FAILED`, permitting an automatic retry. They are the closest
   thing MCP offers to an executor raising `NotExecuted` (SPEC-v0.1 §5.5): the peer is stating
   in band that it rejected the request rather than running the method. An upstream that does
-  work and *then* returns `-32602` violates JSON-RPC 2.0, and CTRLRun will retry against a side
+  work and *then* returns `-32602` violates JSON-RPC 2.0, and ctrlrun will retry against a side
   effect that already landed. The alternative — mapping every error to `AMBIGUOUS` — makes a
   routine token expiry or a typo'd tool name cost a human `ctrlrun resolve`, which is how a
   guarantee becomes something people switch off. The asymmetry stays where v0.1 put it:
@@ -240,7 +240,7 @@ model. They shipped in 0.2.0 and every one of them describes behaviour you can r
   in the events file. Cutting a chain of *unknown* width means setting `delegable: false` on
   the root grant and restarting, after which §5.6 rule 6 denies every descendant.
 - **Observe mode executes.** It is the rollout path, not a sandbox: effects land at remotes
-  and the records of them are real. What it suspends is CTRLRun's refusals, wholesale — every
+  and the records of them are real. What it suspends is ctrlrun's refusals, wholesale — every
   ⚠ row of `SPEC-v0.3.md` §9 at once. It is not a per-action opt-out and cannot be made one.
 - **A `mode: observe` writer and a ≤ 0.2 reader do not mix.** `ReceiptResult` gains
   `observed`, and `Receipt.from_dict` parses `result` into a closed enum — so an older process

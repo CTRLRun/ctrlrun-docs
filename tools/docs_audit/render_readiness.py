@@ -1,6 +1,6 @@
 """Render the readiness block, the same in three places, from generated sources only.
 
-The block is the first thing a stranger reads about whether CTRLRun can be run for real, so
+The block is the first thing a stranger reads about whether ctrlrun can be run for real, so
 every number in it comes from something that measures itself:
 
 - the version and the dependency floor from `pyproject.toml`;

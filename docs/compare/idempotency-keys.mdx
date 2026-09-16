@@ -1,5 +1,5 @@
 ---
-title: "CTRLRun and idempotency keys"
+title: "ctrlrun and idempotency keys"
 sidebarTitle: "vs idempotency keys"
 description: "An idempotency key deduplicates at one API that chose to support it. An effect key deduplicates at the agent, across every API it touches."
 ---
@@ -33,7 +33,7 @@ them well, you have solved a large part of this problem.
 The row that matters most is the unknown outcome. Resending with an idempotency key is the right
 move when the remote implements them and the window has not passed. It is a guess when the
 remote does not, when the call went to a second API, when the window expired, or when the client
-never learned whether the first request arrived. CTRLRun refuses to guess and makes someone
+never learned whether the first request arrived. ctrlrun refuses to guess and makes someone
 look.
 
 ## When to use both

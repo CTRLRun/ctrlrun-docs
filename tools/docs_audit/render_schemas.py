@@ -65,7 +65,7 @@ def render_schemas() -> str:
     lines = [
         "---",
         'title: "Receipt and event schemas"',
-        'description: "Every field of a CTRLRun receipt and of an event, and every event '
+        'description: "Every field of a ctrlrun receipt and of an event, and every event '
         'type, rendered from the dataclasses that write them."',
         "---",
         "",
@@ -74,7 +74,7 @@ def render_schemas() -> str:
         "A receipt is one executed action; an event is one step on the way. Both are written to the",
         "store, appended to `.ctrlrun/receipts.jsonl` and `.ctrlrun/events.jsonl` as one JSON object",
         "per line, and exported to any sink installed. Every enum renders by value, so a reader that",
-        "never imported CTRLRun can read the evidence.",
+        "never imported ctrlrun can read the evidence.",
         "",
         "## Receipt",
         "",
@@ -150,7 +150,7 @@ def render_errors() -> str:
     lines = [
         "---",
         'title: "Errors"',
-        'description: "The closed set of CTRLRun exceptions, each with its base class and '
+        'description: "The closed set of ctrlrun exceptions, each with its base class and '
         'when it is raised: ActionDenied, ApprovalRequired, DuplicateEffect and the rest."',
         "---",
         "",

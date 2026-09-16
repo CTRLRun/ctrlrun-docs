@@ -3,7 +3,7 @@ title: "How this is built"
 description: "Specification first, every requirement mutation-tested, independent review, every claim mapped to a test, and what has not been done yet."
 ---
 
-CTRLRun is built specification-first, every requirement in it is mutation-tested, anything
+ctrlrun is built specification-first, every requirement in it is mutation-tested, anything
 that touches authorization is reviewed by a session that did not write it, and every sentence
 in the README maps to a test. That discipline is the reason to trust the code, and it is also
 what makes it safe that AI coding agents write most of it. This page says both, plainly, with

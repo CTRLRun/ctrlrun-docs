@@ -6,7 +6,7 @@ description: "Route an approve decision through the OpenAI Agents SDK's tool-app
 `ctrlrun-openai-agents` makes an `approve` decision stop the run with the SDK's own
 `ToolApprovalItem` instead of `ApprovalRequired` being raised past the runner. The human
 answers with `state.approve(item)`, where this SDK's users already answer, and one core provider
-writes the grant. The binding across the interrupt is the SDK's, keyed by `call_id`, so CTRLRun
+writes the grant. The binding across the interrupt is the SDK's, keyed by `call_id`, so ctrlrun
 records who answered and cannot re-check what they answered about: that is attribution, in that
 word.
 
@@ -60,15 +60,15 @@ blocks are the adapter's own example, run against a real SDK install in this rep
         result = await gate.run(agent, state)
     ```
 
-    `gate.run` and `gate.run_sync` are `Runner.run` with CTRLRun's exceptions arriving as
+    `gate.run` and `gate.run_sync` are `Runner.run` with ctrlrun's exceptions arriving as
     themselves: the SDK wraps a tool's exception in `UserError`, and these walk the chain back.
     `unwrap(error)` does the same if you call `Runner` yourself.
   </Step>
 
   <Step title="Know what a rejection leaves behind">
-    The SDK does not invoke a tool whose approval was refused, so no CTRLRun action is
+    The SDK does not invoke a tool whose approval was refused, so no ctrlrun action is
     proposed: no `APPROVAL_DENIED`, no `ACTION_DENIED`, no receipt. The refusal is real and in
-    the SDK's run output; CTRLRun was never asked. Record it where you call `state.reject(item)`
+    the SDK's run output; ctrlrun was never asked. Record it where you call `state.reject(item)`
     if you need it in the evidence log. The conformance kit reports `denial` as not applicable
     for the same reason.
   </Step>

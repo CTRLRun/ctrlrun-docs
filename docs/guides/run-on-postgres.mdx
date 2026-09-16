@@ -7,7 +7,7 @@ Use Postgres when workers on more than one host must share one store, because `B
 IMMEDIATE` is a write lock on a local file and does not reach across hosts. The store is the
 same protocol, graded by the same suite as SQLite; what changes is a URL.
 
-**Prerequisites:** a Postgres 14 or later server, a database, a role for CTRLRun, and
+**Prerequisites:** a Postgres 14 or later server, a database, a role for ctrlrun, and
 `pip install "ctrlrun[postgres]"`.
 
 <Steps>
@@ -27,7 +27,7 @@ same protocol, graded by the same suite as SQLite; what changes is a URL.
     The URL goes to `psycopg.connect` unchanged, so `?sslmode=require`, `?connect_timeout=5`, a
     `service=` name and the `PG*` environment variables all work. Put the password in
     `~/.pgpass` or `PGPASSWORD`, not in the URL. On the command line the schema travels as
-    CTRLRun's own query parameter:
+    ctrlrun's own query parameter:
 
     ```bash
     export CTRLRUN_STORE_URL='postgresql://db.internal/ctrlrun?ctrlrun_schema=ctrlrun'

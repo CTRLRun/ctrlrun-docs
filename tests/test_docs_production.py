@@ -193,7 +193,7 @@ FORBIDDEN: tuple[str, ...] = (
     "exactly[ -]once",
 )
 
-#: Sentences on a Production page that use one of those words to say what CTRLRun is **not**.
+#: Sentences on a Production page that use one of those words to say what ctrlrun is **not**.
 #: Lower-cased and whitespace-collapsed the way the scan sees them. Adding one is a deliberate
 #: act with this list in the diff.
 ALLOWED: frozenset[str] = frozenset(
@@ -221,7 +221,7 @@ def test_the_forbidden_scan_would_fire_on_the_claims_it_exists_to_catch():
     """The positive control. Every word above is absent from every page today, so without this
     the whole scan is a check nothing exercises — `v0.4 §1.3`, and mutation pattern 3."""
     claims = (
-        "CTRLRun gives you guaranteed exactly-once execution.",
+        "ctrlrun gives you guaranteed exactly-once execution.",
         "Receipts are signed, which proves authorship.",
         "The chain is tamper-proof and gives you non-repudiation.",
         "This makes your agent secure and compliant.",
@@ -419,10 +419,10 @@ def test_every_production_page_is_in_the_production_group():
 
 
 #: The README carried the readiness block until 2026-09-09, when the page was cut to what
-#: CTRLRun does, how to use it and how it works. The block has two homes on the site, where a
+#: ctrlrun does, how to use it and how it works. The block has two homes on the site, where a
 #: reader who wants the numbers goes, and the generator still refuses a shrunken suite: what
 #: was dropped is one embedding, not the guard.
-READINESS_HOMES = ("docs.mdx", "docs/production/index.mdx")
+READINESS_HOMES = ("index.mdx", "docs/production/index.mdx")
 
 
 @pytest.mark.parametrize("home", READINESS_HOMES)
@@ -633,7 +633,7 @@ def test_the_badge_row_is_generated_and_carries_the_test_count_badge():
         sys.path.pop(0)
     assert render_badges.check() == []
     alts = [badge.alt for badge in render_badges.BADGES]
-    assert "Tests" in alts and "CTRLRun verified" in alts, alts
+    assert "Tests" in alts and "ctrlrun verified" in alts, alts
     document = render_badges.tests_badge(3825)
     assert document == {
         "schemaVersion": 1,
@@ -709,7 +709,7 @@ def test_the_readme_says_where_it_runs_before_the_badges():
 
 
 def test_the_home_page_offers_to_run_it_for_real():
-    home = (DOCS / "docs.mdx").read_text(encoding="utf-8")
+    home = (DOCS / "index.mdx").read_text(encoding="utf-8")
     assert "Run it for real" in home
     assert "/docs/production/index" in home
 

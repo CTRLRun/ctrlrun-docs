@@ -294,7 +294,7 @@ export const ExecutionBoundary = () => {
             <path d="M 290 150 L 312 150" className="cr-dg-arrow" markerEnd="url(#cr-dg-head)" />
 
             <rect x="306" y="50" width="340" height="262" rx="8" className="cr-dg-gate" />
-            <text x="318" y="74" className="cr-dg-wordmark">CTRLRun</text>
+            <text x="318" y="74" className="cr-dg-wordmark">ctrlrun</text>
             <text x="634" y="74" className="cr-dg-eyebrow" textAnchor="end">MAY THIS EXECUTE NOW?</text>
             {checks.map((item, index) => {
               const y = 88 + index * 44;

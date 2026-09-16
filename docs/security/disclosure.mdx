@@ -12,7 +12,7 @@ actions. A failing test is the fastest possible report.
 
 ## What counts as a vulnerability
 
-CTRLRun sits in the execution path of consequential actions, so anything that breaks one of
+ctrlrun sits in the execution path of consequential actions, so anything that breaks one of
 these is a security issue rather than a bug:
 
 - An action executes that the policy should have denied.
@@ -32,7 +32,7 @@ think one is stated too generously, say so:
 - A compromised process, host or Python environment.
 - A malicious administrator with write access to the policy file or the store.
 - A remote that lies about what it did.
-- A compromised approver: CTRLRun proves what was approved, not that the human was right.
+- A compromised approver: ctrlrun proves what was approved, not that the human was right.
 - An executor that raises `NotExecuted` after the remote acted.
 - Code that bypasses the decorator entirely.
 - Data exfiltration through reads the policy allows.
@@ -47,7 +47,7 @@ than the code does is a defect in this project's terms, and
 
 ## Supported versions
 
-CTRLRun is pre-1.0 and only the latest release receives fixes.
+ctrlrun is pre-1.0 and only the latest release receives fixes.
 
 ## Next
 
