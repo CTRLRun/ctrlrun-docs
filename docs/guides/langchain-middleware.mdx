@@ -5,6 +5,8 @@ description: "Gate every LangChain tool call with ctrlrun-langchain, through wra
 
 This guide provides a quick overview for getting started with the ctrlrun [middleware](https://docs.langchain.com/oss/langchain/middleware/overview). ctrlrun checks every tool call your agent makes against a policy you write, before the call runs, and records what happened after.
 
+`CTRLRunMiddleware` is an official LangChain middleware integration, listed in LangChain's [middleware integrations](https://docs.langchain.com/oss/python/integrations/middleware), and that listing links to this page.
+
 ## Overview
 
 ### Details
@@ -107,4 +109,5 @@ To have the human answered *inside* the run instead, use [`ctrlrun-langgraph`](h
 
 - [Use the LangGraph adapter](/docs/guides/langgraph-adapter): approvals answered inside the run, through `interrupt()`.
 - [Adapters](/docs/adapters): the three ways in, and why this one is prevention.
+- [LangChain's middleware integrations](https://docs.langchain.com/oss/python/integrations/middleware), where `CTRLRunMiddleware` is listed beside the other middleware.
 - [The middleware's README](https://github.com/CTRLRun/ctrlrun/blob/main/adapters/langchain/README.md) · [Get started](/docs/get-started/quickstart) · [Why](/docs/why).
