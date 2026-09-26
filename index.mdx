@@ -231,6 +231,11 @@ Most readers need the decorator. An adapter buys exactly one thing, routing an a
 the framework's own interrupt, and a framework with no such primitive does not need one.
 [Choosing between them](/docs/get-started/choosing) has the decision table.
 
+On LangChain, ctrlrun is an official middleware integration: `CTRLRunMiddleware` is listed in
+LangChain's [middleware integrations](https://docs.langchain.com/oss/python/integrations/middleware)
+and gates every tool call the agent makes, tools you did not write included.
+[Use the LangChain middleware](/docs/guides/langchain-middleware).
+
 ## Where it stands
 
 {/* generated from the suite, pyproject and the soak (mdx) — run the generator */}

@@ -80,6 +80,7 @@ by its quoted claim, and `tests/test_docs_audit.py` fails if a named row is not 
 | "an adapter never constructs one and never supplies a principal" | `needs_approval` — `adapter.py:430` — resolves the principal from the `Control` so no adapter builds an `Action` | `test_T129_no_public_callable_takes_a_principal`, `test_T129_the_module_exposes_no_way_to_construct_a_control` |
 | "prevention" / "attribution" | `carries_approved_arguments` gates §3.4's rebuild in `_check_answer` — `adapter.py:248` | `test_T137b_the_readme_says_the_binding_is_attribution_and_why` |
 | "Adapters ship on their own version line" | `adapters/*/pyproject.toml`, never in the `ctrlrun` wheel or sdist | `test_T136_the_ctrlrun_distributions_contain_no_adapter` |
+| "`CTRLRunMiddleware` ... gates every tool call through LangChain's own `wrap_tool_call`, tools you did not write included: a refused call never reaches the tool, and the model is told which rule refused it" | `CTRLRunMiddleware.wrap_tool_call` in `adapters/langchain` is registered on the agent rather than on a tool, runs `handler` only as the executor `Control.execute` is handed, and on `ActionDenied` returns a `ToolMessage` carrying the denial's reason instead of calling it | `test_a_denied_call_never_reaches_the_handler`, `test_an_unnamed_tool_is_refused_because_nothing_is_default_allow`, `test_the_refusal_names_the_rule_rather_than_reporting_an_error_the_tool_never_produced` |
 
 ## Write down what the agent may do
 
