@@ -162,6 +162,7 @@
                 "group": "Integrations",
                 "pages": [
                   "docs/cookbook/protect-an-mcp-server",
+                  "docs/cookbook/github-merge-agent",
                   "docs/cookbook/langgraph-interrupt",
                   "docs/cookbook/openai-agents-tool-approval",
                   "docs/cookbook/slack-approvals",

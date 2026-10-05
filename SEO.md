@@ -91,6 +91,7 @@ that page's frontmatter, never here.
 | `docs/cookbook/customer-notification-agent` | AI agent notify customers once | One effect per customer per incident, so a retry or a second worker sends once. |
 | `docs/cookbook/manager-and-worker` | multi agent delegation bounded authority | A manager delegates a narrower slice; the worker cannot exceed or widen it. |
 | `docs/cookbook/protect-an-mcp-server` | protect existing MCP server | Name the tools in a policy and put the gateway between the agent and the server. |
+| `docs/cookbook/github-merge-agent` | github mcp server merge pull request approval | The approval binds `expectedHeadSha`, so a push after the approval merges nothing. |
 | `docs/cookbook/langgraph-interrupt` | langgraph approval refund | The approval surfaces as LangGraph's own interrupt and the resumption carries the arguments. |
 | `docs/cookbook/openai-agents-tool-approval` | openai agents sdk approval refund | The run stops with the SDK's own tool-approval interruption. |
 | `docs/cookbook/slack-approvals` | slack approve AI agent action | One signed POST out, a signed answer back, and the same grant call the CLI makes. |

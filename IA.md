@@ -223,6 +223,7 @@ non-zero.
 | `docs/cookbook/customer-notification-agent` | communications — batch notifications, one effect each |
 | `docs/cookbook/manager-and-worker` | multi-agent — a manager delegates bounded authority to a worker |
 | `docs/cookbook/protect-an-mcp-server` | integrations — an existing MCP server in five minutes |
+| `docs/cookbook/github-merge-agent` | integrations — merge pull requests through the GitHub MCP server, at the approved head |
 | `docs/cookbook/langgraph-interrupt` | integrations — LangGraph with `interrupt()` |
 | `docs/cookbook/openai-agents-tool-approval` | integrations — the OpenAI Agents SDK's tool approval |
 | `docs/cookbook/slack-approvals` | integrations — approvals in Slack via webhook |

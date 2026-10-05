@@ -1,0 +1,225 @@
+---
+title: "A merge agent behind the GitHub MCP server"
+description: "An agent merges pull requests through github-mcp-server, and only at the head a human approved: a push after the approval merges nothing."
+---
+
+An agent merges pull requests through the GitHub MCP server, and a human approves each merge.
+The gateway binds that approval to the call's exact arguments, so the call has to carry the
+commit the human reviewed. `merge_pull_request` takes it as `expectedHeadSha`, and GitHub
+refuses a merge when the head has moved. The policy refuses a merge without one. A push that
+lands after the approval merges nothing, and an agent that swaps in the new SHA is asked for a
+new approval.
+
+The gateway does not re-read the pull request before the call: a policy cannot name a
+precondition provider. The SHA in the arguments is what closes the gap. Here the gateway is
+driven in process against a stand-in for github-mcp-server, so the recipe runs offline.
+
+## The policy
+
+```yaml runnable
+schema: ctrlrun.policy/v2
+
+actions:
+  mcp.github.pull_request_read:
+    decision: allow
+  mcp.github.merge_pull_request:
+    effect: "merge:{owner}/{repo}:{pullNumber}"
+    rules:
+      - when: { expectedHeadSha_neq: "" }
+        decision: approve
+      - decision: deny
+```
+
+A call without `expectedHeadSha` falls through to `deny`. The gateway also logs a warning for
+it, `condition expectedHeadSha_neq ignored: the action has no argument 'expectedHeadSha'`,
+because a condition on an argument the call did not carry is false. Every other github-mcp-server
+tool is denied, because a tool the policy does not list is denied.
+
+## The code
+
+```python runnable file=main.py
+import json
+from collections.abc import Mapping
+from pathlib import Path
+from typing import Any
+
+from ctrlrun import Control, Policy, SQLiteStateStore
+from ctrlrun.gateway.mcp import CURRENT_REVISION
+from ctrlrun.gateway.outcome import COMPLETE, UpstreamResult
+from ctrlrun.gateway.server import Gateway, GatewayConfig
+
+HERE = Path(__file__).resolve().parent
+STATE = HERE / ".ctrlrun"
+STATE.mkdir(exist_ok=True)
+for name in ("state.db", "state.db-wal", "state.db-shm"):
+    (STATE / name).unlink(missing_ok=True)
+
+REVIEWED = "a1b2c3d" + "0" * 33
+PUSHED = "e4f5a6b" + "0" * 33
+PULL = {"owner": "acme", "repo": "checkout", "pullNumber": 4471, "merge_method": "squash"}
+pull_request = {"head": REVIEWED, "merged_at": None}
+upstream_calls: list[dict] = []
+
+STALE = "failed to merge pull request: 409 Head branch was modified. Review and try the merge again."
+
+
+def github_mcp_server(
+    body: bytes, headers: Mapping[str, str], *, fresh: bool
+) -> tuple[Any, bytes, int, dict[str, str]]:
+    """merge_pull_request as the gateway sees it: GitHub's `sha` check, reported the way the
+    server reports any GitHub error, as a tool result with isError."""
+    request = json.loads(body)
+    upstream_calls.append(request)
+    expected = request["params"]["arguments"].get("expectedHeadSha")
+    if expected is not None and expected != pull_request["head"]:
+        result = {"content": [{"type": "text", "text": STALE}], "isError": True}
+    else:
+        pull_request["merged_at"] = pull_request["head"]
+        merged = json.dumps({"merged": True, "sha": pull_request["head"]})
+        result = {"content": [{"type": "text", "text": merged}]}
+    reply = {"jsonrpc": "2.0", "id": request["id"], "result": result}
+    return (
+        UpstreamResult(result_type=COMPLETE, is_error=result.get("isError", False)),
+        json.dumps(reply).encode(),
+        200,
+        {"content-type": "application/json"},
+    )
+
+
+store = SQLiteStateStore(STATE / "state.db")
+control = Control(Policy.from_file(HERE / "ctrlrun.yaml"), store)
+config = GatewayConfig(
+    upstream="http://127.0.0.1:8082/mcp", alias="github", principal="merge-agent"
+)
+gateway = Gateway(config, control, github_mcp_server)
+
+
+def merge(rpc_id: int, **arguments: str) -> dict:
+    body = json.dumps(
+        {
+            "jsonrpc": "2.0",
+            "id": rpc_id,
+            "method": "tools/call",
+            "params": {"name": "merge_pull_request", "arguments": {**PULL, **arguments}},
+        }
+    ).encode()
+    headers = {
+        "MCP-Protocol-Version": CURRENT_REVISION,
+        "Mcp-Method": "tools/call",
+        "Mcp-Name": "merge_pull_request",
+        "Content-Type": "application/json",
+    }
+    response = gateway.handle(body, headers)
+    return {"status": response.status, **json.loads(response.body)}
+
+
+def refused(answer: dict) -> str:
+    return f"{answer['status']} {answer['error']['code']} {answer['error']['data']['error']}"
+
+
+unpinned = merge(1)
+if "error" not in unpinned:
+    raise SystemExit("a merge with no expectedHeadSha reached the server")
+print("merge, no expectedHeadSha:", refused(unpinned))
+
+asked = merge(2, expectedHeadSha=REVIEWED)
+if "error" not in asked:
+    raise SystemExit("a merge reached the server without a human")
+request_id = asked["error"]["data"]["request_id"]
+print("merge at a1b2c3d:", refused(asked))
+store.grant_approval(request_id, "human:ada@example.com")
+print("a human approves the merge at a1b2c3d")
+
+pull_request["head"] = PUSHED
+print("a push lands; the head is now e4f5a6b")
+
+swapped = merge(3, expectedHeadSha=PUSHED)
+if "error" not in swapped:
+    raise SystemExit("a merge at a head nobody approved reached the server")
+print("merge at e4f5a6b instead:", refused(swapped))
+
+approved = merge(4, expectedHeadSha=REVIEWED)
+if pull_request["merged_at"] is not None:
+    raise SystemExit(f"merged at {pull_request['merged_at'][:7]}, which nobody approved")
+print("the approved call:", approved["result"]["content"][0]["text"].split(": ", 1)[1])
+
+again = merge(5, expectedHeadSha=REVIEWED)
+if "error" not in again:
+    raise SystemExit("the call after an unknown outcome reached the server")
+print("the approved call again:", refused(again))
+
+print("merges:", 0 if pull_request["merged_at"] is None else 1)
+print("calls that reached the server:", len(upstream_calls))
+store.close()
+```
+
+## What the agent sees
+
+```text
+merge, no expectedHeadSha: 403 -41001 ctrlrun.denied
+merge at a1b2c3d: 403 -41002 ctrlrun.approval_required
+a human approves the merge at a1b2c3d
+a push lands; the head is now e4f5a6b
+merge at e4f5a6b instead: 403 -41002 ctrlrun.approval_required
+the approved call: 409 Head branch was modified. Review and try the merge again.
+the approved call again: 409 -41005 ctrlrun.ambiguous_effect
+merges: 0
+calls that reached the server: 1
+```
+
+One call reached the server, and GitHub refused it. The swap to `e4f5a6b` is a different
+action hash, so it is a new request for a human rather than a merge. The `409` comes back as
+the server's own tool result, relayed unchanged.
+
+## The receipt
+
+```bash runnable
+ctrlrun receipts --last 2
+```
+
+```text
+…  mcp.github.merge_pull_request  deny/denied  merge:acme/checkout:4471  merge-agent
+…  mcp.github.merge_pull_request  approve/ambiguous  merge:acme/checkout:4471  merge-agent
+```
+
+Two receipts: the call with no SHA, and the approved call GitHub refused. The two calls
+waiting on a human have none yet. Neither does the `-41005`: the gateway refuses it on the
+effect record before an action is recorded.
+
+## When an AMBIGUOUS appears
+
+After the `409` the effect is `AMBIGUOUS`, not `FAILED`. github-mcp-server reports a GitHub
+refusal and a dropped connection the same way: a tool result with `isError` and a message, the
+second ending in `EOF`. The gateway cannot tell them apart, so it records neither as `FAILED`.
+
+Read the message. Where it is the `409`, nothing merged: run
+`ctrlrun resolve merge:acme/checkout:4471 --failed`, and the agent's merge at the new head is a
+new approval request. Do not set `mcp: {not_executed_on_error: true}` for this server. A merge
+that lands and loses its reply also comes back as `isError`, and that setting would record it
+`FAILED`.
+
+## In production
+
+Run github-mcp-server in `http` mode on loopback, and point the agent's MCP client at the
+gateway. The client sends its GitHub token in `Authorization`, and the gateway forwards it.
+These lines need a token and a network, so they are not run here:
+
+```bash
+github-mcp-server http --listen-host 127.0.0.1 --port 8082 --toolsets pull_requests
+ctrlrun gateway --upstream http://127.0.0.1:8082/mcp --alias github --principal merge-agent
+```
+
+The same race run against the real server, with a fake GitHub behind it, is in the
+[github-merge-head-race study](https://github.com/CTRLRun/ctrlrun/tree/main/research/github-merge-head-race).
+
+## Run it
+
+```bash
+git clone https://github.com/CTRLRun/ctrlrun && cd ctrlrun/examples/cookbook/github-merge-agent
+pip install "ctrlrun[gateway]" && python main.py
+```
+
+## Next
+
+- [Protect an existing MCP server in five minutes](/docs/cookbook/protect-an-mcp-server): the same gateway in front of any server.
+- [Resolve an ambiguous effect](/docs/cookbook/resolve-an-ambiguous-effect) · [Get started](/docs/get-started/quickstart) · [Why](/docs/why).
